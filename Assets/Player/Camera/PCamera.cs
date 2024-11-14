@@ -1,0 +1,59 @@
+using System;
+using Cinemachine;
+using Unity.Netcode;
+using UnityEngine;
+
+public class PCamera : NetworkBehaviour
+{
+    [SerializeField] private Transform orientation;
+    [SerializeField] private Transform head;
+    [SerializeField] private float cameraSmoothSpeed = 35;
+    [SerializeField] private CinemachineVirtualCamera cam;
+    
+    [SerializeField] [Range(0,3)] private float sensMult = 1;
+    
+    
+    public Vector2 LookTarget { get; private set; } 
+    public Vector2 LookDir { get; private set; }
+    public Vector2 LookDelta { get; private set; }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        if (!IsOwner)
+        {
+            cam.enabled = false;
+            return;
+        }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void OnEnable()
+    {
+        if (NetcodeManager.InGame) return;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    private void Update()
+    {
+        if (!IsOwner && NetcodeManager.InGame) return;
+        GetLookTarget();
+        Look();
+    }
+
+    private void Look()
+    {
+        LookDir = Vector2.Lerp(LookDir, LookTarget, cameraSmoothSpeed * Time.deltaTime);
+        orientation.localRotation = Quaternion.Euler(0, LookDir.x, 0);
+        head.localRotation = Quaternion.Euler(-LookDir.y, 0, 0);
+    }
+
+    private void GetLookTarget()
+    {
+        LookDelta = InputManager.instance.LookInput * sensMult;
+        LookTarget += LookDelta;
+        LookTarget = new(LookTarget.x,Mathf.Clamp(LookTarget.y, -90, 90));
+    }
+}
