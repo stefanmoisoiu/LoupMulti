@@ -20,7 +20,7 @@ public class PDrag : NetworkBehaviour
     
     private void ApplyDrag()
     {
-        Vector3 vel = rb.velocity;
+        Vector3 vel = rb.linearVelocity;
         
         if (grounded.FullyGrounded()) vel = grounded.WorldToGround * vel;
         float d = 1 - (grounded.FullyGrounded() ? drag : airDrag);
@@ -28,6 +28,6 @@ public class PDrag : NetworkBehaviour
         
         if (grounded.FullyGrounded()) vel = grounded.GroundToWorld * vel;
         
-        rb.velocity = vel;
+        rb.linearVelocity = vel;
     }
 }

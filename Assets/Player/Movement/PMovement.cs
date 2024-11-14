@@ -34,7 +34,7 @@ public class PMovement : NetworkBehaviour
         Vector3 force = dir * acceleration;
         if (!grounded.FullyGrounded()) force *= airAccelMultiplier;
 
-        Vector3 vel = rb.velocity;
+        Vector3 vel = rb.linearVelocity;
         if (grounded.FullyGrounded()) vel = grounded.WorldToGround * vel;
 
         float y = vel.y;
@@ -60,9 +60,9 @@ public class PMovement : NetworkBehaviour
         
         if (grounded.FullyGrounded()) vel = grounded.GroundToWorld * vel;
         
-        rb.velocity = vel;
+        rb.linearVelocity = vel;
         
-        Debug.DrawRay(transform.position, rb.velocity, Color.red);
-        Debug.DrawRay(transform.position + rb.velocity,force * Time.fixedDeltaTime, Color.green);
+        Debug.DrawRay(transform.position, rb.linearVelocity, Color.red);
+        Debug.DrawRay(transform.position + rb.linearVelocity,force * Time.fixedDeltaTime, Color.green);
     }
 }

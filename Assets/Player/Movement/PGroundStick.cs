@@ -31,7 +31,7 @@ public class PGroundStick : NetworkBehaviour
             return;
         }
         rb.useGravity = false;
-        float force = Spring.CalculateSpringForce(rb.position.y, grounded.GroundHit.point.y + offset, rb.velocity.y, springConstant, dampingFactor);
+        float force = Spring.CalculateSpringForce(rb.position.y, grounded.GroundHit.point.y + offset, rb.linearVelocity.y, springConstant, dampingFactor);
         rb.AddForce(Vector3.up * force, ForceMode.Force);
         
         if (debug)

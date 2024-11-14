@@ -23,7 +23,7 @@ public class PFastParticles : NetworkBehaviour
 
     private void Update()
     {
-        if(rb.velocity.magnitude > speedParticlesThreshold) StartParticles();
+        if(rb.linearVelocity.magnitude > speedParticlesThreshold) StartParticles();
         else StopParticles();
     }
 

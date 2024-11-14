@@ -29,7 +29,7 @@ public class PCameraHeadTurnTilt : MonoBehaviour
 
     private void Tilt()
     {
-        _tilt -= cam.LookDelta.x * Mathf.Lerp(minSpeedTiltFactor, maxSpeedTiltFactor, rb.velocity.magnitude / maxSpeedTiltSpeed);
+        _tilt -= cam.LookDelta.x * Mathf.Lerp(minSpeedTiltFactor, maxSpeedTiltFactor, rb.linearVelocity.magnitude / maxSpeedTiltSpeed);
         _tilt = Mathf.Lerp(_tilt, 0, tiltLerpBackSpeed * Time.deltaTime);
         
         // headTurn.localRotation = Quaternion.Euler(0, 0, _tilt);

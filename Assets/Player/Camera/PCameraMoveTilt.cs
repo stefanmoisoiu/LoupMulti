@@ -31,7 +31,7 @@ public class PCameraMoveTilt : MonoBehaviour
     
     private void Tilt()
     {
-        Vector3 vel = rb.velocity;
+        Vector3 vel = rb.linearVelocity;
         if (grounded.FullyGrounded()) vel = grounded.WorldToGround * vel;
         vel.y = 0;
         Quaternion hRot = Quaternion.LookRotation(orientation.forward, Vector3.up);

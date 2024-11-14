@@ -21,6 +21,6 @@ public class PCameraSpeedFOV : MonoBehaviour
 
     private void Update()
     {
-        cam.m_Lens.FieldOfView = Mathf.Lerp(_startFOV, _startFOV + maxAddedFOV, rb.velocity.magnitude / maxFOVSpeed);
+        cam.m_Lens.FieldOfView = Mathf.Lerp(_startFOV, _startFOV + maxAddedFOV, rb.linearVelocity.magnitude / maxFOVSpeed);
     }
 }
