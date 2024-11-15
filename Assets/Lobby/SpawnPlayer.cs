@@ -11,7 +11,7 @@ public class SpawnPlayer : NetworkBehaviour
     private void OnEnable()
     {
         NetcodeManager.OnCreateGame += TrySpawnSelfPlayer;
-        if (IsServer) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
+        if (IsHost) NetworkManager.Singleton.OnConnectionEvent += TrySpawn;
     }
 
     private void OnDisable()
@@ -25,6 +25,7 @@ public class SpawnPlayer : NetworkBehaviour
     }
     private void TrySpawn(ulong clientID)
     {
+        Debug.Log("Spawning player for client " + clientID);
         GameObject player = Instantiate(playerObject, transform.position, Quaternion.identity);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID);
     }

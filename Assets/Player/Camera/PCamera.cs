@@ -1,5 +1,5 @@
 using System;
-using Cinemachine;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ public class PCamera : NetworkBehaviour
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform head;
     [SerializeField] private float cameraSmoothSpeed = 35;
-    [SerializeField] private CinemachineVirtualCamera cam;
+    [SerializeField] private CinemachineCamera cam;
     
     [SerializeField] [Range(0,3)] private float sensMult = 1;
     

@@ -66,13 +66,12 @@ public class NetcodeManager : MonoBehaviour
             return false;
         }
     }
-    public async Task<bool> JoinGame(string joinCode)
+    public async Task JoinGame(string joinCode)
     {
         bool previousInGame = InGame;
         if (string.IsNullOrEmpty(joinCode) || joinCode.Length != 6)
         {
-            Debug.LogError("Invalid join code");
-            return false;
+            throw new Exception("Invalid join code");
         }
         try
         {
@@ -92,15 +91,13 @@ public class NetcodeManager : MonoBehaviour
             
             OnJoinGame?.Invoke();
             OnEnterGame?.Invoke();
-            return true;
         }
         catch
         {
-            Debug.LogError("Failed to join game");
             InGame = previousInGame;
             LoadingGame = false;
             
-            return false;
+            throw new Exception("Failed to join game");
         }
     }
     

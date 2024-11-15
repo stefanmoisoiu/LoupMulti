@@ -34,19 +34,14 @@ public class PJump : NetworkBehaviour
     
     public override void OnNetworkSpawn()
     {
-        base.OnNetworkSpawn();
-        if (!IsOwner) return;
-        Enable();
+        if (!IsOwner || NetcodeManager.InGame) return;
+        InputManager.instance.OnJump += StartPressJump;
+        grounded.OnGroundedChanged += CheckCoyote;
     }
 
     private void OnEnable()
     {
         if (NetcodeManager.InGame) return;
-        Enable();
-    }
-
-    private void Enable()
-    {
         InputManager.instance.OnJump += StartPressJump;
         grounded.OnGroundedChanged += CheckCoyote;
     }

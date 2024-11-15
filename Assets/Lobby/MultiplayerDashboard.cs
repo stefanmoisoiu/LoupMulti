@@ -113,4 +113,9 @@ public class MultiplayerDashboard : MonoBehaviour
         createGamePanel.interactable = enabled;
         lobbyInfoPanel.interactable = enabled;
     }
+    
+    public void CopyToClipboardJoinCode()
+    {
+        GUIUtility.systemCopyBuffer = NetcodeManager.Instance.CurrentServerJoinCode;
+    }
 }

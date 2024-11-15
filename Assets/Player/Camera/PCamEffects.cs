@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Cinemachine;
+using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,13 +9,13 @@ public class PCamEffects : NetworkBehaviour
     public static List<Effect> Effects = new();
 
     [SerializeField] private Transform target;
-    [SerializeField] private CinemachineVirtualCamera cam;
+    [SerializeField] private CinemachineCamera cam;
     private float _baseFov;
 
     private void Start()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
-        _baseFov = cam.m_Lens.FieldOfView;
+        _baseFov = cam.Lens.FieldOfView;
 
     }
 
@@ -41,7 +40,7 @@ public class PCamEffects : NetworkBehaviour
     
     private void ApplyEffect(Effect effect)
     {
-        cam.m_Lens.FieldOfView = _baseFov + effect.AddedFov;
+        cam.Lens.FieldOfView = _baseFov + effect.AddedFov;
         target.localPosition = effect.AddedPosition;
         target.localRotation = Quaternion.Euler(effect.Tilt);
     }

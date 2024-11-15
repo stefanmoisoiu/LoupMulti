@@ -4808,6 +4808,9 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4922,6 +4925,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -4956,7 +4962,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7848515828598910200}
-  - component: {fileID: 4841669237874423016}
+  - component: {fileID: 4532712510028270501}
   m_Layer: 0
   m_Name: Cam
   m_TagString: Untagged
@@ -4981,7 +4987,7 @@ Transform:
   - {fileID: 7776139952172240920}
   m_Father: {fileID: 4748873836574712678}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4841669237874423016
+--- !u!114 &4532712510028270501
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4990,36 +4996,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 1475429394509647222}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ExcludedPropertiesInInspector:
-  - m_Script
-  m_LockStageInInspector: 
-  m_StreamingVersion: 20170927
-  m_Priority: 10
-  m_StandbyUpdate: 2
-  m_LookAt: {fileID: 0}
-  m_Follow: {fileID: 0}
-  m_Lens:
-    FieldOfView: 85
+  Priority:
+    Enabled: 0
+    m_Value: 0
+  OutputChannel: 1
+  StandbyUpdate: 2
+  m_StreamingVersion: 20241001
+  m_LegacyPriority: 0
+  Target:
+    TrackingTarget: {fileID: 0}
+    LookAtTarget: {fileID: 0}
+    CustomLookAtTarget: 0
+  Lens:
+    FieldOfView: 80
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
-    LensShift: {x: 0, y: 0}
-    GateFit: 2
-    FocusDistance: 10
-    m_SensorSize: {x: 1, y: 1}
-  m_Transitions:
-    m_BlendHint: 0
-    m_InheritPosition: 0
-    m_OnCameraLive:
-      m_PersistentCalls:
-        m_Calls: []
-  m_LegacyBlendHint: 0
-  m_ComponentOwner: {fileID: 4099825601806263785}
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
+  BlendHint: 0
 --- !u!1 &1884691672679967038
 GameObject:
   m_ObjectHideFlags: 0
@@ -5032,7 +5042,6 @@ GameObject:
   - component: {fileID: 6385064005469093846}
   - component: {fileID: 5841718485748783599}
   - component: {fileID: 3326530429167689552}
-  - component: {fileID: 3133973302169228412}
   m_Layer: 0
   m_Name: Movement
   m_TagString: Untagged
@@ -5056,6 +5065,7 @@ Transform:
   - {fileID: 8678524554768581212}
   - {fileID: 3732704406630109276}
   - {fileID: 1577182960787337467}
+  - {fileID: 7203886226493501857}
   m_Father: {fileID: 231473827190849983}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6385064005469093846
@@ -5070,6 +5080,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7b6c3132b9f33e48b83027abbf9b5ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   orientation: {fileID: 1083606244367989922}
   rb: {fileID: 7570585517021872206}
   maxWalkSpeed: 6
@@ -5090,6 +5101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f90561f042599464bb0095d50083c983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 7570585517021872206}
   drag: 0.15
   airDrag: 0.0075
@@ -5106,23 +5118,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0fe41405db0174f8d0e69ce86f9dc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   loseRate: 50
   grounded: {fileID: 5692434654991538524}
-  stamina: {fileID: 3133973302169228412}
---- !u!114 &3133973302169228412
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1884691672679967038}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 154d27a626f4499c8420bc6c02164286, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  recoverRate: 10
-  run: {fileID: 3326530429167689552}
+  stamina: {fileID: 3152893132160712871}
 --- !u!1 &1974766057621294980
 GameObject:
   m_ObjectHideFlags: 0
@@ -5167,6 +5166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f86f14da3ad74573aae25a8caccfe0ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rayLength: 1.5
   groundMask:
     serializedVersion: 2
@@ -5223,10 +5223,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9df9588603b6d694d989e7ff2af48943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   orientation: {fileID: 1083606244367989922}
   head: {fileID: 4890824702631100434}
   cameraSmoothSpeed: 35
-  cam: {fileID: 4841669237874423016}
+  cam: {fileID: 4532712510028270501}
   sensMult: 0.75
 --- !u!114 &6737127875729548569
 MonoBehaviour:
@@ -5276,6 +5277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00212e4573910be468710ed68adcb8e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   tiltAmount: 3
   tiltCurve:
     serializedVersion: 2
@@ -5333,8 +5335,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 831cf4dd23633a5418c657c7f43fc41e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   target: {fileID: 4748873836574712678}
-  cam: {fileID: 4841669237874423016}
+  cam: {fileID: 4532712510028270501}
 --- !u!114 &3039448439410740762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5489,6 +5492,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 888d3bec5e9792240b009b651eb3002c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 7570585517021872206}
   springConstant: 500
   dampingFactor: 30
@@ -5565,6 +5569,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -5654,6 +5661,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 3433059524
   InScenePlacedSourceGlobalObjectIdHash: 254798653
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -5661,6 +5670,8 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &1929523264724071433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5673,6 +5684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca18b1aff5bb3e498b69d39cea4db5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   interpolationBackTime: 0.1
   extrapolationMode: 1
   useExtrapolationTimeLimit: 1
@@ -5728,6 +5740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca18b1aff5bb3e498b69d39cea4db5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   interpolationBackTime: 0.1
   extrapolationMode: 1
   useExtrapolationTimeLimit: 1
@@ -5783,6 +5796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca18b1aff5bb3e498b69d39cea4db5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   interpolationBackTime: 0.1
   extrapolationMode: 1
   useExtrapolationTimeLimit: 1
@@ -5838,6 +5852,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c320ddd0f6d41c0b634eb203e8fb901, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 7570585517021872206}
 --- !u!1 &3717479674781827703
 GameObject:
@@ -5941,6 +5956,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -6074,6 +6092,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d54ce546f7b8f664e8d7d9533aea0b42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 7570585517021872206}
   jumpForce: 5
   jumpCooldown: 0.2
@@ -6081,7 +6100,7 @@ MonoBehaviour:
   jumpBufferTime: 0.1
   jumpStaminaCost: 0
   grounded: {fileID: 5692434654991538524}
-  stamina: {fileID: 3133973302169228412}
+  stamina: {fileID: 3152893132160712871}
 --- !u!1 &6796503458457961388
 GameObject:
   m_ObjectHideFlags: 0
@@ -6126,6 +6145,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1874a8fa3f5893142a87f998497a74e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 7570585517021872206}
   particles: {fileID: 2194674870385670627}
   speedParticlesThreshold: 8
+--- !u!1 &8976351017418158125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7203886226493501857}
+  - component: {fileID: 3152893132160712871}
+  m_Layer: 0
+  m_Name: Stamina
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7203886226493501857
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8976351017418158125}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6171578751134408734}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3152893132160712871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8976351017418158125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 154d27a626f4499c8420bc6c02164286, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  recoverRate: 10
+  run: {fileID: 3326530429167689552}

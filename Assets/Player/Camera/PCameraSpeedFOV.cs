@@ -1,13 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class PCameraSpeedFOV : MonoBehaviour
 {
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private CinemachineVirtualCamera cam;
+    [SerializeField] private CinemachineCamera cam;
     
     
     [SerializeField] private float maxAddedFOV = 20;
@@ -16,11 +13,11 @@ public class PCameraSpeedFOV : MonoBehaviour
 
     private void Start()
     {
-        _startFOV = cam.m_Lens.FieldOfView;
+        _startFOV = cam.Lens.FieldOfView;
     }
 
     private void Update()
     {
-        cam.m_Lens.FieldOfView = Mathf.Lerp(_startFOV, _startFOV + maxAddedFOV, rb.linearVelocity.magnitude / maxFOVSpeed);
+        cam.Lens.FieldOfView = Mathf.Lerp(_startFOV, _startFOV + maxAddedFOV, rb.linearVelocity.magnitude / maxFOVSpeed);
     }
 }
