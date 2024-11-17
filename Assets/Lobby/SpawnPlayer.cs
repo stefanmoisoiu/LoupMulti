@@ -10,14 +10,18 @@ public class SpawnPlayer : NetworkBehaviour
 
     private void OnEnable()
     {
-        NetcodeManager.OnCreateGame += TrySpawnSelfPlayer;
-        if (IsHost) NetworkManager.Singleton.OnConnectionEvent += TrySpawn;
+        // NetcodeManager.OnCreateGame += TrySpawnSelfPlayer;
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsHost) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
     }
 
     private void OnDisable()
     {
-        NetcodeManager.OnCreateGame -= TrySpawnSelfPlayer;
-        if (NetworkManager != null && NetworkManager.Singleton != null && IsServer) NetworkManager.Singleton.OnClientConnectedCallback -= TrySpawn;
+        // NetcodeManager.OnCreateGame -= TrySpawnSelfPlayer;
+        if (NetworkManager.Singleton != null && IsHost) NetworkManager.Singleton.OnClientConnectedCallback -= TrySpawn;
     }
     private void TrySpawnSelfPlayer()
     {

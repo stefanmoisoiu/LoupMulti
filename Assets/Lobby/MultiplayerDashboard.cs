@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
-using Unity.Services.Relay;
 using UnityEngine;
 
 public class MultiplayerDashboard : MonoBehaviour
@@ -29,46 +27,64 @@ public class MultiplayerDashboard : MonoBehaviour
 
     private void Start()
     {
-        NetworkManager.Singleton.OnClientConnectedCallback += (ulong id) => UpdateLobbyDashboardInfo();
-        NetworkManager.Singleton.OnClientDisconnectCallback += (ulong id) => UpdateLobbyDashboardInfo();
-        
         joinCodeInput.characterLimit = _maxCodeSize;
+    }
+
+    private void OnEnable()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback += PlayerCountChanged;
+        NetworkManager.Singleton.OnClientDisconnectCallback += PlayerCountChanged;
+        
+        NetcodeManager.OnCreateGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
+        NetcodeManager.OnJoinGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
+        NetcodeManager.OnLeaveGame += () => ChangeDashboardState(DashboardState.CreateJoin);
+    }
+
+    private void OnDisable()
+    {
+        if (NetworkManager.Singleton != null)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= PlayerCountChanged;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= PlayerCountChanged;
+        }
+
+        
+        NetcodeManager.OnCreateGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
+        NetcodeManager.OnJoinGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
+        NetcodeManager.OnLeaveGame -= () => ChangeDashboardState(DashboardState.CreateJoin);
     }
 
     public async void CreateGame()
     {
         Debug.Log("Create Game button pressed");
-        
+        SetDashboardEnabled(false);
         try
         {
-            SetDashboardEnabled(false);
+            
             await NetcodeManager.Instance.CreateGame();
-            ChangeDashboardState(DashboardState.LobbyInfo);
-            SetDashboardEnabled(true);
+            CopyToClipboardJoinCode();
         }
         catch (Exception e)
         {
             Debug.LogError(e);
-            SetDashboardEnabled(true);
+            
         }
+        SetDashboardEnabled(true);
     }
 
     public async void JoinGame()
     {
         Debug.Log("Join Game button pressed");
-
+        SetDashboardEnabled(false);
         try
         {
-            SetDashboardEnabled(false);
             await NetcodeManager.Instance.JoinGame(joinCodeInput.text);
-            SetDashboardEnabled(true);
-            ChangeDashboardState(DashboardState.LobbyInfo);
         }
         catch (Exception e)
         {
             Debug.LogError(e);
-            SetDashboardEnabled(true);
         }
+        SetDashboardEnabled(true);
     }
     
     public void LeaveGame()
@@ -76,9 +92,8 @@ public class MultiplayerDashboard : MonoBehaviour
         Debug.Log("Leave Game button pressed");
         
         NetcodeManager.Instance.LeaveGame();
-        ChangeDashboardState(DashboardState.CreateJoin);
     }
-
+    private void PlayerCountChanged(ulong playerID) => UpdateLobbyDashboardInfo();
     private void UpdateLobbyDashboardInfo()
     {
         int playerCount = NetworkManager.Singleton.GetCurrentPlayerCount();

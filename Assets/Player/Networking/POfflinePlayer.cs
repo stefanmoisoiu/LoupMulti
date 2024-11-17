@@ -6,6 +6,12 @@ public class POfflinePlayer : NetworkBehaviour
 {
     [SerializeField] private bool isOfflinePlayer;
 
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+        TryDeletePlayer();
+    }
+
     private void OnEnable()
     {
         if (NetcodeManager.InGame) TryDeletePlayer();
@@ -24,13 +30,10 @@ public class POfflinePlayer : NetworkBehaviour
 
     private void TryDeletePlayer()
     {
-        try
+        if (isOfflinePlayer)
         {
-            if (isOfflinePlayer) Destroy(transform.root.gameObject);
-        }
-        catch
-        {
-            // ignored
+            transform.root.gameObject.SetActive(false);
+            Destroy(transform.root.gameObject);
         }
     }
 }
