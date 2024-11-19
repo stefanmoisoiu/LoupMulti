@@ -8,14 +8,13 @@ public class SpawnPlayer : NetworkBehaviour
 {
     [SerializeField] private GameObject playerObject;
 
-    private void OnEnable()
+    private void Start()
     {
-        // NetcodeManager.OnCreateGame += TrySpawnSelfPlayer;
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        if (IsHost) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
+        Debug.Log("SpawnPlayer Start");
+        Debug.Log("IsHost: " + IsHost);
+        Debug.Log("IsServer: " + IsServer);
+        if (IsHost) TrySpawnSelfPlayer();
+        if (IsServer) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
     }
 
     private void OnDisable()

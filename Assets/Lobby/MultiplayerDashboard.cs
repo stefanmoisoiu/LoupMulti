@@ -4,8 +4,13 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
-public class MultiplayerDashboard : MonoBehaviour
+public class MultiplayerDashboard : NetworkBehaviour
 {
+    [SerializeField] private string multiplayerLobbySceneName = "MultiLobby";
+    [SerializeField] private string soloLobbySceneName = "SoloLobby";
+    
+    [SerializeField] private SceneChange sceneChange;
+    
     [SerializeField] private TMP_InputField joinCodeInput;
     private int _maxCodeSize = 6;
     
@@ -29,15 +34,19 @@ public class MultiplayerDashboard : MonoBehaviour
     {
         joinCodeInput.characterLimit = _maxCodeSize;
     }
-
     private void OnEnable()
     {
-        NetworkManager.Singleton.OnClientConnectedCallback += PlayerCountChanged;
-        NetworkManager.Singleton.OnClientDisconnectCallback += PlayerCountChanged;
-        
-        NetcodeManager.OnCreateGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
-        NetcodeManager.OnJoinGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
-        NetcodeManager.OnLeaveGame += () => ChangeDashboardState(DashboardState.CreateJoin);
+        if (NetcodeManager.InGame)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += PlayerCountChanged;
+            NetworkManager.Singleton.OnClientDisconnectCallback += PlayerCountChanged;
+            
+            UpdateLobbyDashboardInfo();
+        }
+
+        // NetcodeManager.OnCreateGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
+        // NetcodeManager.OnJoinGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
+        // NetcodeManager.OnLeaveGame += () => ChangeDashboardState(DashboardState.CreateJoin);
     }
 
     private void OnDisable()
@@ -49,9 +58,9 @@ public class MultiplayerDashboard : MonoBehaviour
         }
 
         
-        NetcodeManager.OnCreateGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
-        NetcodeManager.OnJoinGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
-        NetcodeManager.OnLeaveGame -= () => ChangeDashboardState(DashboardState.CreateJoin);
+        // NetcodeManager.OnCreateGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
+        // NetcodeManager.OnJoinGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
+        // NetcodeManager.OnLeaveGame -= () => ChangeDashboardState(DashboardState.CreateJoin);
     }
 
     public async void CreateGame()
@@ -60,9 +69,11 @@ public class MultiplayerDashboard : MonoBehaviour
         SetDashboardEnabled(false);
         try
         {
-            
             await NetcodeManager.Instance.CreateGame();
             CopyToClipboardJoinCode();
+            sceneChange.ChangeScene(multiplayerLobbySceneName);
+
+            // NetworkManager.Singleton.OnConnectionEvent += CreateOrJoinConnectionEvent;
         }
         catch (Exception e)
         {
@@ -71,7 +82,7 @@ public class MultiplayerDashboard : MonoBehaviour
         }
         SetDashboardEnabled(true);
     }
-
+    
     public async void JoinGame()
     {
         Debug.Log("Join Game button pressed");
@@ -79,6 +90,8 @@ public class MultiplayerDashboard : MonoBehaviour
         try
         {
             await NetcodeManager.Instance.JoinGame(joinCodeInput.text);
+            sceneChange.ChangeScene(multiplayerLobbySceneName);
+            // NetworkManager.Singleton.OnConnectionEvent += CreateOrJoinConnectionEvent;
         }
         catch (Exception e)
         {
@@ -86,12 +99,28 @@ public class MultiplayerDashboard : MonoBehaviour
         }
         SetDashboardEnabled(true);
     }
+    // private void CreateOrJoinConnectionEvent(NetworkManager arg1, ConnectionEventData arg2)
+    // {
+    //     Debug.Log("Connection Event: " + arg2.EventType);
+    //     if (arg2.EventType == ConnectionEvent.ClientConnected)
+    //     {
+    //         NetworkManager.Singleton.OnConnectionEvent -= CreateOrJoinConnectionEvent;
+    //         FinishedCreatingOrJoiningGame();
+    //     }
+    // }
+    // private void FinishedCreatingOrJoiningGame()
+    // {
+    //     sceneChange.ChangeScene(multiplayerLobbySceneName);
+    // }
+    
+    
     
     public void LeaveGame()
     {
         Debug.Log("Leave Game button pressed");
         
         NetcodeManager.Instance.LeaveGame();
+        sceneChange.ChangeScene(soloLobbySceneName);
     }
     private void PlayerCountChanged(ulong playerID) => UpdateLobbyDashboardInfo();
     private void UpdateLobbyDashboardInfo()

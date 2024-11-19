@@ -26,7 +26,7 @@ public class NetcodeManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            NetworkManager.Singleton.OnConnectionEvent += HostLeftGameCheck;
+            // NetworkManager.Singleton.OnConnectionEvent += HostLeftGameCheck;
         }
         else
         {

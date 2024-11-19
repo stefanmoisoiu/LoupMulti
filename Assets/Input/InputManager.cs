@@ -19,19 +19,18 @@ public class InputManager : MonoBehaviour
     public Action OnRun { get; set; }
     public Action OnStopRun { get; set; }
 
-    private void Awake()
+    private void OnEnable()
     {
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            CreateControls();
         }
         else
         {
             Destroy(this);
         }
-
-        CreateControls();
     }
 
     private void CreateControls()
