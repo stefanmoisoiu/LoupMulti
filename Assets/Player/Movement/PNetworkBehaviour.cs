@@ -3,18 +3,21 @@ using UnityEditor;
 
 public abstract class PNetworkBehaviour : NetworkBehaviour
 {
+    private bool _initialized = false;
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (!IsOwner) return;
+        if (!IsOwner || _initialized) return;
         StartOnlineOwner();
         StartAnyOwner();
+        _initialized = true;
     }
     private void Start()
     {
-        if (IsSpawned) return;
+        if (IsSpawned || NetcodeManager.InGame || _initialized) return;
         StartOffline();
         StartAnyOwner();
+        _initialized = true;
     }
 
     protected virtual void StartOnlineOwner() {}

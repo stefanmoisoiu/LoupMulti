@@ -5943,35 +5943,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  dashLength: 0.5
-  dashForce: 10
+  dashLength: 0.35
+  dashForce: 12
   dashCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 1
-      inSlope: -0.70010763
-      outSlope: -0.70010763
-      tangentMode: 34
+      inSlope: -0.01085719
+      outSlope: -0.01085719
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
+      outWeight: 0.30416667
+    - serializedVersion: 3
+      time: 0.51750904
+      value: 0.6039818
+      inSlope: -1.9763296
+      outSlope: -1.9763296
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.09019303
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 0.29989237
-      inSlope: -0.70010763
-      outSlope: -0.70010763
-      tangentMode: 34
+      value: 0.20000514
+      inSlope: -0.00887906
+      outSlope: -0.00887906
+      tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
+      inWeight: 0.4404227
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  dashStaminaCost: 50
+  staminaGracePart: 0.25
   head: {fileID: 4890824702631100434}
   rb: {fileID: 7570585517021872206}
   grounded: {fileID: 5692434654991538524}
+  stamina: {fileID: 3152893132160712871}
 --- !u!1 &5369308543324512157
 GameObject:
   m_ObjectHideFlags: 0
