@@ -7,19 +7,15 @@ using UnityEngine;
 public class SpawnPlayer : NetworkBehaviour
 {
     [SerializeField] private GameObject playerObject;
-
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        Debug.Log("SpawnPlayer Start");
-        Debug.Log("IsHost: " + IsHost);
-        Debug.Log("IsServer: " + IsServer);
+        base.OnNetworkSpawn();
         if (IsHost) TrySpawnSelfPlayer();
         if (IsServer) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
     }
 
     private void OnDisable()
     {
-        // NetcodeManager.OnCreateGame -= TrySpawnSelfPlayer;
         if (NetworkManager.Singleton != null && IsHost) NetworkManager.Singleton.OnClientConnectedCallback -= TrySpawn;
     }
     private void TrySpawnSelfPlayer()

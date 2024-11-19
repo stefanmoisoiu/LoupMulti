@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PJump : NetworkBehaviour
+public class PJump : PNetworkBehaviour
 {
     [SerializeField] private Rigidbody rb;
     [SerializeField] private float jumpForce;
@@ -30,24 +30,14 @@ public class PJump : NetworkBehaviour
 
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PStamina stamina;
-    
-    
-    public override void OnNetworkSpawn()
+
+    protected override void StartAnyOwner()
     {
-        base.OnNetworkSpawn();
-        if (!IsOwner) return;
         InputManager.instance.OnJump += StartPressJump;
         grounded.OnGroundedChanged += CheckCoyote;
     }
 
-    private void OnEnable()
-    {
-        if (NetcodeManager.InGame) return;
-        InputManager.instance.OnJump += StartPressJump;
-        grounded.OnGroundedChanged += CheckCoyote;
-    }
-
-    private void OnDisable()
+    protected override void DisableAnyOwner()
     {
         InputManager.instance.OnJump -= StartPressJump;
         grounded.OnGroundedChanged -= CheckCoyote;

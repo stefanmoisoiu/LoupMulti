@@ -18,6 +18,18 @@ public class InputManager : MonoBehaviour
     public bool Running { get; private set; }
     public Action OnRun { get; set; }
     public Action OnStopRun { get; set; }
+    
+    public bool Action1Pressed { get; set; }
+    public Action OnAction1 { get; set; }
+    public Action OnStopAction1 { get; set; }
+    
+    public bool Action2Pressed { get; set; }
+    public Action OnAction2 { get; set; }
+    public Action OnStopAction2 { get; set; }
+    
+    public bool Action3Pressed { get; set; }
+    public Action OnAction3 { get; set; }
+    public Action OnStopAction3 { get; set; }
 
     private void OnEnable()
     {
@@ -41,10 +53,21 @@ public class InputManager : MonoBehaviour
         _controls.BaseMovement.Horizontal.performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
         _controls.BaseMovement.Look.performed += ctx => LookInput = ctx.ReadValue<Vector2>();
         
+        
         _controls.BaseMovement.Jump.performed += ctx => { OnJump?.Invoke(); Jumping = true; };
         _controls.BaseMovement.Jump.canceled += ctx => { OnStopJump?.Invoke(); Jumping = false; };
         
         _controls.BaseMovement.Run.performed += ctx => { OnRun?.Invoke(); Running = true; };
         _controls.BaseMovement.Run.canceled += ctx => { OnStopRun?.Invoke(); Running = false; };
+        
+        
+        _controls.BaseMovement.Action1.performed += ctx => { OnAction1?.Invoke(); Action1Pressed = true; };
+        _controls.BaseMovement.Action1.canceled += ctx => { OnStopAction1?.Invoke(); Action1Pressed = false; };
+        
+        _controls.BaseMovement.Action2.performed += ctx => { OnAction2?.Invoke(); Action2Pressed = true; };
+        _controls.BaseMovement.Action2.canceled += ctx => { OnStopAction2?.Invoke(); Action2Pressed = false; };
+        
+        _controls.BaseMovement.Action3.performed += ctx => { OnAction3?.Invoke(); Action3Pressed = true; };
+        _controls.BaseMovement.Action3.canceled += ctx => { OnStopAction3?.Invoke(); Action3Pressed = false; };
     }
 }

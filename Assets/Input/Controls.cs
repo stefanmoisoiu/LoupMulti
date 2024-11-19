@@ -62,6 +62,33 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Action1"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d13a573-e3f0-481c-9f2b-4e9872330e80"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Action2"",
+                    ""type"": ""Button"",
+                    ""id"": ""dce3c089-8ac1-4677-beb2-a07fb11d6565"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Action3"",
+                    ""type"": ""Button"",
+                    ""id"": ""87eaa1e8-cdb3-4e87-a929-b262988f96be"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -196,6 +223,39 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Run"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b308cc95-1baa-490c-a974-e64906255e30"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4b6f96d0-5010-4f32-b71a-4520ec691ae6"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7a866b55-6de0-4f1e-b5db-bacf039a6f3e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Action3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -208,6 +268,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_BaseMovement_Jump = m_BaseMovement.FindAction("Jump", throwIfNotFound: true);
         m_BaseMovement_Look = m_BaseMovement.FindAction("Look", throwIfNotFound: true);
         m_BaseMovement_Run = m_BaseMovement.FindAction("Run", throwIfNotFound: true);
+        m_BaseMovement_Action1 = m_BaseMovement.FindAction("Action1", throwIfNotFound: true);
+        m_BaseMovement_Action2 = m_BaseMovement.FindAction("Action2", throwIfNotFound: true);
+        m_BaseMovement_Action3 = m_BaseMovement.FindAction("Action3", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -278,6 +341,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_BaseMovement_Jump;
     private readonly InputAction m_BaseMovement_Look;
     private readonly InputAction m_BaseMovement_Run;
+    private readonly InputAction m_BaseMovement_Action1;
+    private readonly InputAction m_BaseMovement_Action2;
+    private readonly InputAction m_BaseMovement_Action3;
     public struct BaseMovementActions
     {
         private @Controls m_Wrapper;
@@ -286,6 +352,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_BaseMovement_Jump;
         public InputAction @Look => m_Wrapper.m_BaseMovement_Look;
         public InputAction @Run => m_Wrapper.m_BaseMovement_Run;
+        public InputAction @Action1 => m_Wrapper.m_BaseMovement_Action1;
+        public InputAction @Action2 => m_Wrapper.m_BaseMovement_Action2;
+        public InputAction @Action3 => m_Wrapper.m_BaseMovement_Action3;
         public InputActionMap Get() { return m_Wrapper.m_BaseMovement; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -307,6 +376,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Run.started += instance.OnRun;
             @Run.performed += instance.OnRun;
             @Run.canceled += instance.OnRun;
+            @Action1.started += instance.OnAction1;
+            @Action1.performed += instance.OnAction1;
+            @Action1.canceled += instance.OnAction1;
+            @Action2.started += instance.OnAction2;
+            @Action2.performed += instance.OnAction2;
+            @Action2.canceled += instance.OnAction2;
+            @Action3.started += instance.OnAction3;
+            @Action3.performed += instance.OnAction3;
+            @Action3.canceled += instance.OnAction3;
         }
 
         private void UnregisterCallbacks(IBaseMovementActions instance)
@@ -323,6 +401,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Run.started -= instance.OnRun;
             @Run.performed -= instance.OnRun;
             @Run.canceled -= instance.OnRun;
+            @Action1.started -= instance.OnAction1;
+            @Action1.performed -= instance.OnAction1;
+            @Action1.canceled -= instance.OnAction1;
+            @Action2.started -= instance.OnAction2;
+            @Action2.performed -= instance.OnAction2;
+            @Action2.canceled -= instance.OnAction2;
+            @Action3.started -= instance.OnAction3;
+            @Action3.performed -= instance.OnAction3;
+            @Action3.canceled -= instance.OnAction3;
         }
 
         public void RemoveCallbacks(IBaseMovementActions instance)
@@ -346,5 +433,8 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
+        void OnAction1(InputAction.CallbackContext context);
+        void OnAction2(InputAction.CallbackContext context);
+        void OnAction3(InputAction.CallbackContext context);
     }
 }

@@ -56,11 +56,6 @@ public class MultiplayerDashboard : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback -= PlayerCountChanged;
             NetworkManager.Singleton.OnClientDisconnectCallback -= PlayerCountChanged;
         }
-
-        
-        // NetcodeManager.OnCreateGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
-        // NetcodeManager.OnJoinGame -= () => ChangeDashboardState(DashboardState.LobbyInfo);
-        // NetcodeManager.OnLeaveGame -= () => ChangeDashboardState(DashboardState.CreateJoin);
     }
 
     public async void CreateGame()
@@ -71,9 +66,7 @@ public class MultiplayerDashboard : NetworkBehaviour
         {
             await NetcodeManager.Instance.CreateGame();
             CopyToClipboardJoinCode();
-            sceneChange.ChangeScene(multiplayerLobbySceneName);
-
-            // NetworkManager.Singleton.OnConnectionEvent += CreateOrJoinConnectionEvent;
+            sceneChange.NetworkChangeScene(multiplayerLobbySceneName);
         }
         catch (Exception e)
         {
@@ -90,8 +83,6 @@ public class MultiplayerDashboard : NetworkBehaviour
         try
         {
             await NetcodeManager.Instance.JoinGame(joinCodeInput.text);
-            sceneChange.ChangeScene(multiplayerLobbySceneName);
-            // NetworkManager.Singleton.OnConnectionEvent += CreateOrJoinConnectionEvent;
         }
         catch (Exception e)
         {
@@ -99,22 +90,6 @@ public class MultiplayerDashboard : NetworkBehaviour
         }
         SetDashboardEnabled(true);
     }
-    // private void CreateOrJoinConnectionEvent(NetworkManager arg1, ConnectionEventData arg2)
-    // {
-    //     Debug.Log("Connection Event: " + arg2.EventType);
-    //     if (arg2.EventType == ConnectionEvent.ClientConnected)
-    //     {
-    //         NetworkManager.Singleton.OnConnectionEvent -= CreateOrJoinConnectionEvent;
-    //         FinishedCreatingOrJoiningGame();
-    //     }
-    // }
-    // private void FinishedCreatingOrJoiningGame()
-    // {
-    //     sceneChange.ChangeScene(multiplayerLobbySceneName);
-    // }
-    
-    
-    
     public void LeaveGame()
     {
         Debug.Log("Leave Game button pressed");

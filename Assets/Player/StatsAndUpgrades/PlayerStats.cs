@@ -18,21 +18,23 @@ public class PlayerStats
         return upgradesIndexArray;
     }
 
-    public ushort[] GetUpgradeIndexList()
-    {
-        ushort arraySize = 0;
-        for (ushort i = 0; i < MaxUpgrades; i++)
-        {
-            if (UpgradesIndexArray[i] == NullUpgradeIndex) break;
-            arraySize++;
-        }
-        
-        ushort[] upgradeList = new ushort[arraySize];
-        for (ushort i = 0; i < arraySize; i++)
-            upgradeList[i] = UpgradesIndexArray[i];
-        
-        return upgradeList;
-    }
+    // inutile
+    
+    // public ushort[] GetUpgradeIndexList()
+    // {
+    //     ushort arraySize = 0;
+    //     for (ushort i = 0; i < MaxUpgrades; i++)
+    //     {
+    //         if (UpgradesIndexArray[i] == NullUpgradeIndex) break;
+    //         arraySize++;
+    //     }
+    //     
+    //     ushort[] upgradeList = new ushort[arraySize];
+    //     for (ushort i = 0; i < arraySize; i++)
+    //         upgradeList[i] = UpgradesIndexArray[i];
+    //     
+    //     return upgradeList;
+    // }
     
     public void SetUpgrades(ushort[] upgradesIndexArray)
     {

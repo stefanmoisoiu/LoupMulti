@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PRun : NetworkBehaviour
+public class PRun : PNetworkBehaviour
 {
 
     [SerializeField] private float loseRate = 50;
@@ -18,30 +18,19 @@ public class PRun : NetworkBehaviour
 
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PStamina stamina;
-    
-    
-    
-    public override void OnNetworkSpawn()
+
+    protected override void StartAnyOwner()
     {
-        base.OnNetworkSpawn();
-        if (!IsOwner) return;
         InputManager.instance.OnRun += StartRun;
         InputManager.instance.OnStopRun += StopRun;
     }
 
-    private void OnEnable()
-    {
-        if (NetcodeManager.InGame) return;
-        InputManager.instance.OnRun += StartRun;
-        InputManager.instance.OnStopRun += StopRun;
-    }
-
-    private void OnDisable()
+    protected override void DisableAnyOwner()
     {
         InputManager.instance.OnRun -= StartRun;
         InputManager.instance.OnStopRun -= StopRun;
     }
-
+    
     private void Update()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
