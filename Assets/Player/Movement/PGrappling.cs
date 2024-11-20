@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using NUnit.Framework;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PGrappling : PNetworkBehaviour
@@ -9,8 +10,9 @@ public class PGrappling : PNetworkBehaviour
 
     [SerializeField] private float grappleDelay = 0.5f;
     private Coroutine grappleDelayCoroutine;
-    
-    
+
+    [SerializeField] private float predictionRadius = .75f;
+    [SerializeField] private int predictionResolution = 3;
     [SerializeField] private float maxGrappleDist;
     [SerializeField] private LayerMask grapplingMask;
 
@@ -25,11 +27,19 @@ public class PGrappling : PNetworkBehaviour
     [SerializeField] private Transform head;
     
     public bool Grappling { get; private set; }
+    
+    public NetworkVariable<bool> grappling = new NetworkVariable<bool>(false);
+    public NetworkVariable<Vector3> grapplePoint = new NetworkVariable<Vector3>(new Vector3());
 
     public Vector3 GetUpVector() => Grappling ? (_grapplePoint - rb.position).normalized : Vector3.up;
     protected override void StartAnyOwner()
     {
         InputManager.instance.OnAction2 += PressedGrapple;
+    }
+
+    protected override void DisableAnyOwner()
+    {
+        InputManager.instance.OnAction2 -= PressedGrapple;
     }
 
     protected override void UpdateAnyOwner()
@@ -40,10 +50,15 @@ public class PGrappling : PNetworkBehaviour
 
     private void UpdateGrapple()
     {
+        Vector3 dir = (_grapplePoint - rb.position).normalized;
+        if (dir.y < 0)
+        {
+            StopGrapple();
+            return;
+        }
         
         float dist = Vector3.Distance(rb.position, _grapplePoint);
         
-        Vector3 dir = (_grapplePoint - rb.position).normalized;
         float velTowardsPoint = Vector3.Dot(rb.linearVelocity, dir);
         
         float force = Spring.CalculateSpringForce(_grappleSpringDist, dist, velTowardsPoint, springConstant, dampingFactor);
@@ -56,6 +71,11 @@ public class PGrappling : PNetworkBehaviour
         Debug.DrawLine(rb.position, _grapplePoint, Color.green);
     }
 
+    protected override void UpdateOnlineNotOwner()
+    {
+        if (grappling.Value) Debug.LogError("Other player grappling position : " + grapplePoint.Value);
+    }
+
     private void PressedGrapple()
     {
         if (Grappling)
@@ -64,21 +84,34 @@ public class PGrappling : PNetworkBehaviour
         }
         else
         {
-            Debug.Log("Try Start Grapple");
             TryStartGrapple();
         }
     }
+    public bool GrapplingRaycast(out RaycastHit hit)
+    {
+        if (Physics.Raycast(head.position, head.forward, out hit, maxGrappleDist, grapplingMask)) return true;
+        for (int i = 0; i < predictionResolution; i++)
+        {
+            if (Physics.SphereCast(
+                    head.position,
+                    predictionRadius * (i + 1) / predictionResolution,
+                    head.forward,
+                    out hit, maxGrappleDist,
+                    grapplingMask)) return true;
+        }
 
+        return false;
+    }
     private void TryStartGrapple()
     {
         if (!CanGrapple()) return;
-        if (!Physics.Raycast(head.position, head.forward, out RaycastHit hit, maxGrappleDist, grapplingMask)) return;
+        if (!GrapplingRaycast(out RaycastHit hit)) return;
         
         _grapplePoint = hit.point;
+        grapplePoint.Value = _grapplePoint;
         
         if (grappleDelayCoroutine != null) StopCoroutine(grappleDelayCoroutine);
         
-        Debug.Log("Start Grapple Delay");
         StartCoroutine(GrappleDelay());
     }
     private IEnumerator GrappleDelay()
@@ -89,15 +122,15 @@ public class PGrappling : PNetworkBehaviour
     }
     private void StartGrapple()
     {
-        Debug.Log("Start Grapple");
         _grappleSpringDist = Vector3.Distance(rb.position, _grapplePoint);
         Grappling = true;
+        grappling.Value = true;
         rb.useGravity = false;
     }
     private void StopGrapple()
     {
-        Debug.Log("Stop Grapple");
         Grappling = false;
+        grappling.Value = false;
         rb.useGravity = true;
     }
     
