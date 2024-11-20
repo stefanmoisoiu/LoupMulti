@@ -5085,9 +5085,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   orientation: {fileID: 1083606244367989922}
   rb: {fileID: 7570585517021872206}
-  maxWalkSpeed: 6
-  maxRunSpeed: 10
-  maxGrappleSpeed: 10
+  maxWalkSpeed: 5
+  maxRunSpeed: 8
+  maxGrappleSpeed: 8
   acceleration: 80
   grappleAcceleration: 5
   airAccelMultiplier: 0.2
@@ -5124,7 +5124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  loseRate: 75
+  loseRate: 50
   grounded: {fileID: 5692434654991538524}
   stamina: {fileID: 3152893132160712871}
 --- !u!1 &1974766057621294980
@@ -5968,7 +5968,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  dashLength: 0.35
+  dashLength: 0.3
   dashForce: 12
   dashCurve:
     serializedVersion: 2
@@ -6003,8 +6003,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dashStaminaCost: 70
-  staminaGracePart: 0.25
+  dashStaminaPartCost: 1
   head: {fileID: 4890824702631100434}
   rb: {fileID: 7570585517021872206}
   grounded: {fileID: 5692434654991538524}
@@ -6056,17 +6055,21 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   springConstant: 100
   dampingFactor: 10
+  grappleJumpForce: 3
+  minGrappleDist: 3
   grappleDelay: 0
+  staminaPartCost: 2
   predictionRadius: 0.8
   predictionResolution: 6
-  maxGrappleDist: 6
+  maxGrappleDist: 8
   grapplingMask:
     serializedVersion: 2
     m_Bits: 8
-  grappleGravityMult: 1
+  grappleGravityMult: 2
   grounded: {fileID: 5692434654991538524}
   rb: {fileID: 7570585517021872206}
   head: {fileID: 7848515828598910200}
+  stamina: {fileID: 3152893132160712871}
 --- !u!1 &5167845819361570622
 GameObject:
   m_ObjectHideFlags: 0
@@ -6113,8 +6116,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   wallCheckDistance: 1
-  verticalBounceSpeed: 5
-  horizontalBounceSpeed: 7
+  verticalBounceSpeed: 7
+  horizontalBounceSpeed: 5
   bufferTime: 0.3
   camRotationLength: 0.5
   camRotCurve:
@@ -6141,6 +6144,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  wallBounceStaminaPartCost: 1
   orientation: {fileID: 1083606244367989922}
   wallCheckPosition: {fileID: 1083606244367989922}
   wallLayer:
@@ -6149,6 +6153,7 @@ MonoBehaviour:
   grounded: {fileID: 5692434654991538524}
   rb: {fileID: 7570585517021872206}
   cam: {fileID: 5467952736240796718}
+  stamina: {fileID: 3152893132160712871}
 --- !u!1 &5369308543324512157
 GameObject:
   m_ObjectHideFlags: 0
@@ -6451,7 +6456,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 7570585517021872206}
   particles: {fileID: 2194674870385670627}
-  speedParticlesThreshold: 8
+  speedParticlesThreshold: 7
 --- !u!114 &2593887385038103756
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6464,6 +6469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d825f76799c94139b32e6cc2e79c6e56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   grappling: {fileID: 3899675887128394501}
   previewGameObject: {fileID: 7922657086832282485, guid: db7590e01e183ee4ba5a10f78a08a452,
     type: 3}
@@ -6477,6 +6483,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7203886226493501857}
   - component: {fileID: 3152893132160712871}
+  - component: {fileID: 7662683108582540176}
   m_Layer: 0
   m_Name: Stamina
   m_TagString: Untagged
@@ -6513,4 +6520,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   recoverRate: 10
+  staminaPartGracePortion: 0.25
   run: {fileID: 3326530429167689552}
+--- !u!114 &7662683108582540176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8976351017418158125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b3048c6305d7974ca7bb528d54c2a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  stamina: {fileID: 3152893132160712871}
+  sliderPrefab: {fileID: 5095584123847203449, guid: 398ce3e0b1cd791418b13d2ad15ef43c,
+    type: 3}
+  fillingColor: {r: 1, g: 0.5883559, b: 0, a: 1}
+  graceColor: {r: 0.2971698, g: 0.84325576, b: 1, a: 1}
+  fullColor: {r: 1, g: 0.80423534, b: 0, a: 1}

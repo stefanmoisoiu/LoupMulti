@@ -16,6 +16,8 @@ public class PWallBounce : PNetworkBehaviour
     [SerializeField] private float camRotationLength = 0.25f;
     [SerializeField] private AnimationCurve camRotCurve;
     private Coroutine _camRotCoroutine;
+
+    [SerializeField] private int wallBounceStaminaPartCost = 1;
     
 
     [SerializeField] private Transform orientation;
@@ -24,6 +26,8 @@ public class PWallBounce : PNetworkBehaviour
     [SerializeField] private PGrounded grounded;
     [SerializeField] private Rigidbody rb;
     [SerializeField] private PCamera cam;
+    [SerializeField] private PStamina stamina;
+    
     
     
 
@@ -57,12 +61,15 @@ public class PWallBounce : PNetworkBehaviour
     {
         if (!CanWallBounce()) return;
         if (!WallInFront(out RaycastHit hit)) return;
+        if (!stamina.HasEnoughStamina(wallBounceStaminaPartCost)) return;
         
         Vector3 force = hit.normal * horizontalBounceSpeed + Vector3.up * verticalBounceSpeed;
         rb.linearVelocity = force;
         
         if (_camRotCoroutine != null) StopCoroutine(_camRotCoroutine);
         _camRotCoroutine = StartCoroutine(RotateCamera(hit.normal));
+        
+        stamina.DecreaseStamina(wallBounceStaminaPartCost);
         
         _bufferTime = 0;
     }

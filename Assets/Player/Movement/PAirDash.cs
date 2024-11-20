@@ -8,8 +8,7 @@ public class PAirDash : PNetworkBehaviour
     [SerializeField] private float dashForce;
     [SerializeField] private AnimationCurve dashCurve;
 
-    [SerializeField] private float dashStaminaCost;
-    [SerializeField] private float staminaGracePart = 0.25f;
+    [SerializeField] private int dashStaminaPartCost = 1;
     
     
     
@@ -36,7 +35,7 @@ public class PAirDash : PNetworkBehaviour
     {
         if (grounded.FullyGrounded()) return;
         if (_dashCoroutine != null) return;
-        if (stamina.Stamina - dashStaminaCost * (1 - staminaGracePart) < 0) return;
+        if (!stamina.HasEnoughStamina(dashStaminaPartCost)) return;
         
         _dashCoroutine = StartCoroutine(Dash());
     }
@@ -46,7 +45,7 @@ public class PAirDash : PNetworkBehaviour
         float adv = 0;
         Vector3 dir = head.forward;
         
-        stamina.DecreaseStamina(dashStaminaCost);
+        stamina.DecreaseStamina(dashStaminaPartCost);
         
         while (adv < dashLength)
         {
