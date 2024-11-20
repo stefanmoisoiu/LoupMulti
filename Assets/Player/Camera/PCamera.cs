@@ -56,4 +56,9 @@ public class PCamera : NetworkBehaviour
         LookTarget += LookDelta;
         LookTarget = new(LookTarget.x,Mathf.Clamp(LookTarget.y, -90, 90));
     }
+    
+    public void AddRotation(Vector2 rotation)
+    {
+        LookTarget += rotation;
+    }
 }

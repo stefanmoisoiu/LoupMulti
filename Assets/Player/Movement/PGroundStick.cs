@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PGroundStick : NetworkBehaviour
+public class PGroundStick : PNetworkBehaviour
 {
     [SerializeField] private Rigidbody rb;
     [SerializeField] private float springConstant = 1000;
@@ -16,9 +16,8 @@ public class PGroundStick : NetworkBehaviour
     [SerializeField] private PJump jump;
     [SerializeField] private PGrounded grounded;
     
-    private void FixedUpdate()
+    protected override void FixedUpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         StickToGround();
     }
     

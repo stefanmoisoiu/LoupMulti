@@ -3,23 +3,92 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PWallBounce : MonoBehaviour
+public class PWallBounce : PNetworkBehaviour
 {
-    [SerializeField] private Rigidbody rb;
     
     [SerializeField] private float wallCheckDistance;
     [SerializeField] private float verticalBounceSpeed;
     [SerializeField] private float horizontalBounceSpeed;
 
-    [SerializeField] private float _type;
+    [SerializeField] private float bufferTime;
+    private float _bufferTime;
+
+    [SerializeField] private float camRotationLength = 0.25f;
+    [SerializeField] private AnimationCurve camRotCurve;
+    private Coroutine _camRotCoroutine;
     
-    private void Update()
+
+    [SerializeField] private Transform orientation;
+    [SerializeField] private Transform wallCheckPosition;
+    [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private PGrounded grounded;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private PCamera cam;
+    
+    
+
+    protected override void StartAnyOwner()
     {
-        if (InputManager.instance.Jumping) TryWallBounce();
+        InputManager.instance.OnAction2 += PressedWallBounce;
+    }
+
+    protected override void DisableAnyOwner()
+    {
+        InputManager.instance.OnAction2 -= PressedWallBounce;
+    }
+
+    protected override void UpdateAnyOwner()
+    {
+        if (_bufferTime > 0) TryWallBounce();
+        _bufferTime -= Time.deltaTime;
+    }
+
+    private void PressedWallBounce()
+    {
+        if (!CanWallBounce() || !WallInFront(out _))
+        {
+            _bufferTime = bufferTime;
+            return;
+        }
+        TryWallBounce();
     }
 
     private void TryWallBounce()
     {
+        if (!CanWallBounce()) return;
+        if (!WallInFront(out RaycastHit hit)) return;
         
+        Vector3 force = hit.normal * horizontalBounceSpeed + Vector3.up * verticalBounceSpeed;
+        rb.linearVelocity = force;
+        
+        if (_camRotCoroutine != null) StopCoroutine(_camRotCoroutine);
+        _camRotCoroutine = StartCoroutine(RotateCamera(hit.normal));
+        
+        _bufferTime = 0;
+    }
+
+    private bool CanWallBounce() => !grounded.FullyGrounded();
+
+    private bool WallInFront(out RaycastHit hit)
+    {
+        return Physics.Raycast(wallCheckPosition.position, orientation.forward, out hit, wallCheckDistance, wallLayer);
+    }
+
+    private IEnumerator RotateCamera(Vector3 wallNormal)
+    {
+        int sign = Vector3.Dot(wallNormal, orientation.right) > 0 ? 1 : -1;
+        float angleToRotate = Vector3.Angle(orientation.forward, new Vector3(wallNormal.x,0,wallNormal.z).normalized);
+        float currentRot = 0;
+        float adv = 0;
+        while (adv < 1)
+        {
+            float curveValue = camRotCurve.Evaluate(adv);
+            float angle = curveValue * angleToRotate * sign;
+            float delta = angle - currentRot;
+            cam.AddRotation(new Vector2(delta, 0));
+            currentRot = angle;
+            adv += Time.deltaTime / (angleToRotate/180) / camRotationLength;
+            yield return null;
+        }
     }
 }

@@ -31,16 +31,14 @@ public class PRun : PNetworkBehaviour
         InputManager.instance.OnStopRun -= StopRun;
     }
     
-    private void Update()
+    protected override void UpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
-        if (Running)
-        {
-            stamina.DecreaseStamina(loseRate * Time.deltaTime);
-            if (stamina.Stamina <= 0 ||
-                !grounded.FullyGrounded() ||
-                InputManager.instance.MoveInput.magnitude < runInputThreshold) StopRun();
-        }
+        if (!Running) return;
+        
+        stamina.DecreaseStamina(loseRate * Time.deltaTime);
+        if (stamina.Stamina <= 0 ||
+            !grounded.FullyGrounded() ||
+            InputManager.instance.MoveInput.magnitude < runInputThreshold) StopRun();
     }
 
     private void StartRun()

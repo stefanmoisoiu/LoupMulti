@@ -50,9 +50,9 @@ public class PJump : PNetworkBehaviour
             _jumpCoyote = jumpCoyoteTime;
         }
     }
-    private void Update()
+
+    protected override void UpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         _jumpCoyote -= Time.deltaTime;
         _jumpBuffer -= Time.deltaTime;
         

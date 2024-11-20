@@ -5066,6 +5066,7 @@ Transform:
   - {fileID: 1577182960787337467}
   - {fileID: 7203886226493501857}
   - {fileID: 1085941668211530988}
+  - {fileID: 5238686482819889119}
   m_Father: {fileID: 231473827190849983}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6385064005469093846
@@ -5086,7 +5087,7 @@ MonoBehaviour:
   maxWalkSpeed: 6
   maxRunSpeed: 10
   acceleration: 80
-  airAccelMultiplier: 0.4
+  airAccelMultiplier: 0.2
   run: {fileID: 3326530429167689552}
   grounded: {fileID: 5692434654991538524}
 --- !u!114 &5841718485748783599
@@ -5189,6 +5190,7 @@ GameObject:
   - component: {fileID: 6906001809635086058}
   - component: {fileID: 3039448439410740762}
   - component: {fileID: 7449399558443249974}
+  - component: {fileID: 4816797882872048562}
   m_Layer: 0
   m_Name: Cam
   m_TagString: Untagged
@@ -5448,6 +5450,22 @@ MonoBehaviour:
   addedFov: 10
   fovLerpSpeed: 5
   run: {fileID: 3326530429167689552}
+--- !u!114 &4816797882872048562
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2500637389486481457}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7893aa6f599ad354ea4513d046c82cb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 7570585517021872206}
+  cam: {fileID: 4532712510028270501}
+  maxAddedFOV: 20
+  maxFOVSpeed: 20
 --- !u!1 &2973618048671641802
 GameObject:
   m_ObjectHideFlags: 0
@@ -5978,12 +5996,94 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  dashStaminaCost: 50
+  dashStaminaCost: 70
   staminaGracePart: 0.25
   head: {fileID: 4890824702631100434}
   rb: {fileID: 7570585517021872206}
   grounded: {fileID: 5692434654991538524}
   stamina: {fileID: 3152893132160712871}
+--- !u!1 &5167845819361570622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5238686482819889119}
+  - component: {fileID: 5004996838141741495}
+  m_Layer: 0
+  m_Name: Wall Bounce
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5238686482819889119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5167845819361570622}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6171578751134408734}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5004996838141741495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5167845819361570622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d261537ad08eb2340a25407928e3df5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  wallCheckDistance: 1
+  verticalBounceSpeed: 5
+  horizontalBounceSpeed: 7
+  bufferTime: 0.3
+  camRotationLength: 0.5
+  camRotCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2.993227
+      outSlope: 2.993227
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.03624535
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  orientation: {fileID: 1083606244367989922}
+  wallCheckPosition: {fileID: 1083606244367989922}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  grounded: {fileID: 5692434654991538524}
+  rb: {fileID: 7570585517021872206}
+  cam: {fileID: 5467952736240796718}
 --- !u!1 &5369308543324512157
 GameObject:
   m_ObjectHideFlags: 0
