@@ -12,15 +12,20 @@ public class PMovement : NetworkBehaviour
     
     [SerializeField] private float maxWalkSpeed = 10f;
     [SerializeField] private float maxRunSpeed = 20f;
+    [SerializeField] private float maxGrappleSpeed = 12f;
     [SerializeField] private float acceleration = 10f;
+    [SerializeField] private float grappleAcceleration = 30f;
     [SerializeField] private float airAccelMultiplier = 0.5f;
 
     [SerializeField] private PRun run;
     [SerializeField] private PGrounded grounded;
+    [SerializeField] private PGrappling grappling;
     
     
     
-    private float MaxSpeed => run.Running ? maxRunSpeed : maxWalkSpeed;
+    
+    private float MaxSpeed => grappling.Grappling ? maxGrappleSpeed : run.Running ? maxRunSpeed : maxWalkSpeed;
+    private float Acceleration => grappling.Grappling ? grappleAcceleration : grounded.FullyGrounded() ? acceleration : acceleration * airAccelMultiplier;
     private void FixedUpdate()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
@@ -31,11 +36,10 @@ public class PMovement : NetworkBehaviour
     {
         Vector3 dir = orientation.forward * InputManager.instance.MoveInput.y + orientation.right * InputManager.instance.MoveInput.x;
         
-        Vector3 force = dir * acceleration;
-        if (!grounded.FullyGrounded()) force *= airAccelMultiplier;
+        Vector3 force = dir * Acceleration;
 
         Vector3 vel = rb.linearVelocity;
-        if (grounded.FullyGrounded()) vel = grounded.WorldToGround * vel;
+        vel = grounded.WorldToLocalUp * vel;
 
         float y = vel.y;
         vel.y = 0;
@@ -58,7 +62,7 @@ public class PMovement : NetworkBehaviour
         
         vel.y = y;
         
-        if (grounded.FullyGrounded()) vel = grounded.GroundToWorld * vel;
+        vel = grounded.LocalUpToWorld * vel;
         
         rb.linearVelocity = vel;
         

@@ -22,11 +22,11 @@ public class PDrag : NetworkBehaviour
     {
         Vector3 vel = rb.linearVelocity;
         
-        if (grounded.FullyGrounded()) vel = grounded.WorldToGround * vel;
+        if (grounded.FullyGrounded()) vel = grounded.WorldToLocalUp * vel;
         float d = 1 - (grounded.FullyGrounded() ? drag : airDrag);
         vel = new(vel.x * d, vel.y, vel.z * d);
         
-        if (grounded.FullyGrounded()) vel = grounded.GroundToWorld * vel;
+        if (grounded.FullyGrounded()) vel = grounded.LocalUpToWorld * vel;
         
         rb.linearVelocity = vel;
     }

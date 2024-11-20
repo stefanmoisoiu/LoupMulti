@@ -11,12 +11,14 @@ public class PGrounded : NetworkBehaviour
     
     public bool IsGrounded { get; private set; }
     public RaycastHit GroundHit { get; private set; }
-    public Quaternion WorldToGround { get; private set; }
-    public Quaternion GroundToWorld { get; private set; }
+    public Quaternion WorldToLocalUp { get; private set; }
+    public Quaternion LocalUpToWorld { get; private set; }
 
     public Action<bool,bool> OnGroundedChanged;
 
     [SerializeField] private PJump jump;
+    [SerializeField] private PGrappling grappling;
+    
     
     public bool FullyGrounded() =>  IsGrounded && !jump.JumpCooldown;
     private void Update()
@@ -24,14 +26,23 @@ public class PGrounded : NetworkBehaviour
         if (!IsOwner && NetcodeManager.InGame) return;
         CheckGrounded();
     }
+
+    private Vector3 LocalUp()
+    {
+        if (IsGrounded) return GroundHit.normal;
+        if (grappling.Grappling) return grappling.GetUpVector();
+        return Vector3.up;
+    }
     private void CheckGrounded()
     {
         bool WasGrounded = IsGrounded;
         IsGrounded = Physics.Raycast(
             transform.position, Vector3.down, out var hit, rayLength, groundMask);
         GroundHit = hit;
-        WorldToGround = Quaternion.FromToRotation(IsGrounded ? hit.normal : Vector3.up, Vector3.up);
-        GroundToWorld = Quaternion.FromToRotation(Vector3.up, IsGrounded ? hit.normal : Vector3.up);
+
+        Vector3 localUp = LocalUp();
+        WorldToLocalUp = Quaternion.FromToRotation(localUp, Vector3.up);
+        LocalUpToWorld = Quaternion.FromToRotation(Vector3.up, localUp);
         
         if (WasGrounded != IsGrounded)
         {

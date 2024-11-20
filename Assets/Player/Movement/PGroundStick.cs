@@ -14,6 +14,7 @@ public class PGroundStick : PNetworkBehaviour
     [SerializeField] private bool debug;
 
     [SerializeField] private PJump jump;
+    [SerializeField] private PGrappling grappling;
     [SerializeField] private PGrounded grounded;
     
     protected override void FixedUpdateAnyOwner()
@@ -23,6 +24,7 @@ public class PGroundStick : PNetworkBehaviour
     
     private void StickToGround()
     {
+        if (grappling.Grappling) return;
         if(jump.JumpCooldown) return;
         if (!grounded.IsGrounded)
         {
