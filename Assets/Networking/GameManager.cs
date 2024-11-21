@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
@@ -26,13 +27,26 @@ public class GameManager : NetworkBehaviour
             return;
         }
         instance = this;
-        DontDestroyOnLoad(gameObject);
+        NetworkObject.DestroyWithScene = false;
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        base.OnNetworkDespawn();
+        instance = null;
+        Destroy(gameObject);
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        NetworkObject.DestroyWithScene = false;
     }
 
     private void Start()
     {
         if (IsServer) SetupPlayerData();
         if(Input.GetKeyDown(KeyCode.U)) StartGameServerRpc();
+        NetworkObject.DestroyWithScene = false;
     }
     private void SetupPlayerData()
     {
@@ -63,18 +77,18 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
     {
-        Debug.Log("Starting game");
+        LogRpc("Starting game");
         gameState.Value = GameState.InGame;
         
         string map = GetRandomMap(maps);
         NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
         currentMap = map;
-        Debug.Log("Loading map " + map + "...");
+        LogRpc("Loading map " + map + "...");
         NetworkManager.Singleton.SceneManager.OnLoadComplete += OnStartGameMapLoaded;
     }
     private void OnStartGameMapLoaded(ulong id, string sceneName, LoadSceneMode loadSceneMode)
     {
-        Debug.Log("Map loaded");
+        LogRpc("Map loaded");
         
         SetPlayerSpawnPositions();
     }
@@ -85,21 +99,33 @@ public class GameManager : NetworkBehaviour
         ulong[] clientIds = playerData.Keys.ToArray();
         for(int i = 0; i < playerData.Count; i++)
         {
-            RpcParams @params = new RpcParams
-            {
-                Send = new RpcSendParams
-                {
-                    Target = RpcTarget.Single(clientIds[i], RpcTargetUse.Temp)
-                }
-            };
-            SetPlayerSpawnPositionClientRpc(spawnIndexes[i], @params);
+            ushort spawnIndex = spawnIndexes[i];
+            LogRpc("Setting spawn position of index " +  spawnIndex + " for " + clientIds[i]);
+            ulong playerObjectID = playerData[clientIds[i]].client.PlayerObject.NetworkObjectId;
+            SetPlayerSpawnPositionClientRpc(spawnIndex, playerObjectID);
         }
     }
-    [Rpc(SendTo.SpecifiedInParams)]
-    private void SetPlayerSpawnPositionClientRpc(ushort index, RpcParams @params = default)
+    [Rpc(SendTo.Everyone)]
+    private void SetPlayerSpawnPositionClientRpc(ushort index, ulong networkObjectID)
     {
-        Debug.Log("Spawn Index : " + index);
+        NetworkObject networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectID];
+        Rigidbody rb = networkObject.GetComponent<Rigidbody>();
+        Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(index);
+        rb.position = spawnPoint.position;
+        rb.linearVelocity = Vector3.zero;
+        
+        Debug.Log("Set spawn position of " + networkObject.OwnerClientId + " to " + spawnPoint.position);
     }
+
+    private RpcParams ToClientIDs(ulong[] clientIDS) => new RpcParams
+    {
+        Send = new RpcSendParams
+        {
+            Target = RpcTarget.Group(clientIDS, RpcTargetUse.Temp)
+        }
+    };
+    
+    [Rpc(SendTo.Everyone)] private void LogRpc(string message) => Debug.Log(message);
 
     private string GetRandomMap(string[] mapPool) => maps[Random.Range(0, mapPool.Length)];
     

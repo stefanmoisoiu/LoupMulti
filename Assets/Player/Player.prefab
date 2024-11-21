@@ -5969,7 +5969,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   dashLength: 0.3
-  dashForce: 12
+  dashForce: 15
   dashCurve:
     serializedVersion: 2
     m_Curve:
@@ -6058,7 +6058,7 @@ MonoBehaviour:
   grappleJumpForce: 3
   minGrappleDist: 3
   grappleDelay: 0
-  staminaPartCost: 2
+  staminaPartCost: 3
   predictionRadius: 0.8
   predictionResolution: 6
   maxGrappleDist: 8
@@ -6116,10 +6116,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   wallCheckDistance: 1
-  verticalBounceSpeed: 7
+  verticalBounceSpeed: 8
   horizontalBounceSpeed: 5
   bufferTime: 0.3
-  camRotationLength: 0.5
+  camRotationLength: 0.4
   camRotCurve:
     serializedVersion: 2
     m_Curve:

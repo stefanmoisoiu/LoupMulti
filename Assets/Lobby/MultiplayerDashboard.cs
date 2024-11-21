@@ -19,6 +19,9 @@ public class MultiplayerDashboard : NetworkBehaviour
     [SerializeField] private TMP_Text joinCodeText;
     [SerializeField] private TMP_Text playerCountText;
     [SerializeField] private Color notEnoughPlayersColor, enoughPlayersColor;
+
+    [SerializeField] private CanvasGroup startButtonGroup;
+    
     
     public enum DashboardState
     {
@@ -97,6 +100,12 @@ public class MultiplayerDashboard : NetworkBehaviour
         NetcodeManager.Instance.LeaveGame();
         sceneChange.ChangeScene(soloLobbySceneName);
     }
+    public void StartGame()
+    {
+        Debug.Log("Start Game button pressed");
+        GameManager.instance.StartGameServerRpc();
+        startButtonGroup.interactable = false;
+    }
     private void PlayerCountChanged(ulong playerID) => UpdateLobbyDashboardInfo();
     private void UpdateLobbyDashboardInfo()
     {
@@ -106,6 +115,9 @@ public class MultiplayerDashboard : NetworkBehaviour
         bool enoughPlayers = playerCount >= minPlayers;
         playerCountText.text = $"{playerCount}/{maxPlayers}";
         playerCountText.color = enoughPlayers ? enoughPlayersColor : notEnoughPlayersColor;
+        
+        // startButtonGroup.interactable = enoughPlayers && NetworkManager.Singleton.IsHost;
+        startButtonGroup.interactable = NetworkManager.Singleton.IsHost;
         
         string joinCode = NetcodeManager.Instance.CurrentServerJoinCode;
         joinCodeText.text = joinCode;

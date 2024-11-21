@@ -2405,6 +2405,36 @@ PrefabInstance:
       propertyPath: m_BlockingObjects
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6762635729473228960, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762635729473228960, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6762635729473228960, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348562323653933596, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_Alpha
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348562323653933596, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_Interactable
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348562323653933596, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

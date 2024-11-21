@@ -17,8 +17,8 @@ public class PGrappling : PNetworkBehaviour
     [SerializeField] private int staminaPartCost = 2;
     
 
-    [SerializeField] private float predictionRadius = .75f;
-    [SerializeField] private int predictionResolution = 3;
+    // [SerializeField] private float predictionRadius = .75f;
+    // [SerializeField] private int predictionResolution = 3;
     [SerializeField] private float maxGrappleDist;
     [SerializeField] private LayerMask grapplingMask;
 
