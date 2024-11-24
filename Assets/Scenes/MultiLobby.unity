@@ -14149,8 +14149,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1285272131}
-  - component: {fileID: 1285272130}
   - component: {fileID: 1285272132}
+  - component: {fileID: 1285272130}
   m_Layer: 0
   m_Name: SpawnGameManager
   m_TagString: Untagged

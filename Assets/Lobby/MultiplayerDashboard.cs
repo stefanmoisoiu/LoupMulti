@@ -149,16 +149,17 @@ public class MultiplayerDashboard : NetworkBehaviour
     }
     public void ChangePlayerState()
     {
-        GameManager.PlayerState state = GameManager.instance.myPlayerData.playerState;
-        if (state == GameManager.PlayerState.Spectating)
+        ulong clientID = NetworkManager.Singleton.LocalClientId;
+        PlayerData.PlayerState state = GameManager.instance.playerDataList.Value.GetPlayerData(clientID).playerState;
+        if (state == PlayerData.PlayerState.Spectating)
         {
-            GameManager.instance.BecomePlayer(NetworkManager.Singleton.LocalClientId);
+            GameManager.instance.BecomePlayer(clientID);
             changeStateText.text = "Spectate";
             
         }
         else
         {
-            GameManager.instance.Spectate(NetworkManager.Singleton.LocalClientId);
+            GameManager.instance.Spectate(clientID);
             changeStateText.text = "Be Player";
         }
     }
