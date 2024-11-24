@@ -8,8 +8,8 @@ public class PStaminaBar : PNetworkBehaviour
 {
     [SerializeField] private PStamina stamina;
     [SerializeField] private GameObject sliderPrefab;
-    private List<Slider> _staminaSliders = new List<Slider>();
-    private List<Image> _staminaFillImages = new List<Image>();
+    private List<Slider> _staminaSliders = new();
+    private List<Image> _staminaFillImages = new();
 
     [SerializeField] private Color fillingColor,graceColor,fullColor;
     
@@ -20,14 +20,15 @@ public class PStaminaBar : PNetworkBehaviour
 
     protected override void StartAnyOwner()
     {
-        _staminaBarParent = GameObject.FindGameObjectWithTag(StaminaSliderTag);
         stamina.UpdatedStaminaParts += UpdateStaminaParts;
-        InitializeStaminaParts();
+        _staminaBarParent = GameObject.FindGameObjectWithTag(StaminaSliderTag);
+        UpdateStaminaParts(stamina.StaminaPartCount);
     }
 
     protected override void DisableAnyOwner()
     {
         stamina.UpdatedStaminaParts -= UpdateStaminaParts;
+        UpdateStaminaParts(0);
     }
 
     protected override void UpdateAnyOwner()
@@ -67,7 +68,7 @@ public class PStaminaBar : PNetworkBehaviour
         {
             for (int i = parts; i < _staminaSliders.Count; i++)
             {
-                Destroy(_staminaSliders[i].gameObject);
+                if(_staminaSliders[i] != null) Destroy(_staminaSliders[i].gameObject);
             }
             _staminaSliders.RemoveRange(parts, _staminaSliders.Count - parts);
             _staminaFillImages.RemoveRange(parts, _staminaFillImages.Count - parts);
@@ -82,6 +83,4 @@ public class PStaminaBar : PNetworkBehaviour
             }
         }
     }
-    
-    private void InitializeStaminaParts() => UpdateStaminaParts(stamina.StaminaPartCount);
 }

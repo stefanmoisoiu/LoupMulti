@@ -26,7 +26,6 @@ public class NetcodeManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            // NetworkManager.Singleton.OnConnectionEvent += HostLeftGameCheck;
         }
         else
         {
@@ -93,6 +92,8 @@ public class NetcodeManager : MonoBehaviour
             
             OnJoinGame?.Invoke();
             OnEnterGame?.Invoke();
+            
+            NetworkManager.Singleton.OnClientStopped += ClientStoppedLeaveGame;
         }
         catch
         {
@@ -105,8 +106,11 @@ public class NetcodeManager : MonoBehaviour
     
     public string CurrentServerJoinCode { get; private set; }
 
+    private void ClientStoppedLeaveGame(bool _) => LeaveGame();
     public void LeaveGame()
     {
+        NetworkManager.Singleton.OnClientStopped -= ClientStoppedLeaveGame;
+        
         NetworkManager.Singleton.Shutdown();
         CurrentServerJoinCode = null;
         
@@ -114,14 +118,5 @@ public class NetcodeManager : MonoBehaviour
         LoadingGame = false;
         
         OnLeaveGame?.Invoke();
-    }
-    private void HostLeftGameCheck(NetworkManager networkManager, ConnectionEventData connectionEvent)
-    {
-        Debug.LogError($"connectionEvent.EventType {connectionEvent.EventType}, connectionEvent.ClientId {connectionEvent.ClientId}");
-        if (connectionEvent.EventType != ConnectionEvent.ClientDisconnected) return;
-        Debug.LogError(connectionEvent.ClientId);
-        
-        Debug.LogError("Left Game");
-        LeaveGame();
     }
 }

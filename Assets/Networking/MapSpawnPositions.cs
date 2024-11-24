@@ -1,8 +1,7 @@
 ﻿using System.Linq;
-using Unity.Netcode;
 using UnityEngine;
 
-public class MapSpawnPositions : NetworkBehaviour
+public class MapSpawnPositions : MonoBehaviour
 {
     [SerializeField] private Transform[] spawnPoints;
     public static MapSpawnPositions instance;

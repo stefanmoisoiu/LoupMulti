@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Smooth;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class GameManager : NetworkBehaviour
@@ -14,10 +16,17 @@ public class GameManager : NetworkBehaviour
     public static GameManager instance;
     
     public NetworkVariable<GameState> gameState = new();
+    public PlayerData myPlayerData;
     private Dictionary<ulong, PlayerData> playerData;
     
     private const string LobbyMap = "MultiLobby";
     private string currentMap;
+    
+    public Action<string> OnMapLoaded;
+    [Rpc(SendTo.Everyone)] private void OnMapLoadedClientRpc(string map) => OnMapLoaded?.Invoke(map);
+    
+    public Action OnGameStart;
+    [Rpc(SendTo.Everyone)] private void OnGameStartClientRpc() => OnGameStart?.Invoke();
     
     private void Awake()
     {
@@ -27,7 +36,6 @@ public class GameManager : NetworkBehaviour
             return;
         }
         instance = this;
-        NetworkObject.DestroyWithScene = false;
     }
 
     public override void OnNetworkDespawn()
@@ -37,15 +45,10 @@ public class GameManager : NetworkBehaviour
         Destroy(gameObject);
     }
 
-    public override void OnNetworkSpawn()
-    {
-        NetworkObject.DestroyWithScene = false;
-    }
-
     private void Start()
     {
-        if (IsServer) SetupPlayerData();
-        if(Input.GetKeyDown(KeyCode.U)) StartGameServerRpc();
+        if (!IsServer) return;
+        SetupPlayerData();
         NetworkObject.DestroyWithScene = false;
     }
     private void SetupPlayerData()
@@ -55,10 +58,18 @@ public class GameManager : NetworkBehaviour
         {
             PlayerData data = new PlayerData(client);
             playerData.Add(client.ClientId, data);
+            
+            UpdateMyPlayerDataClientRpc(ToClientIDs(new [] {client.ClientId}));
         }
         
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+    }
+    [Rpc(SendTo.SpecifiedInParams)]
+    private void UpdateMyPlayerDataClientRpc(RpcParams @params)
+    {
+        myPlayerData = playerData[NetworkManager.Singleton.LocalClientId];
+        LogRpc("My player data set for " + myPlayerData.ClientID);
     }
 
     private void OnClientDisconnected(ulong clientId)
@@ -69,7 +80,7 @@ public class GameManager : NetworkBehaviour
     private void OnClientConnected(ulong clientId)
     {
         PlayerData data = new PlayerData(NetworkManager.Singleton.ConnectedClients[clientId]);
-        if (gameState.Value != GameState.Lobby) data.playerState = PlayerState.Spectating;
+        if (gameState.Value != GameState.Lobby) Spectate(clientId);
         
         playerData.Add(clientId, data);
     }
@@ -84,14 +95,35 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
         currentMap = map;
         LogRpc("Loading map " + map + "...");
-        NetworkManager.Singleton.SceneManager.OnLoadComplete += OnStartGameMapLoaded;
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += StartGameMapLoaded;
     }
-    private void OnStartGameMapLoaded(ulong id, string sceneName, LoadSceneMode loadSceneMode)
+
+    private void StartGameMapLoaded(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
     {
         LogRpc("Map loaded");
+        OnMapLoadedClientRpc(currentMap);
         
         SetPlayerSpawnPositions();
+
+        foreach (ulong clientID in playerData.Keys)
+        {
+            PlayerData data = playerData[clientID];
+            data.ResetGameData();
+            
+            if (data.playerState == PlayerState.Spectating)
+            {
+                
+            }
+            else
+            {
+                if (data.playerState == PlayerState.NotAssigned) data.SetState(PlayerState.Playing);
+            }
+            UpdateMyPlayerDataClientRpc(ToClientIDs(new[] {clientID}));
+        }
+        
+        OnGameStartClientRpc();
     }
+    
 
     private void SetPlayerSpawnPositions()
     {
@@ -101,27 +133,52 @@ public class GameManager : NetworkBehaviour
         {
             ushort spawnIndex = spawnIndexes[i];
             LogRpc("Setting spawn position of index " +  spawnIndex + " for " + clientIds[i]);
-            ulong playerObjectID = playerData[clientIds[i]].client.PlayerObject.NetworkObjectId;
-            SetPlayerSpawnPositionClientRpc(spawnIndex, playerObjectID);
+            
+            Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(spawnIndex);
+            SmoothSyncNetcode sync = playerData[clientIds[i]].client.PlayerObject.GetComponent<SmoothSyncNetcode>();
+            sync.teleportAnyObjectFromServer(spawnPoint.position, spawnPoint.rotation, Vector3.one);
         }
     }
-    [Rpc(SendTo.Everyone)]
-    private void SetPlayerSpawnPositionClientRpc(ushort index, ulong networkObjectID)
+    
+    public void Spectate(ulong clientId) => SpectateServerRpc(SenderClientID(clientId));
+    [Rpc(SendTo.Server)]
+    private void SpectateServerRpc(RpcParams @params)
     {
-        NetworkObject networkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectID];
-        Rigidbody rb = networkObject.GetComponent<Rigidbody>();
-        Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(index);
-        rb.position = spawnPoint.position;
-        rb.linearVelocity = Vector3.zero;
+        ulong clientId = @params.Receive.SenderClientId;
+        playerData[clientId].SetState(PlayerState.Spectating);
         
-        Debug.Log("Set spawn position of " + networkObject.OwnerClientId + " to " + spawnPoint.position);
+        UpdateMyPlayerDataClientRpc(ToClientIDs(new[] {clientId}));
+        
+        LogRpc(clientId + " is now spectating");
     }
+    public void BecomePlayer(ulong clientId) => BecomePlayerServerRpc(SenderClientID(clientId));
+    [Rpc(SendTo.Server)]
+    private void BecomePlayerServerRpc(RpcParams @params)
+    {
+        if (!CanBecomePlayer()) return;
+        
+        ulong clientId = @params.Receive.SenderClientId;
+        playerData[clientId].SetState(PlayerState.Playing);
+        
+        UpdateMyPlayerDataClientRpc(ToClientIDs(new[] {clientId}));
+        
+        LogRpc(clientId + " is now playing");
+    }
+
+    private bool CanBecomePlayer() => gameState.Value == GameState.Lobby;
 
     private RpcParams ToClientIDs(ulong[] clientIDS) => new RpcParams
     {
         Send = new RpcSendParams
         {
             Target = RpcTarget.Group(clientIDS, RpcTargetUse.Temp)
+        }
+    };
+    public RpcParams SenderClientID(ulong clientID) => new RpcParams
+    {
+        Receive = new()
+        {
+            SenderClientId = clientID
         }
     };
     
@@ -138,19 +195,42 @@ public class GameManager : NetworkBehaviour
 
     public enum PlayerState
     {
-        InGame,
+        NotAssigned,
+        Playing,
         Spectating,
     }
     
-    public struct PlayerData
+    [Serializable]
+    public class PlayerData
     {
-        public NetworkClient client;
-        public PlayerState playerState;
+        public ulong ClientID => client.ClientId;
+        public NetworkClient client { get; private set; }
+        public PlayerState playerState { get; private set; }
+        public PlayerGameData gameData { get; private set; }
         
+
         public PlayerData(NetworkClient client)
         {
             this.client = client;
-            playerState = PlayerState.InGame;
+            playerState = PlayerState.NotAssigned;
+            gameData = new PlayerGameData();
         }
+
+        public void ResetGameData()
+        {
+            gameData = new();
+        }
+        
+        public void SetState(PlayerState state) => playerState = state;
+    }
+
+    [Serializable]
+    public struct PlayerGameData
+    {
+        public int Score { get; private set; }
+        
+        public void AddScore(int amount) => Score += amount;
+        public void RemoveScore(int amount) => Score -= amount;
+        public void ResetScore() => Score = 0;
     }
 }

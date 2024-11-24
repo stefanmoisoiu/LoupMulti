@@ -5524,6 +5524,52 @@ MonoBehaviour:
   jump: {fileID: 6450666549975843647}
   grappling: {fileID: 3899675887128394501}
   grounded: {fileID: 5692434654991538524}
+--- !u!1 &3286553869093133804
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 637059515131742313}
+  - component: {fileID: 5155413617467792157}
+  m_Layer: 6
+  m_Name: UI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &637059515131742313
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286553869093133804}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 231473827190849983}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5155413617467792157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286553869093133804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faaafdea237e4e91a36eec31b1e5ecef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  canvas: {fileID: 6661752744929025915, guid: 57a25852aa3254f488a9eb4414cac584, type: 3}
 --- !u!1 &3430329463520521720
 GameObject:
   m_ObjectHideFlags: 0
@@ -5567,6 +5613,7 @@ Transform:
   - {fileID: 4760990636335128805}
   - {fileID: 4591691004480856036}
   - {fileID: 5658806299735567646}
+  - {fileID: 637059515131742313}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6103423599468793262
@@ -6053,14 +6100,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  springConstant: 100
-  dampingFactor: 10
+  springConstant: 50
+  dampingFactor: 5
   grappleJumpForce: 3
   minGrappleDist: 3
   grappleDelay: 0
   staminaPartCost: 3
-  predictionRadius: 0.8
-  predictionResolution: 6
   maxGrappleDist: 8
   grapplingMask:
     serializedVersion: 2
@@ -6116,7 +6161,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   wallCheckDistance: 1
-  verticalBounceSpeed: 8
+  verticalBounceSpeed: 7
   horizontalBounceSpeed: 5
   bufferTime: 0.3
   camRotationLength: 0.4

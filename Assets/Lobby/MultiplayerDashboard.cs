@@ -20,6 +20,9 @@ public class MultiplayerDashboard : NetworkBehaviour
     [SerializeField] private TMP_Text playerCountText;
     [SerializeField] private Color notEnoughPlayersColor, enoughPlayersColor;
 
+    [SerializeField] private TMP_Text changeStateText;
+    
+
     [SerializeField] private CanvasGroup startButtonGroup;
     
     
@@ -143,6 +146,21 @@ public class MultiplayerDashboard : NetworkBehaviour
     {
         createGamePanel.interactable = enabled;
         lobbyInfoPanel.interactable = enabled;
+    }
+    public void ChangePlayerState()
+    {
+        GameManager.PlayerState state = GameManager.instance.myPlayerData.playerState;
+        if (state == GameManager.PlayerState.Spectating)
+        {
+            GameManager.instance.BecomePlayer(NetworkManager.Singleton.LocalClientId);
+            changeStateText.text = "Spectate";
+            
+        }
+        else
+        {
+            GameManager.instance.Spectate(NetworkManager.Singleton.LocalClientId);
+            changeStateText.text = "Be Player";
+        }
     }
     
     public void CopyToClipboardJoinCode()

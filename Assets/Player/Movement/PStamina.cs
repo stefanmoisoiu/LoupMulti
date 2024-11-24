@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class PStamina : NetworkBehaviour
+public class PStamina : PNetworkBehaviour
 {
     [SerializeField] private float recoverRate = 10f;
     [SerializeField] private float staminaPartGracePortion = 0.25f;
@@ -14,25 +14,20 @@ public class PStamina : NetworkBehaviour
     public float MaxStamina => StaminaPerPart * StaminaPartCount;
     private float _stamina;
     public float Stamina => _stamina;
-    public static float OwnerStamina { get; private set; }
 
     [SerializeField] private PRun run;
 
     public Action<int> UpdatedStaminaParts;
-    
-    private void Start()
+
+    protected override void StartAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         _stamina = MaxStamina;
     }
 
-    private void Update()
+    protected override void UpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
-        OwnerStamina = _stamina;
         TryRecoverStamina();
     }
-
     private void TryRecoverStamina()
     {
         if (run.Running) return;

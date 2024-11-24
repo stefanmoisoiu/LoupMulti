@@ -60,7 +60,7 @@ public class PGrappling : PNetworkBehaviour
     private void UpdateGrapple()
     {
         Vector3 dir = (_grapplePoint - rb.position).normalized;
-        if (dir.y < 0)
+        if (dir.y < 0 && rb.linearVelocity.y > 0)
         {
             StopGrapple();
             return;
@@ -71,10 +71,13 @@ public class PGrappling : PNetworkBehaviour
         float velTowardsPoint = Vector3.Dot(rb.linearVelocity, dir);
         
         float force = Spring.CalculateSpringForce(_grappleSpringDist, dist, velTowardsPoint, springConstant, dampingFactor);
-        rb.AddForce(dir * force, ForceMode.Force);
-        
-        
-        Vector3 gravityApplyDir = Vector3.ProjectOnPlane(new Vector3(dir.x, 0, dir.z),GetUpVector());
+        Vector3 forceToApply = dir * force;
+        if (_grapplePoint.y - rb.position.y < 0) forceToApply.y = 0;
+        rb.AddForce(forceToApply, ForceMode.Force);
+
+        Vector3 gravityUp = GetUpVector();
+        gravityUp.y = Mathf.Abs(gravityUp.y);
+        Vector3 gravityApplyDir = Vector3.ProjectOnPlane(new Vector3(dir.x, 0, dir.z),gravityUp);
         rb.AddForce(gravityApplyDir * (Physics.gravity.magnitude * grappleGravityMult), ForceMode.Force);
         
         Debug.DrawLine(rb.position, _grapplePoint, Color.green);
