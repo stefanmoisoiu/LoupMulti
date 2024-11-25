@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -7,25 +8,24 @@ public class PStyle : PNetworkBehaviour
     private ushort _currentStylePoints;
     public NoLookStyle[] noLookStyles;
     public RotationStyle[] rotationStyles;
-    
-    private const string NoLookTextTag = "NoLookStyleText";
-    private const string RotationTextTag = "RotationStyleText";
-    private TMP_Text _noLookText, _rotationText;
 
     private float _currentRotation;
     private float _currentNoLookTime;
     
-    private NoLookStyle _currentNoLookStyle;
-    private RotationStyle _currentRotationStyle;
-
-    [SerializeField] private AnimationClip changedStyleAnimation;
-    [SerializeField] private AnimationClip stoppedStyleAnimation;
-
-    private Animator _noLookAnimator;
-    private Animator _rotationAnimator;
-
+    private int _currentNoLookStyleIndex;
+    private int _currentRotationStyleIndex;
+    
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PCamera cam;
+    [SerializeField] private PMovement movement;
+    [SerializeField] private PTextScreenPopup textScreenPopup;
+    
+
+    private PMovement.MoveSpeedModifiers _noLookSpeedModifier = new(1,1);
+    private PMovement.MoveSpeedModifiers _rotationSpeedModifier = new(1,1);
+    
+    private Coroutine _noLookCoroutine;
+    private Coroutine _rotationCoroutine;
     
     public bool NoLook { get; private set; }
 
@@ -33,14 +33,9 @@ public class PStyle : PNetworkBehaviour
     {
         InputManager.instance.OnAction1 += StartNoLook;
         InputManager.instance.OnStopAction1 += StopNoLook;
-
-        GameObject noLook = GameObject.FindGameObjectWithTag(NoLookTextTag);
-        _noLookText = noLook.transform.GetChild(0).GetComponent<TMP_Text>();
-        _noLookAnimator = noLook.GetComponent<Animator>();
         
-        GameObject rotation = GameObject.FindGameObjectWithTag(RotationTextTag);
-        _rotationText = rotation.transform.GetChild(0).GetComponent<TMP_Text>();
-        _rotationAnimator = rotation.GetComponent<Animator>();
+        movement.AddMoveSpeedModifier(_noLookSpeedModifier);
+        movement.AddMoveSpeedModifier(_rotationSpeedModifier);
     }
 
     protected override void DisableAnyOwner()
@@ -60,105 +55,117 @@ public class PStyle : PNetworkBehaviour
 
     protected override void UpdateAnyOwner()
     {
+        UpdateNoLook();
+        UpdateRotation();
+    }
+    private IEnumerator BoostSpeed(PMovement.MoveSpeedModifiers speedModifier, Style style)
+    {
+        speedModifier.maxSpeedFactor = style.maxSpeedFactor;
+        speedModifier.accelerationFactor = style.accelerationFactor;
+
+        float t = 0;
+        
+        while (t < style.boostDuration)
+        {
+            t += Time.deltaTime;
+            float adv = Mathf.Pow(t / style.boostDuration, 2);
+            
+            speedModifier.maxSpeedFactor = Mathf.Lerp(style.maxSpeedFactor, 1, adv);
+            speedModifier.accelerationFactor = Mathf.Lerp(style.accelerationFactor, 1, adv);
+            
+            yield return null;
+        }
+        
+        speedModifier.maxSpeedFactor = 1;
+        speedModifier.accelerationFactor = 1;
+    }
+    
+    private void UpdateNoLook()
+    {
         if (NoLook)
         {
             _currentNoLookTime += Time.deltaTime;
 
-            NoLookStyle noLookStyle = null;
-            
+            int noLookStyleIndex = -1;
+
             for (int i = 0; i < noLookStyles.Length; i++)
             {
                 bool isLast = i == noLookStyles.Length - 1;
+
                 bool myStyleReached = noLookStyles[i].StyleReached(_currentNoLookTime);
                 bool nextStyleReached = !isLast && noLookStyles[i + 1].StyleReached(_currentNoLookTime);
                 if (myStyleReached && !nextStyleReached)
                 {
-                    noLookStyle = noLookStyles[i];
+                    noLookStyleIndex = i;
                     break;
                 }
             }
             
-            if (noLookStyle != null)
+            if (noLookStyleIndex != -1 && _currentNoLookStyleIndex != noLookStyleIndex)
             {
-                if (_currentNoLookStyle != noLookStyle)
-                {;
-                    _noLookAnimator.Play(changedStyleAnimation.name);
-                    noLookStyle.SetTextToStyle(_noLookText);
-                }
-                
+                textScreenPopup.CreatePopup(noLookStyles[noLookStyleIndex].popupData,Vector3.zero);
             }
-            else if (_currentNoLookStyle != null)
-            {
-                _noLookAnimator.Play(stoppedStyleAnimation.name);
-            }
-            _currentNoLookStyle = noLookStyle;
+            
+            _currentNoLookStyleIndex = noLookStyleIndex;
         }
         else
         {
             _currentNoLookTime = 0;
             
-            if (_currentNoLookStyle != null)
+            if (_currentNoLookStyleIndex != -1 && grounded.FullyGrounded())
             {
-                _noLookAnimator.Play(stoppedStyleAnimation.name);
+                if (_noLookCoroutine != null) StopCoroutine(_noLookCoroutine);
+                _noLookCoroutine = StartCoroutine(BoostSpeed(_noLookSpeedModifier, noLookStyles[_currentNoLookStyleIndex]));
             }
-            
-            _currentNoLookStyle = null;
         }
-        
-        
-        
+    }
+    private void UpdateRotation()
+    {
         if (!grounded.FullyGrounded())
         {
             _currentRotation += cam.LookDelta.x;
 
-            RotationStyle rotationStyle = null;
+            int rotationStyleIndex = -1;
             
             for (int i = 0; i < rotationStyles.Length; i++)
             {
                 bool isLast = i == rotationStyles.Length - 1;
+                
                 float absCurrentRotation = Mathf.Abs(_currentRotation);
                 bool myStyleReached = rotationStyles[i].StyleReached(absCurrentRotation);
                 bool nextStyleReached = !isLast && rotationStyles[i + 1].StyleReached(absCurrentRotation);
                 if (myStyleReached && !nextStyleReached)
                 {
-                    rotationStyle = rotationStyles[i];
+                    rotationStyleIndex = i;
                     break;
                 }
             }
+
+            if (rotationStyleIndex != -1 && _currentRotationStyleIndex != rotationStyleIndex)
+            {
+                textScreenPopup.CreatePopup(rotationStyles[rotationStyleIndex].popupData,Vector3.zero);
+            }
             
-            if (rotationStyle != null)
-            {
-                if (_currentRotationStyle != rotationStyle)
-                {
-                    _rotationAnimator.Play(changedStyleAnimation.name);
-                    rotationStyle.SetTextToStyle(_rotationText);
-                }
-                
-            }
-            else if (_currentRotationStyle != null)
-            {
-                _rotationAnimator.Play(stoppedStyleAnimation.name);
-            }
-            _currentRotationStyle = rotationStyle;
+            _currentRotationStyleIndex = rotationStyleIndex;
         }
         else
         {
             _currentRotation = 0;
             
-            if (_currentRotationStyle != null)
+            if (_currentRotationStyleIndex != -1)
             {
-                _rotationAnimator.Play(stoppedStyleAnimation.name);
+                if (_rotationCoroutine != null) StopCoroutine(_rotationCoroutine);
+                _rotationCoroutine = StartCoroutine(BoostSpeed(_rotationSpeedModifier, rotationStyles[_currentRotationStyleIndex]));
             }
             
-            _currentRotationStyle = null;
+            _currentRotationStyleIndex = -1;
         }
     }
-
     [Serializable]
     public class NoLookStyle : Style
     {
-        public float time;
-        public bool StyleReached(float currentTime) => currentTime >= time;
+        public float noLookTime;
+        public bool StyleReached(float currentTime) => currentTime >= noLookTime;
     }
     [Serializable]
     public class RotationStyle : Style
@@ -169,22 +176,10 @@ public class PStyle : PNetworkBehaviour
 
     public abstract class Style
     {
-        public string name;
-        public Color color = Color.white;
-        public int fontSize = 32;
-
-        public void SetTextToStyle(TMP_Text text)
-        {
-            text.color = color;
-            text.fontSize = fontSize;
-            text.text = name;
-        }
-
-        public Style()
-        {
-            name = "Default";
-            color = Color.white;
-            fontSize = 32;
-        }
+        public PTextScreenPopup.PopupData popupData;
+        
+        public float maxSpeedFactor;
+        public float accelerationFactor;
+        public float boostDuration;
     }
 }

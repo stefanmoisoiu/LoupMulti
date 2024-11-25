@@ -21,11 +21,39 @@ public class PMovement : NetworkBehaviour
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PGrappling grappling;
     
+    public List<MoveSpeedModifiers> moveSpeedModifiers { get; private set; } = new();
     
+    public void AddMoveSpeedModifier(MoveSpeedModifiers modifier)
+    {
+        moveSpeedModifiers.Add(modifier);
+    }
+    private float GetMaxSpeedFactor()
+    {
+        float addedMaxSpeed = 1;
+        foreach (var modifier in moveSpeedModifiers)
+        {
+            addedMaxSpeed *= modifier.maxSpeedFactor;
+        }
+
+        return addedMaxSpeed;
+    }
+    private float GetAccelerationFactor()
+    {
+        float addedAcceleration = 1;
+        foreach (var modifier in moveSpeedModifiers)
+        {
+            addedAcceleration *= modifier.accelerationFactor;
+        }
+
+        return addedAcceleration;
+    }
     
-    
-    private float MaxSpeed => grappling.Grappling ? maxGrappleSpeed : run.Running ? maxRunSpeed : maxWalkSpeed;
-    private float Acceleration => grappling.Grappling ? grappleAcceleration : grounded.FullyGrounded() ? acceleration : acceleration * airAccelMultiplier;
+    private float MaxSpeed =>
+        grappling.Grappling ? maxGrappleSpeed :
+        (run.Running ? maxRunSpeed : maxWalkSpeed) * GetMaxSpeedFactor();
+    private float Acceleration =>
+        grappling.Grappling ? grappleAcceleration :
+        (grounded.FullyGrounded() ? acceleration : acceleration * airAccelMultiplier) * GetAccelerationFactor();
     private void FixedUpdate()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
@@ -68,5 +96,17 @@ public class PMovement : NetworkBehaviour
         
         Debug.DrawRay(transform.position, rb.linearVelocity, Color.red);
         Debug.DrawRay(transform.position + rb.linearVelocity,force * Time.fixedDeltaTime, Color.green);
+    }
+
+    public class MoveSpeedModifiers
+    {
+        public float maxSpeedFactor;
+        public float accelerationFactor;
+        
+        public MoveSpeedModifiers(float maxSpeedFactor, float accelerationFactor)
+        {
+            this.maxSpeedFactor = maxSpeedFactor;
+            this.accelerationFactor = accelerationFactor;
+        }
     }
 }

@@ -23,12 +23,12 @@ public class PAirDash : PNetworkBehaviour
     private Coroutine _dashCoroutine;
     protected override void StartAnyOwner()
     {
-        // InputManager.instance.OnAction1 += TryStartDash;
+        InputManager.instance.OnAction1 += TryStartDash;
     }
 
     protected override void DisableAnyOwner()
     {
-        // InputManager.instance.OnAction1 -= TryStartDash;
+        InputManager.instance.OnAction1 -= TryStartDash;
     }
 
     private void TryStartDash()

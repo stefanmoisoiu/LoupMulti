@@ -11,6 +11,12 @@ public class PGrapplingPreviewPoint : PNetworkBehaviour
     {
         CreatePreviewPoint();
     }
+
+    protected override void DisableAnyOwner()
+    {
+        Destroy(_previewGameObject);
+    }
+
     private void CreatePreviewPoint()
     {
         _previewGameObject = Instantiate(previewGameObject, Vector3.zero, Quaternion.identity);
