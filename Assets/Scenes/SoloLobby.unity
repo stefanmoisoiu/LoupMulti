@@ -10865,8 +10865,91 @@ PrefabInstance:
     - {fileID: 8834437190558245234, guid: 5f1e9a7d723b05a4bbac5c2004425550, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1884691672679967038, guid: 5f1e9a7d723b05a4bbac5c2004425550,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1300261748}
   m_SourcePrefab: {fileID: 100100000, guid: 5f1e9a7d723b05a4bbac5c2004425550, type: 3}
+--- !u!1 &1300261747 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1884691672679967038, guid: 5f1e9a7d723b05a4bbac5c2004425550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1300261746}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1300261748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300261747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ee5e68b218c4e88920347dece9694ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  noLookStyles:
+  - name: No Look
+    color: {r: 1, g: 1, b: 1, a: 1}
+    fontSize: 32
+    time: 1
+  - name: Swag off
+    color: {r: 0.17295581, g: 0.7717121, b: 1, a: 1}
+    fontSize: 48
+    time: 2
+  - name: Aveugle?
+    color: {r: 1, g: 1, b: 1, a: 1}
+    fontSize: 54
+    time: 5
+  - name: Tu peux lacher c'est bon
+    color: {r: 1, g: 1, b: 1, a: 1}
+    fontSize: 32
+    time: 10
+  rotationStyles:
+  - name: 180
+    color: {r: 1, g: 1, b: 1, a: 1}
+    fontSize: 32
+    rotation: 180
+  - name: 360 Trickshot
+    color: {r: 1, g: 1, b: 1, a: 1}
+    fontSize: 48
+    rotation: 360
+  - name: Toupie!!!
+    color: {r: 1, g: 1, b: 1, a: 1}
+    fontSize: 60
+    rotation: 720
+  changedStyleAnimation: {fileID: 7400000, guid: c84c9c9d218144c43bf59be0f5e32a5e,
+    type: 2}
+  stoppedStyleAnimation: {fileID: 7400000, guid: 0849f706db0bb3c4a8dbd703be22b5bd,
+    type: 2}
+  grounded: {fileID: 1300261750}
+  cam: {fileID: 1300261749}
+--- !u!114 &1300261749 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5467952736240796718, guid: 5f1e9a7d723b05a4bbac5c2004425550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1300261746}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9df9588603b6d694d989e7ff2af48943, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1300261750 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5692434654991538524, guid: 5f1e9a7d723b05a4bbac5c2004425550,
+    type: 3}
+  m_PrefabInstance: {fileID: 1300261746}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f86f14da3ad74573aae25a8caccfe0ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1324932093
 GameObject:
   m_ObjectHideFlags: 0

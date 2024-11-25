@@ -3,7 +3,7 @@ using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PCamera : NetworkBehaviour
+public class PCamera : PNetworkBehaviour
 {
     [SerializeField] private Transform orientation;
     [SerializeField] private Transform head;
@@ -20,25 +20,19 @@ public class PCamera : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (!IsOwner)
-        {
-            cam.enabled = false;
-            return;
-        }
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (IsOwner) return;
+        cam.enabled = false;
+        return;
     }
 
-    private void OnEnable()
+    protected override void StartAnyOwner()
     {
-        if (NetcodeManager.InGame) return;
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.visible = false;;
     }
 
-    private void Update()
+    protected override void UpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         GetLookTarget();
         Look();
     }

@@ -7,9 +7,9 @@ public class PGrounded : NetworkBehaviour
     [SerializeField] private float rayLength = 0.5f;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private bool debug = true;
-    
-    
-    public bool IsGrounded { get; private set; }
+
+
+    public bool IsGrounded { get; private set; } = true;
     public RaycastHit GroundHit { get; private set; }
     public Quaternion WorldToLocalUp { get; private set; }
     public Quaternion LocalUpToWorld { get; private set; }
