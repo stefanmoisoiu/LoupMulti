@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Smooth;
 using Unity.Netcode;
@@ -20,11 +21,14 @@ public class GameManager : NetworkBehaviour
     public List<PlayerData> clientPlayerData = new();
     public PlayerData myPlayerData;
     
+    public static Action<List<PlayerData>> OnClientPlayerDataChanged;
+    public static Action<PlayerData> OnMyPlayerDataChanged;
+    
     public const int RoundCount = 10;
     public const int TimeToUpgrade = 20;
-    public const int startCountdown = 5;
+    public const int StartCountdown = 5;
 
-    private Coroutine _gameCoroutine;
+    private Coroutine _gameLoopCoroutine;
 
     private const string LobbyMap = "MultiLobby";
     private string currentMap;
@@ -53,6 +57,8 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
+            LogRpc("Starting Game Manager");
+            
             _playerDataList = new ();
             _playerDataList.SetupPlayerData();
         
@@ -90,6 +96,9 @@ public class GameManager : NetworkBehaviour
         clientPlayerData = new List<PlayerData>(playerDatas);
         
         myPlayerData = clientPlayerData.Find(data => data.ClientId == NetworkManager.Singleton.LocalClientId);
+        
+        OnClientPlayerDataChanged?.Invoke(clientPlayerData);
+        OnMyPlayerDataChanged?.Invoke(myPlayerData);
     }
     
     [Rpc(SendTo.SpecifiedInParams)]
@@ -102,10 +111,16 @@ public class GameManager : NetworkBehaviour
             if (clientPlayerData[i].ClientId != data.ClientId) continue;
             
             clientPlayerData[i] = data;
+            
+            OnClientPlayerDataChanged?.Invoke(clientPlayerData);
+            OnMyPlayerDataChanged?.Invoke(myPlayerData);
+            
             return;
         }
         
         clientPlayerData.Add(data);
+        
+        OnClientPlayerDataChanged?.Invoke(clientPlayerData);
     }
     
     [Rpc(SendTo.SpecifiedInParams)]
@@ -118,6 +133,7 @@ public class GameManager : NetworkBehaviour
             clientPlayerData.RemoveAt(i);
             return;
         }
+        OnClientPlayerDataChanged?.Invoke(clientPlayerData);
     }
     
     private void OnClientConnected(ulong clientId)
@@ -135,6 +151,7 @@ public class GameManager : NetworkBehaviour
     private void OnClientDisconnected(ulong clientId)
     {
         if (NetworkManager.Singleton == null) return;
+        if (NetworkManager.Singleton.ConnectedClients.Count == 0) return;
         
         LogRpc("Client disconnected: " + clientId);
         _playerDataList.RemovePlayerData(clientId);
@@ -175,9 +192,12 @@ public class GameManager : NetworkBehaviour
                 if (data.CurrentPlayerState == PlayerData.PlayerState.NotAssigned) data.SetState(PlayerData.PlayerState.Playing);
             }
         }
-        
         OnGameStartClientRpc();
+        
+        if (_gameLoopCoroutine != null) StopCoroutine(_gameLoopCoroutine);
+        _gameLoopCoroutine = StartCoroutine(GameLoop());
     }
+    
     
 
     private void SetPlayerSpawnPositions()
@@ -192,6 +212,35 @@ public class GameManager : NetworkBehaviour
             SmoothSyncNetcode sync = NetworkManager.Singleton.ConnectedClients[data.ClientId].PlayerObject.GetComponent<SmoothSyncNetcode>();
             sync.teleportAnyObjectFromServer(spawnPoint.position, spawnPoint.rotation, Vector3.one);
         }
+    }
+
+    private IEnumerator GameLoop()
+    {
+        // Choose Upgrade -> Play Round -> Repeat
+        int round = 1;
+        
+        while (round <= RoundCount)
+        {
+            yield return ChooseUpgrade();
+            yield return PlayRound();
+            round++;
+        }
+    }
+    
+    private IEnumerator ChooseUpgrade()
+    {
+        gameState.Value = GameState.ChoosingUpgrade;
+        yield return new WaitForSeconds(TimeToUpgrade);
+    }
+    private IEnumerator PlayRound()
+    {
+        gameState.Value = GameState.InGame;
+        yield return new WaitForSeconds(StartCountdown);
+    }
+    private IEnumerator EndGame()
+    {
+        gameState.Value = GameState.Lobby;
+        yield break;
     }
     
     public void Spectate(ulong clientId) => SpectateServerRpc(SenderClientID(clientId));

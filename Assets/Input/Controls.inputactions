@@ -236,6 +236,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "UI",
+            "id": "9fdfa20a-a6c5-4222-ae5a-e80d62f60d40",
+            "actions": [
+                {
+                    "name": "Scoreboard",
+                    "type": "Button",
+                    "id": "4e52fe20-7251-4bf2-bc4b-d26a63598527",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "de2e08cc-9168-482f-ae53-e9c1881b5f62",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Scoreboard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

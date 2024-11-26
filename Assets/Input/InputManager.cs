@@ -30,6 +30,10 @@ public class InputManager : MonoBehaviour
     public bool Action3Pressed { get; set; }
     public Action OnAction3 { get; set; }
     public Action OnStopAction3 { get; set; }
+    
+    public bool ScoreboardPressed { get; set; }
+    public Action OnScoreboard { get; set; }
+    public Action OnStopScoreboard { get; set; }
 
     private void OnEnable()
     {
@@ -69,5 +73,8 @@ public class InputManager : MonoBehaviour
         
         _controls.BaseMovement.Action3.performed += ctx => { OnAction3?.Invoke(); Action3Pressed = true; };
         _controls.BaseMovement.Action3.canceled += ctx => { OnStopAction3?.Invoke(); Action3Pressed = false; };
+        
+        _controls.UI.Scoreboard.performed += ctx => { OnScoreboard?.Invoke(); ScoreboardPressed = true; };
+        _controls.UI.Scoreboard.canceled += ctx => { OnStopScoreboard?.Invoke(); ScoreboardPressed = false; };
     }
 }

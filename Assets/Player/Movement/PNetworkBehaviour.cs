@@ -1,24 +1,25 @@
 ﻿using System;
 using Unity.Netcode;
 using UnityEditor;
+using UnityEngine;
 
 public abstract class PNetworkBehaviour : NetworkBehaviour
 {
-    private bool _initialized = false;
+    private bool _initializedAny = false;
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (!IsOwner || _initialized) return;
+        if (!IsOwner) return;
         StartOnlineOwner();
-        StartAnyOwner();
-        _initialized = true;
+        if (!_initializedAny) StartAnyOwner();
+        _initializedAny = true;
     }
     private void Start()
     {
-        if (IsSpawned || NetcodeManager.InGame || _initialized) return;
+        if (IsSpawned || NetcodeManager.InGame) return;
         StartOffline();
-        StartAnyOwner();
-        _initialized = true;
+        if (!_initializedAny) StartAnyOwner();
+        _initializedAny = true;
     }
 
     private void Update()

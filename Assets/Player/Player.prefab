@@ -6748,6 +6748,7 @@ GameObject:
   - component: {fileID: 637059515131742313}
   - component: {fileID: 5155413617467792157}
   - component: {fileID: 4541982701231185965}
+  - component: {fileID: 7229733272650442910}
   m_Layer: 6
   m_Name: UI
   m_TagString: Untagged
@@ -6799,6 +6800,24 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   textPopupPrefab: {fileID: 2814847518941980968, guid: 300a56757dd5ab6488d58a6d0592ff3b,
     type: 3}
+--- !u!114 &7229733272650442910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3286553869093133804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f44325211b4450faaf1825f0ad530c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  scorePrefab: {fileID: 4137574415697711860, guid: 0dc8f9b26860ae24594b5af1345d08a2,
+    type: 3}
+  scoreboardPrefab: {fileID: 727231133566150857, guid: 00432f41d54e44c418db76b283c002ef,
+    type: 3}
+  canvas: {fileID: 5155413617467792157}
 --- !u!1 &3430329463520521720
 GameObject:
   m_ObjectHideFlags: 0
