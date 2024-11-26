@@ -12,13 +12,17 @@ public class PStyle : PNetworkBehaviour
     private float _currentRotation;
     private float _currentNoLookTime;
     
-    private int _currentNoLookStyleIndex;
-    private int _currentRotationStyleIndex;
+    private int _currentNoLookStyleIndex = -1;
+    private int _currentRotationStyleIndex = -1;
     
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PCamera cam;
     [SerializeField] private PMovement movement;
     [SerializeField] private PTextScreenPopup textScreenPopup;
+
+    [SerializeField] private float popupRotationRange = 30;
+    [SerializeField] private Bounds popupPositionBounds;
+    
     
 
     private PMovement.MoveSpeedModifiers _noLookSpeedModifier = new(1,1);
@@ -26,6 +30,14 @@ public class PStyle : PNetworkBehaviour
     
     private Coroutine _noLookCoroutine;
     private Coroutine _rotationCoroutine;
+
+    private CanvasGroup noLookPanel;
+    [SerializeField] private float noLookPanelLerpDuration = 0.5f;
+    [SerializeField] private AnimationCurve startNoLookPanelCurve;
+    [SerializeField] private AnimationCurve stopNoLookPanelCurve;
+    private Coroutine _noLookPanelCoroutine;
+    private const string NoLookPanelTag = "NoLookPanel";
+    
     
     public bool NoLook { get; private set; }
 
@@ -36,6 +48,8 @@ public class PStyle : PNetworkBehaviour
         
         movement.AddMoveSpeedModifier(_noLookSpeedModifier);
         movement.AddMoveSpeedModifier(_rotationSpeedModifier);
+        
+        noLookPanel = GameObject.FindGameObjectWithTag(NoLookPanelTag).GetComponent<CanvasGroup>();
     }
 
     protected override void DisableAnyOwner()
@@ -47,12 +61,34 @@ public class PStyle : PNetworkBehaviour
     private void StartNoLook()
     {
         NoLook = true;
+        
+        if (_noLookPanelCoroutine != null) StopCoroutine(_noLookPanelCoroutine);
+        _noLookPanelCoroutine = StartCoroutine(LerpNoLookPanel(true));
     }
     private void StopNoLook()
     {
         NoLook = false;
+        
+        if (_noLookPanelCoroutine != null) StopCoroutine(_noLookPanelCoroutine);
+        _noLookPanelCoroutine = StartCoroutine(LerpNoLookPanel(false));
     }
 
+    private IEnumerator LerpNoLookPanel(bool start)
+    {
+        float t = 0;
+        float startAlpha = noLookPanel.alpha;
+        float endAlpha = start ? 1 : 0;
+        
+        while (t < noLookPanelLerpDuration)
+        {
+            t += Time.deltaTime;
+            float adv = t / noLookPanelLerpDuration;
+            noLookPanel.alpha = Mathf.Lerp(startAlpha, endAlpha, start ? startNoLookPanelCurve.Evaluate(adv) : stopNoLookPanelCurve.Evaluate(adv));
+            yield return null;
+        }
+        
+        noLookPanel.alpha = endAlpha;
+    }
     protected override void UpdateAnyOwner()
     {
         UpdateNoLook();
@@ -103,7 +139,7 @@ public class PStyle : PNetworkBehaviour
             
             if (noLookStyleIndex != -1 && _currentNoLookStyleIndex != noLookStyleIndex)
             {
-                textScreenPopup.CreatePopup(noLookStyles[noLookStyleIndex].popupData,Vector3.zero);
+                textScreenPopup.CreatePopup(noLookStyles[noLookStyleIndex].popupData,Vector2.zero);
             }
             
             _currentNoLookStyleIndex = noLookStyleIndex;
@@ -117,6 +153,8 @@ public class PStyle : PNetworkBehaviour
                 if (_noLookCoroutine != null) StopCoroutine(_noLookCoroutine);
                 _noLookCoroutine = StartCoroutine(BoostSpeed(_noLookSpeedModifier, noLookStyles[_currentNoLookStyleIndex]));
             }
+            
+            _currentNoLookStyleIndex = -1;
         }
     }
     private void UpdateRotation()
@@ -143,7 +181,10 @@ public class PStyle : PNetworkBehaviour
 
             if (rotationStyleIndex != -1 && _currentRotationStyleIndex != rotationStyleIndex)
             {
-                textScreenPopup.CreatePopup(rotationStyles[rotationStyleIndex].popupData,Vector3.zero);
+                float rotation = UnityEngine.Random.Range(-popupRotationRange, popupRotationRange);
+                Vector3 position = new Vector3(UnityEngine.Random.Range(popupPositionBounds.min.x, popupPositionBounds.max.x),
+                    UnityEngine.Random.Range(popupPositionBounds.min.y, popupPositionBounds.max.y), 0);
+                textScreenPopup.CreatePopup(rotationStyles[rotationStyleIndex].popupData,position,rotation);
             }
             
             _currentRotationStyleIndex = rotationStyleIndex;

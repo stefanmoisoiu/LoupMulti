@@ -50,7 +50,7 @@ public class PMovement : NetworkBehaviour
     
     private float MaxSpeed =>
         grappling.Grappling ? maxGrappleSpeed :
-        (run.Running ? maxRunSpeed : maxWalkSpeed) * GetMaxSpeedFactor();
+        (run.Running ? maxRunSpeed - maxWalkSpeed : 0) + maxWalkSpeed * GetMaxSpeedFactor();
     private float Acceleration =>
         grappling.Grappling ? grappleAcceleration :
         (grounded.FullyGrounded() ? acceleration : acceleration * airAccelMultiplier) * GetAccelerationFactor();

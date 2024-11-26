@@ -3,12 +3,12 @@
 public class PCanvas : PNetworkBehaviour
 {
     [SerializeField] private GameObject canvas;
-    private static GameObject _canvas;
+    public static GameObject Canvas { get; private set; }
     
     protected override void StartAnyOwner()
     {
-        if (_canvas != null) return;
-        _canvas = Instantiate(canvas);
-        DontDestroyOnLoad(_canvas);
+        if (Canvas != null) return;
+        Canvas = Instantiate(canvas);
+        DontDestroyOnLoad(Canvas);
     }
 }

@@ -13,19 +13,18 @@ public class GameManager : NetworkBehaviour
     public static GameManager instance;
 
     public NetworkVariable<GameState> gameState = new();
-    public NetworkVariable<PlayerDataList> playerDataList = new (readPerm: NetworkVariableReadPermission.Everyone, writePerm: NetworkVariableWritePermission.Server);
     
-    public PlayerDataList editorPreviewPlayerDataList;
+    // CONTROLLED BY SERVER
+    private PlayerDataList _playerDataList;
+
+    public List<PlayerData> clientPlayerData = new();
+    public PlayerData myPlayerData;
     
     public const int RoundCount = 10;
     public const int TimeToUpgrade = 20;
     public const int startCountdown = 5;
 
     private Coroutine _gameCoroutine;
-    private void Update()
-    {
-        editorPreviewPlayerDataList = playerDataList.Value;
-    }
 
     private const string LobbyMap = "MultiLobby";
     private string currentMap;
@@ -35,14 +34,9 @@ public class GameManager : NetworkBehaviour
     
     public Action OnGameStart;
     [Rpc(SendTo.Everyone)] private void OnGameStartClientRpc() => OnGameStart?.Invoke();
-    
+
     private void Awake()
     {
-        if (instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
         instance = this;
     }
 
@@ -53,37 +47,104 @@ public class GameManager : NetworkBehaviour
         Destroy(gameObject);
     }
 
-    private void Start()
+    public override void OnNetworkSpawn()
     {
-        if (!IsServer) return;
-        
-        LogRpc("Server started");
-        
-        playerDataList.Value = new PlayerDataList();
-        playerDataList.Value = playerDataList.Value.SetupPlayerData();
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-        NetworkObject.DestroyWithScene = false;
-    }
+        base.OnNetworkSpawn();
 
+        if (IsServer)
+        {
+            _playerDataList = new ();
+            _playerDataList.SetupPlayerData();
+        
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+            NetworkObject.DestroyWithScene = false;
+        }
+        if (IsHost) RequestEntireClientPlayerData_ServerRpc(SenderClientID(NetworkManager.Singleton.LocalClientId));
+    }
+    
+    [Rpc(SendTo.Server)]
+    public void RequestMyClientPlayerData_ServerRpc(RpcParams @params)
+    {
+        ulong clientId = @params.Receive.SenderClientId;
+        PlayerData data = _playerDataList.GetPlayerData(clientId);
+        
+        LogRpc(clientId + " Requested player data");
+        
+        UpdateSpecificClientPlayerData_ClientRpc(data, SendToClientIDs(new []{clientId}));
+    }
+    
+    [Rpc(SendTo.Server)]
+    public void RequestEntireClientPlayerData_ServerRpc(RpcParams @params)
+    {
+        ulong clientId = @params.Receive.SenderClientId;
+        
+        LogRpc(clientId + " Requested all player data");
+        
+        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), SendToClientIDs(new []{clientId}));
+    }
+    
+    [Rpc(SendTo.SpecifiedInParams)]
+    public void UpdateEntireClientPlayerData_ClientRpc(PlayerData[] playerDatas, RpcParams @params)
+    {
+        clientPlayerData = new List<PlayerData>(playerDatas);
+        
+        myPlayerData = clientPlayerData.Find(data => data.ClientId == NetworkManager.Singleton.LocalClientId);
+    }
+    
+    [Rpc(SendTo.SpecifiedInParams)]
+    public void UpdateSpecificClientPlayerData_ClientRpc(PlayerData data, RpcParams @params)
+    {
+        if (data.ClientId == NetworkManager.Singleton.LocalClientId) myPlayerData = data;
+        
+        for (int i = 0; i < clientPlayerData.Count; i++)
+        {
+            if (clientPlayerData[i].ClientId != data.ClientId) continue;
+            
+            clientPlayerData[i] = data;
+            return;
+        }
+        
+        clientPlayerData.Add(data);
+    }
+    
+    [Rpc(SendTo.SpecifiedInParams)]
+    public void RemoveClientPlayerData_ClientRpc(ulong clientId, RpcParams @params)
+    {
+        for (int i = 0; i < clientPlayerData.Count; i++)
+        {
+            if (clientPlayerData[i].ClientId != clientId) continue;
+            
+            clientPlayerData.RemoveAt(i);
+            return;
+        }
+    }
+    
     private void OnClientConnected(ulong clientId)
     {
         LogRpc("Client connected: " + clientId);
+        
         PlayerData data = new PlayerData(NetworkManager.Singleton.ConnectedClients[clientId]);
+        _playerDataList.AddPlayerData(data);
+        
         if (gameState.Value != GameState.Lobby) Spectate(clientId);
         
-        playerDataList.Value = playerDataList.Value.AddPlayerData(data);
+        UpdateSpecificClientPlayerData_ClientRpc(data, SendToAllClients());
+        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), SendToClientIDs(new []{clientId}));
     }
     private void OnClientDisconnected(ulong clientId)
     {
+        if (NetworkManager.Singleton == null) return;
+        
         LogRpc("Client disconnected: " + clientId);
-        playerDataList.Value = playerDataList.Value.RemovePlayerData(clientId);
+        _playerDataList.RemovePlayerData(clientId);
+        
+        RemoveClientPlayerData_ClientRpc(clientId, SendToAllClients());
     }
 
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
     {
-        LogRpc("Starting game");
         gameState.Value = GameState.InGame;
         
         string map = GetRandomMap(maps);
@@ -93,6 +154,7 @@ public class GameManager : NetworkBehaviour
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += StartGameMapLoaded;
     }
 
+    // SERVER SIDE
     private void StartGameMapLoaded(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
     {
         LogRpc("Map loaded");
@@ -100,17 +162,17 @@ public class GameManager : NetworkBehaviour
         
         SetPlayerSpawnPositions();
 
-        foreach (PlayerData data in playerDataList.Value.playerDatas)
+        foreach (PlayerData data in _playerDataList.playerDatas)
         {
             data.ResetGameData();
             
-            if (data.playerState == PlayerData.PlayerState.Spectating)
+            if (data.CurrentPlayerState == PlayerData.PlayerState.Spectating)
             {
                 
             }
             else
             {
-                if (data.playerState == PlayerData.PlayerState.NotAssigned) data.SetState(PlayerData.PlayerState.Playing);
+                if (data.CurrentPlayerState == PlayerData.PlayerState.NotAssigned) data.SetState(PlayerData.PlayerState.Playing);
             }
         }
         
@@ -120,14 +182,14 @@ public class GameManager : NetworkBehaviour
 
     private void SetPlayerSpawnPositions()
     {
-        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(playerDataList.Value.playerDatas.Length);
-        for(int i = 0; i < playerDataList.Value.playerDatas.Length; i++)
+        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(_playerDataList.playerDatas.Count);
+        for(int i = 0; i < _playerDataList.playerDatas.Count; i++)
         {
+            PlayerData data = _playerDataList.playerDatas[i];
             ushort spawnIndex = spawnIndexes[i];
-            LogRpc("Setting spawn position of index " +  spawnIndex + " for " + playerDataList.Value.playerDatas[i].clientId);
             
             Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(spawnIndex);
-            SmoothSyncNetcode sync = NetworkManager.Singleton.ConnectedClients[playerDataList.Value.playerDatas[i].clientId].PlayerObject.GetComponent<SmoothSyncNetcode>();
+            SmoothSyncNetcode sync = NetworkManager.Singleton.ConnectedClients[data.ClientId].PlayerObject.GetComponent<SmoothSyncNetcode>();
             sync.teleportAnyObjectFromServer(spawnPoint.position, spawnPoint.rotation, Vector3.one);
         }
     }
@@ -138,9 +200,11 @@ public class GameManager : NetworkBehaviour
     {
         ulong clientId = @params.Receive.SenderClientId;
         
-        PlayerData data = playerDataList.Value.GetPlayerData(clientId);
+        PlayerData data = _playerDataList.GetPlayerData(clientId);
         data.SetState(PlayerData.PlayerState.Spectating);
-        playerDataList.Value = playerDataList.Value.UpdatePlayerData(data);
+        _playerDataList.UpdatePlayerData(data);
+        
+        UpdateSpecificClientPlayerData_ClientRpc(data, SendToAllClients());
         
         LogRpc(clientId + " is now spectating");
     }
@@ -152,9 +216,11 @@ public class GameManager : NetworkBehaviour
         
         ulong clientId = @params.Receive.SenderClientId;
         
-        PlayerData data = playerDataList.Value.GetPlayerData(clientId);
+        PlayerData data = _playerDataList.GetPlayerData(clientId);
         data.SetState(PlayerData.PlayerState.Playing);
-        playerDataList.Value.UpdatePlayerData(data);
+        _playerDataList.UpdatePlayerData(data);
+        
+        UpdateSpecificClientPlayerData_ClientRpc(data, SendToAllClients());
         
         LogRpc(clientId + " is now playing");
     }
@@ -175,8 +241,15 @@ public class GameManager : NetworkBehaviour
             SenderClientId = clientID
         }
     };
+    private RpcParams SendToAllClients() => new RpcParams
+    {
+        Send = new RpcSendParams
+        {
+            Target = RpcTarget.Everyone
+        }
+    };
     
-    [Rpc(SendTo.Everyone)] public void LogRpc(string message) => Debug.Log($"<color=#29b929>{message}");
+    [Rpc(SendTo.Everyone)] public void LogRpc(string message) => Debug.Log($"<color=#29b929><b>{message}");
 
     private string GetRandomMap(string[] mapPool) => maps[Random.Range(0, mapPool.Length)];
     

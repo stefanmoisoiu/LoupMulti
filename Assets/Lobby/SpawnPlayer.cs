@@ -24,7 +24,7 @@ public class SpawnPlayer : NetworkBehaviour
     }
     private void TrySpawn(ulong clientID)
     {
-        Debug.Log("Spawning player for client " + clientID);
+        Debug.Log("<color=#FF00FF>Spawning player for client " + clientID);
         GameObject player = Instantiate(playerObject, transform.position, Quaternion.identity);
         player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID);
     }

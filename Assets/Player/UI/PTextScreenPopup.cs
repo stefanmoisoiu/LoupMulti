@@ -6,33 +6,32 @@ using UnityEngine;
 public class PTextScreenPopup : PNetworkBehaviour
 {
     private RectTransform _canvas;
-    private const string CanvasTag = "Canvas";
+    
 
     [SerializeField] private GameObject textPopupPrefab;
     
     private List<Popup> _popups = new List<Popup>();
     protected override void StartAnyOwner()
     {
-        _canvas = GameObject.FindGameObjectWithTag(CanvasTag).GetComponent<RectTransform>();
+        _canvas = PCanvas.Canvas.GetComponent<RectTransform>();
     }
 
     public void CreatePopup(PopupData popupData, Vector2 position, float rotation = 0)
     {
-        Vector2 canvasCenter = new Vector2(_canvas.rect.width / 2, _canvas.rect.height / 2);
-        
-        Transform instance = Instantiate(textPopupPrefab, canvasCenter + position,Quaternion.Euler(0,0,rotation)).transform;
+        Transform instance = Instantiate(textPopupPrefab, _canvas).transform;
         TMP_Text text = instance.GetChild(0).GetComponent<TMP_Text>();
         
         text.text = popupData.text;
         text.color = popupData.color;
         text.fontSize = popupData.fontSize;
         
-        instance.SetParent(_canvas);
+        instance.localPosition = position;
+        instance.localRotation = Quaternion.Euler(0, 0, rotation);
         
         Popup popup = new Popup
         {
             data = popupData,
-            textObject = instance.GetComponent<RectTransform>(),
+            text = text,
             OnEnd = OnPopupEnd
         };
         _popups.Add(popup);
@@ -63,6 +62,7 @@ public class PTextScreenPopup : PNetworkBehaviour
         public AnimationCurve rotCurve = AnimationCurve.Constant(0,1,0);
         public AnimationCurve opacityCurve = AnimationCurve.Constant(0,1,1);
 
+
         public bool IsEnd(float currentLifetime)
         {
             return currentLifetime >= lifetime;
@@ -73,7 +73,7 @@ public class PTextScreenPopup : PNetworkBehaviour
     {
         public PopupData data;
         public float time = 0;
-        public RectTransform textObject;
+        public TMP_Text text;
         
         public Action<Popup> OnEnd;
         
@@ -85,10 +85,10 @@ public class PTextScreenPopup : PNetworkBehaviour
             float rot = data.rotCurve.Evaluate(currentLifetime / data.lifetime);
             float opacity = data.opacityCurve.Evaluate(currentLifetime / data.lifetime);
             
-            textObject.localPosition = new Vector3(x, y, 0);
-            textObject.localScale = new Vector3(size, size, size);
-            textObject.localRotation = Quaternion.Euler(0, 0, rot);
-            textObject.GetComponent<TMP_Text>().color = new Color(1, 1, 1, opacity);
+            text.rectTransform.localPosition = new Vector3(x, y, 0);
+            text.rectTransform.localScale = new Vector3(size, size, 1);
+            text.rectTransform.localRotation = Quaternion.Euler(0, 0, rot);
+            text.color = new Color(text.color.r,text.color.g,text.color.b, opacity);
         }
         
         public void Step(float deltaTime)
@@ -98,13 +98,13 @@ public class PTextScreenPopup : PNetworkBehaviour
             
             if (data.IsEnd(time))
             {
-                Destroy();
+                DestroyObj();
             }
         }
         
-        public void Destroy()
+        public void DestroyObj()
         {
-            GameObject.Destroy(textObject);
+            Destroy(text.transform.parent.gameObject);
             OnEnd?.Invoke(this);
         }
         

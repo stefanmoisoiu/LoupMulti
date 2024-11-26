@@ -5,9 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - StaminaBar
-  - NoLookStyleText
-  - RotationStyleText
-  - Canvas
+  - NoLookPanel
   layers:
   - Default
   - TransparentFX

@@ -1,101 +1,68 @@
 ﻿    using System;
+    using System.Collections.Generic;
     using Unity.Netcode;
     
     [Serializable] 
-    public struct PlayerDataList : INetworkSerializable
+    public class PlayerDataList
     {
-        public PlayerData[] playerDatas;
+        public List<PlayerData> playerDatas;
 
-        public PlayerDataList SetupPlayerData()
+        public void SetupPlayerData()
         {
-            playerDatas = new PlayerData[NetcodeManager.MaxPlayers];
-            GameManager.instance.LogRpc(playerDatas.Length + " player data slots created");
-            GameManager.instance.LogRpc("Setting up player data");
-            GameManager.instance.LogRpc(NetworkManager.Singleton.ConnectedClientsList.Count + " players connected");
+            playerDatas = new (NetcodeManager.MaxPlayers);
             foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
             {
                 PlayerData data = new PlayerData(client);
                 AddPlayerData(data);
-                GameManager.instance.LogRpc("Player " + data.clientId + " added to player data");
             }
-
-            return this;
         }
         
         public PlayerData GetPlayerData(ulong clientId)
         {
             foreach (PlayerData data in playerDatas)
             {
-                if (!data.assignedToPlayer) continue;
-                if (data.clientId != clientId) continue;
+                if (data.ClientId != clientId) continue;
                 return data;
             }
             return new();
         }
         
-        public PlayerDataList AddPlayerData(PlayerData data)
+        public void AddPlayerData(PlayerData data)
         {
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (playerDatas[i].assignedToPlayer) continue;
-            
-                playerDatas[i] = data;
-                return this;
-            }
-            return this;
+            playerDatas.Add(data);
         }
         
-        public PlayerDataList RemovePlayerData(PlayerData data)
+        public void UpdatePlayerData(PlayerData data)
         {
-            for (int i = 0; i < playerDatas.Length; i++)
+            for (int i = 0; i < playerDatas.Count; i++)
             {
-                if (playerDatas[i].clientId != data.clientId) continue;
-                
-                playerDatas[i].assignedToPlayer = false;
-            }
-            return this;
-        }
-        
-        public PlayerDataList UpdatePlayerData(PlayerData data)
-        {
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (!playerDatas[i].assignedToPlayer) continue;
-                if (playerDatas[i].clientId != data.clientId) continue;
+                if (playerDatas[i].ClientId != data.ClientId) continue;
                 
                 playerDatas[i] = data;
             }
-            return this;
         }
-        public PlayerDataList RemovePlayerData(ulong clientId)
+        public void RemovePlayerData(ulong clientId)
         {
-            for (int i = 0; i < playerDatas.Length; i++)
+            for (int i = 0; i < playerDatas.Count; i++)
             {
-                if (playerDatas[i].assignedToPlayer) continue;
-                if (playerDatas[i].clientId != clientId) continue;
+                if (playerDatas[i].ClientId != clientId) continue;
                 
-                playerDatas[i].assignedToPlayer = false;
+                playerDatas.RemoveAt(i);
             }
-            return this;
         }
-
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        public void RemovePlayerData(PlayerData data)
         {
-            // foreach (PlayerData playerData in playerDatas)
-            //     playerData.NetworkSerialize(serializer);
-            serializer.SerializeValue(ref playerDatas);
+            playerDatas.Remove(data);
         }
     }
     
     [Serializable]
-    public struct PlayerData :  INetworkSerializable
+    public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
     {
-        
-        public ulong clientId;
-        public PlayerState playerState;
-        public PlayerInGameData inGameData;
 
-        public bool assignedToPlayer;
+        public ulong ClientId;
+        public PlayerState CurrentPlayerState;
+        public PlayerInGameData InGameData;
         
         public enum PlayerState
         {
@@ -106,34 +73,37 @@
 
         public PlayerData(NetworkClient client = null)
         {
-            if (client != null)
-            {
-                clientId = client.ClientId;
-                assignedToPlayer = true;
-            }
-            else
-            {
-                assignedToPlayer = false;
-                clientId = ulong.MaxValue;
-            }
-            
-            playerState = PlayerState.NotAssigned;
-            inGameData = new PlayerInGameData();
+            ClientId = client?.ClientId ?? ulong.MaxValue;
+            CurrentPlayerState = PlayerState.NotAssigned;
+            InGameData = new PlayerInGameData();
         }
 
         public void ResetGameData()
         {
-            inGameData = new();
+            InGameData = new();
         }
         
-        public void SetState(PlayerState state) => playerState = state;
-
+        public void SetState(PlayerState state) => CurrentPlayerState = state;
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref clientId);
-            serializer.SerializeValue(ref playerState);
-            inGameData.NetworkSerialize(serializer);
-            serializer.SerializeValue(ref assignedToPlayer);
+            serializer.SerializeValue(ref ClientId);
+            serializer.SerializeValue(ref CurrentPlayerState);
+            serializer.SerializeValue(ref InGameData);
+        }
+
+        public bool Equals(PlayerData other)
+        {
+            return ClientId == other.ClientId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is PlayerData other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(ClientId, (int)CurrentPlayerState, InGameData);
         }
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
@@ -150,7 +151,7 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void ChangePlayerState()
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
-        PlayerData.PlayerState state = GameManager.instance.playerDataList.Value.GetPlayerData(clientID).playerState;
+        PlayerData.PlayerState state = GameManager.instance.myPlayerData.CurrentPlayerState;
         if (state == PlayerData.PlayerState.Spectating)
         {
             GameManager.instance.BecomePlayer(clientID);
