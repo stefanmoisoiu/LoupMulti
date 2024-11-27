@@ -22,7 +22,7 @@ public class PScoreboard : PNetworkBehaviour
         _spectatorText = _scoreboard.GetChild(1).GetComponent<TMP_Text>();
         _spectatorList = _scoreboard.GetChild(2).GetComponent<TMP_Text>();
         
-        GameManager.OnClientPlayerDataChanged += UpdateScoreboard;
+        GameData.OnClientPlayerDataChanged += UpdateScoreboard;
         
         InputManager.instance.OnScoreboard += ShowScoreboard;
         InputManager.instance.OnStopScoreboard += HideScoreboard;
@@ -32,7 +32,7 @@ public class PScoreboard : PNetworkBehaviour
 
     protected override void DisableOnlineOwner()
     {
-        GameManager.OnClientPlayerDataChanged -= UpdateScoreboard;
+        GameData.OnClientPlayerDataChanged -= UpdateScoreboard;
         
         InputManager.instance.OnScoreboard -= ShowScoreboard;
         InputManager.instance.OnStopScoreboard -= HideScoreboard;

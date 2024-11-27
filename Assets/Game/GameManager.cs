@@ -12,21 +12,16 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private string[] maps;
 
     public static GameManager instance;
+    public static GameData gameData;
+    
 
     public NetworkVariable<GameState> gameState = new();
-    
-    // CONTROLLED BY SERVER
-    private PlayerDataList _playerDataList;
 
-    public List<PlayerData> clientPlayerData = new();
-    public PlayerData myPlayerData;
     
-    public static Action<List<PlayerData>> OnClientPlayerDataChanged;
-    public static Action<PlayerData> OnMyPlayerDataChanged;
-    
-    public const int RoundCount = 10;
+    public const int RoundCount = 2;
     public const int TimeToUpgrade = 20;
     public const int StartCountdown = 5;
+    public const int GameLength = 60;
 
     private Coroutine _gameLoopCoroutine;
 
@@ -42,12 +37,14 @@ public class GameManager : NetworkBehaviour
     private void Awake()
     {
         instance = this;
+        gameData = GetComponent<GameData>();
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
         instance = null;
+        gameData = null;
         Destroy(gameObject);
     }
 
@@ -57,107 +54,23 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            LogRpc("Starting Game Manager");
-            
-            _playerDataList = new ();
-            _playerDataList.SetupPlayerData();
+            LogRpc("Starting Game Manager", LogType.ServerInfo);
         
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
             NetworkObject.DestroyWithScene = false;
         }
-        if (IsHost) RequestEntireClientPlayerData_ServerRpc(SenderClientID(NetworkManager.Singleton.LocalClientId));
     }
-    
-    [Rpc(SendTo.Server)]
-    public void RequestMyClientPlayerData_ServerRpc(RpcParams @params)
-    {
-        ulong clientId = @params.Receive.SenderClientId;
-        PlayerData data = _playerDataList.GetPlayerData(clientId);
-        
-        LogRpc(clientId + " Requested player data");
-        
-        UpdateSpecificClientPlayerData_ClientRpc(data, SendToClientIDs(new []{clientId}));
-    }
-    
-    [Rpc(SendTo.Server)]
-    public void RequestEntireClientPlayerData_ServerRpc(RpcParams @params)
-    {
-        ulong clientId = @params.Receive.SenderClientId;
-        
-        LogRpc(clientId + " Requested all player data");
-        
-        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), SendToClientIDs(new []{clientId}));
-    }
-    
-    [Rpc(SendTo.SpecifiedInParams)]
-    public void UpdateEntireClientPlayerData_ClientRpc(PlayerData[] playerDatas, RpcParams @params)
-    {
-        clientPlayerData = new List<PlayerData>(playerDatas);
-        
-        myPlayerData = clientPlayerData.Find(data => data.ClientId == NetworkManager.Singleton.LocalClientId);
-        
-        OnClientPlayerDataChanged?.Invoke(clientPlayerData);
-        OnMyPlayerDataChanged?.Invoke(myPlayerData);
-    }
-    
-    [Rpc(SendTo.SpecifiedInParams)]
-    public void UpdateSpecificClientPlayerData_ClientRpc(PlayerData data, RpcParams @params)
-    {
-        if (data.ClientId == NetworkManager.Singleton.LocalClientId) myPlayerData = data;
-        
-        for (int i = 0; i < clientPlayerData.Count; i++)
-        {
-            if (clientPlayerData[i].ClientId != data.ClientId) continue;
-            
-            clientPlayerData[i] = data;
-            
-            OnClientPlayerDataChanged?.Invoke(clientPlayerData);
-            OnMyPlayerDataChanged?.Invoke(myPlayerData);
-            
-            return;
-        }
-        
-        clientPlayerData.Add(data);
-        
-        OnClientPlayerDataChanged?.Invoke(clientPlayerData);
-    }
-    
-    [Rpc(SendTo.SpecifiedInParams)]
-    public void RemoveClientPlayerData_ClientRpc(ulong clientId, RpcParams @params)
-    {
-        for (int i = 0; i < clientPlayerData.Count; i++)
-        {
-            if (clientPlayerData[i].ClientId != clientId) continue;
-            
-            clientPlayerData.RemoveAt(i);
-            return;
-        }
-        OnClientPlayerDataChanged?.Invoke(clientPlayerData);
-    }
-    
     private void OnClientConnected(ulong clientId)
     {
-        LogRpc("Client connected: " + clientId);
         
-        PlayerData data = new PlayerData(NetworkManager.Singleton.ConnectedClients[clientId]);
-        _playerDataList.AddPlayerData(data);
-        
-        if (gameState.Value != GameState.Lobby) Spectate(clientId);
-        
-        UpdateSpecificClientPlayerData_ClientRpc(data, SendToAllClients());
-        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), SendToClientIDs(new []{clientId}));
     }
     private void OnClientDisconnected(ulong clientId)
     {
-        if (NetworkManager.Singleton == null) return;
-        if (NetworkManager.Singleton.ConnectedClients.Count == 0) return;
         
-        LogRpc("Client disconnected: " + clientId);
-        _playerDataList.RemovePlayerData(clientId);
-        
-        RemoveClientPlayerData_ClientRpc(clientId, SendToAllClients());
     }
+    
+    
 
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
@@ -167,19 +80,19 @@ public class GameManager : NetworkBehaviour
         string map = GetRandomMap(maps);
         NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
         currentMap = map;
-        LogRpc("Loading map " + map + "...");
+        LogRpc("Loading map " + map + "...", LogType.ServerInfo);
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += StartGameMapLoaded;
     }
 
     // SERVER SIDE
     private void StartGameMapLoaded(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
     {
-        LogRpc("Map loaded");
+        LogRpc("Map loaded", LogType.ServerInfo);
         OnMapLoadedClientRpc(currentMap);
         
         SetPlayerSpawnPositions();
 
-        foreach (PlayerData data in _playerDataList.playerDatas)
+        foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
         {
             data.ResetGameData();
             
@@ -197,15 +110,13 @@ public class GameManager : NetworkBehaviour
         if (_gameLoopCoroutine != null) StopCoroutine(_gameLoopCoroutine);
         _gameLoopCoroutine = StartCoroutine(GameLoop());
     }
-    
-    
 
     private void SetPlayerSpawnPositions()
     {
-        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(_playerDataList.playerDatas.Count);
-        for(int i = 0; i < _playerDataList.playerDatas.Count; i++)
+        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(gameData.ServerSidePlayerDataList.playerDatas.Count);
+        for(int i = 0; i < gameData.ServerSidePlayerDataList.playerDatas.Count; i++)
         {
-            PlayerData data = _playerDataList.playerDatas[i];
+            PlayerData data = gameData.ServerSidePlayerDataList.playerDatas[i];
             ushort spawnIndex = spawnIndexes[i];
             
             Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(spawnIndex);
@@ -221,84 +132,72 @@ public class GameManager : NetworkBehaviour
         
         while (round <= RoundCount)
         {
+            LogRpc("Round " + round, LogType.InGameInfo);
             yield return ChooseUpgrade();
             yield return PlayRound();
             round++;
         }
+
+        yield return EndGame();
     }
     
     private IEnumerator ChooseUpgrade()
     {
+        LogRpc($"Choosing upgrade for {TimeToUpgrade} seconds...", LogType.InGameInfo);
         gameState.Value = GameState.ChoosingUpgrade;
         yield return new WaitForSeconds(TimeToUpgrade);
     }
     private IEnumerator PlayRound()
     {
+        LogRpc($"Countdown of {StartCountdown} seconds", LogType.InGameInfo);
         gameState.Value = GameState.InGame;
         yield return new WaitForSeconds(StartCountdown);
+        
+        LogRpc($"Playing round for {GameLength} seconds", LogType.InGameInfo);
+        yield return new WaitForSeconds(GameLength);
     }
     private IEnumerator EndGame()
     {
+        LogRpc("Game ended", LogType.InGameInfo);
         gameState.Value = GameState.Lobby;
         yield break;
     }
     
-    public void Spectate(ulong clientId) => SpectateServerRpc(SenderClientID(clientId));
+    
+    public void Spectate(ulong clientId) => SpectateServerRpc(RpcParamsExt.Instance.SenderClientID(clientId));
     [Rpc(SendTo.Server)]
     private void SpectateServerRpc(RpcParams @params)
     {
-        ulong clientId = @params.Receive.SenderClientId;
-        
-        PlayerData data = _playerDataList.GetPlayerData(clientId);
-        data.SetState(PlayerData.PlayerState.Spectating);
-        _playerDataList.UpdatePlayerData(data);
-        
-        UpdateSpecificClientPlayerData_ClientRpc(data, SendToAllClients());
-        
-        LogRpc(clientId + " is now spectating");
+        gameData.SetPlayerState(PlayerData.PlayerState.Spectating, @params.Receive.SenderClientId);
     }
-    public void BecomePlayer(ulong clientId) => BecomePlayerServerRpc(SenderClientID(clientId));
+    public void BecomePlayer(ulong clientId) => BecomePlayerServerRpc(RpcParamsExt.Instance.SenderClientID(clientId));
     [Rpc(SendTo.Server)]
     private void BecomePlayerServerRpc(RpcParams @params)
     {
         if (!CanBecomePlayer()) return;
         
-        ulong clientId = @params.Receive.SenderClientId;
-        
-        PlayerData data = _playerDataList.GetPlayerData(clientId);
-        data.SetState(PlayerData.PlayerState.Playing);
-        _playerDataList.UpdatePlayerData(data);
-        
-        UpdateSpecificClientPlayerData_ClientRpc(data, SendToAllClients());
-        
-        LogRpc(clientId + " is now playing");
+        gameData.SetPlayerState(PlayerData.PlayerState.Playing, @params.Receive.SenderClientId);
+    }
+    private bool CanBecomePlayer() => GameManager.instance.gameState.Value == GameManager.GameState.Lobby;
+    
+
+    
+    public enum LogType
+    {
+        ServerInfo,
+        InGameInfo,
+        Error,
     }
 
-    private bool CanBecomePlayer() => gameState.Value == GameState.Lobby;
-
-    private RpcParams SendToClientIDs(ulong[] clientIDs) => new RpcParams
+    [Rpc(SendTo.Everyone)]
+    public void LogRpc(string message, LogType type)
     {
-        Send = new RpcSendParams
-        {
-            Target = RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
-        }
-    };
-    public RpcParams SenderClientID(ulong clientID) => new RpcParams
-    {
-        Receive = new()
-        {
-            SenderClientId = clientID
-        }
-    };
-    private RpcParams SendToAllClients() => new RpcParams
-    {
-        Send = new RpcSendParams
-        {
-            Target = RpcTarget.Everyone
-        }
-    };
-    
-    [Rpc(SendTo.Everyone)] public void LogRpc(string message) => Debug.Log($"<color=#29b929><b>{message}");
+        string color = "<color=#29b929>";
+        if (type == LogType.ServerInfo) color = "<color=#80eeee>";
+        else if (type == LogType.Error) color = "<color=#ff0000>";
+        
+        Debug.Log($"{color}<b>{message}");
+    }
 
     private string GetRandomMap(string[] mapPool) => maps[Random.Range(0, mapPool.Length)];
     
