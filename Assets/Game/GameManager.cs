@@ -89,8 +89,6 @@ public class GameManager : NetworkBehaviour
     {
         LogRpc("Map loaded", LogType.ServerInfo);
         OnMapLoadedClientRpc(currentMap);
-        
-        SetPlayerSpawnPositions();
 
         foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
         {
@@ -133,6 +131,7 @@ public class GameManager : NetworkBehaviour
         while (round <= RoundCount)
         {
             LogRpc("Round " + round, LogType.InGameInfo);
+            SetPlayerSpawnPositions();
             yield return ChooseUpgrade();
             yield return PlayRound();
             round++;
