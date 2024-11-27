@@ -1,5 +1,6 @@
 ﻿    using System;
     using System.Collections.Generic;
+    using Unity.Collections;
     using Unity.Netcode;
     
     [Serializable] 
@@ -88,7 +89,7 @@
         {
             serializer.SerializeValue(ref ClientId);
             serializer.SerializeValue(ref CurrentPlayerState);
-            serializer.SerializeValue(ref InGameData);
+            InGameData.NetworkSerialize(serializer);
         }
 
         public bool Equals(PlayerData other)
@@ -111,6 +112,8 @@
     public struct PlayerInGameData : INetworkSerializable
     {
         public int score;
+        public ushort[] upgradesIndexArray;
+        private ushort upgradesLength;
         
         public void AddScore(int amount) => score += amount;
         public void RemoveScore(int amount) => score -= amount;
@@ -130,9 +133,33 @@
         {
             return score;
         }
+        
+        public PlayerInGameData(int score = 0)
+        {
+            this.score = score;
+            upgradesIndexArray = new ushort[UpgradesManager.MaxUpgrades];
+            upgradesLength = UpgradesManager.MaxUpgrades;
+        }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref score);
+            
+            if (serializer.IsReader)
+            {
+                serializer.SerializeValue(ref upgradesLength);
+                upgradesIndexArray = new ushort[upgradesLength];
+                
+                for (int i = 0; i < upgradesLength; i++)
+                    serializer.SerializeValue(ref upgradesIndexArray[i]);
+            }
+            else
+            {
+                upgradesLength = (ushort)upgradesIndexArray.Length;
+                serializer.SerializeValue(ref upgradesLength);
+                
+                for (int i = 0; i < upgradesIndexArray.Length; i++)
+                    serializer.SerializeValue(ref upgradesIndexArray[i]);
+            }
         }
     }

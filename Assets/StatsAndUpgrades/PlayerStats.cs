@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerStats
 {
-    private const ushort MaxUpgrades = 20;
+    public const ushort MaxUpgrades = 20;
     private const ushort NullUpgradeIndex = 999;
     public ushort[] UpgradesIndexArray { get; private set; } = InitializeUpgradesIndexArray();
     private List<ScriptableUpgrade> _upgrades = new(); // LOCAL VARIABLE NOT NETWORKED
@@ -17,24 +17,6 @@ public class PlayerStats
         
         return upgradesIndexArray;
     }
-
-    // inutile
-    
-    // public ushort[] GetUpgradeIndexList()
-    // {
-    //     ushort arraySize = 0;
-    //     for (ushort i = 0; i < MaxUpgrades; i++)
-    //     {
-    //         if (UpgradesIndexArray[i] == NullUpgradeIndex) break;
-    //         arraySize++;
-    //     }
-    //     
-    //     ushort[] upgradeList = new ushort[arraySize];
-    //     for (ushort i = 0; i < arraySize; i++)
-    //         upgradeList[i] = UpgradesIndexArray[i];
-    //     
-    //     return upgradeList;
-    // }
     
     public void SetUpgrades(ushort[] upgradesIndexArray)
     {
