@@ -12,7 +12,8 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private string[] maps;
 
     public static GameManager instance;
-    public static GameData gameData;
+    public GameData gameData;
+    public UpgradesManager upgradesManager;
     
 
     public NetworkVariable<GameState> gameState = new();
@@ -38,6 +39,7 @@ public class GameManager : NetworkBehaviour
     {
         instance = this;
         gameData = GetComponent<GameData>();
+        upgradesManager = GetComponent<UpgradesManager>();
     }
 
     public override void OnNetworkDespawn()
@@ -45,6 +47,7 @@ public class GameManager : NetworkBehaviour
         base.OnNetworkDespawn();
         instance = null;
         gameData = null;
+        upgradesManager = null;
         Destroy(gameObject);
     }
 

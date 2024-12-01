@@ -1,8 +1,10 @@
 ﻿    using System;
     using System.Collections.Generic;
+    using Sirenix.OdinInspector;
     using Unity.Collections;
     using Unity.Netcode;
-    
+    using UnityEngine;
+
     [Serializable] 
     public class PlayerDataList
     {
@@ -113,11 +115,23 @@
     {
         public int score;
         public ushort[] upgradesIndexArray;
-        private ushort upgradesLength;
+        public ScriptableUpgrade[] upgrades { get; private set; }
         
         public void AddScore(int amount) => score += amount;
         public void RemoveScore(int amount) => score -= amount;
         public void ResetScore() => score = 0;
+        
+        private string UpgradesText()
+        {
+            string text = "";
+            foreach (ScriptableUpgrade upgrade in upgrades)
+            {
+                if (upgrade == null) continue;
+                text += upgrade.UpgradeName + "\n";
+            }
+            return text;
+        }
+        [ShowInInspector] private string _upgradesText => UpgradesText();
 
         public bool Equals(PlayerInGameData other)
         {
@@ -138,28 +152,41 @@
         {
             this.score = score;
             upgradesIndexArray = new ushort[UpgradesManager.MaxUpgrades];
-            upgradesLength = UpgradesManager.MaxUpgrades;
+            upgrades = new ScriptableUpgrade[UpgradesManager.MaxUpgrades];
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref score);
             
-            if (serializer.IsReader)
+            upgradesIndexArray ??= new ushort[UpgradesManager.MaxUpgrades];
+            serializer.SerializeValue(ref upgradesIndexArray);
+        }
+        
+        public void AddUpgrade(ushort upgradeIndex)
+        {
+            for (int i = 0; i < upgradesIndexArray.Length; i++)
             {
-                serializer.SerializeValue(ref upgradesLength);
-                upgradesIndexArray = new ushort[upgradesLength];
+                if (upgradesIndexArray[i] != 0) continue;
                 
-                for (int i = 0; i < upgradesLength; i++)
-                    serializer.SerializeValue(ref upgradesIndexArray[i]);
+                upgradesIndexArray[i] = (ushort)(upgradeIndex + 1);
+                UpdateUpgradesArray();
+                return;
             }
-            else
+        }
+        private void UpdateUpgradesArray()
+        {
+            upgrades ??= new ScriptableUpgrade[UpgradesManager.MaxUpgrades];
+            
+            for (int i = 0; i < upgradesIndexArray.Length; i++)
             {
-                upgradesLength = (ushort)upgradesIndexArray.Length;
-                serializer.SerializeValue(ref upgradesLength);
-                
-                for (int i = 0; i < upgradesIndexArray.Length; i++)
-                    serializer.SerializeValue(ref upgradesIndexArray[i]);
+                if (upgradesIndexArray[i] == 0)
+                {
+                    upgrades[i] = null;
+                    continue;
+                }
+                ScriptableUpgrade upgrade = GameManager.instance.upgradesManager.GetUpgrade((ushort)(upgradesIndexArray[i] - 1));
+                upgrades[i] = upgrade;
             }
         }
     }

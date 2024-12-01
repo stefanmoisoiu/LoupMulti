@@ -29,31 +29,67 @@ public class PMovement : NetworkBehaviour
     }
     private float GetMaxSpeedFactor()
     {
-        float addedMaxSpeed = 1;
+        float maxSpeedFactor = 1;
         foreach (var modifier in moveSpeedModifiers)
         {
-            addedMaxSpeed *= modifier.maxSpeedFactor;
+            maxSpeedFactor *= modifier.maxSpeedFactor;
+        }
+        
+        
+
+        return maxSpeedFactor;
+    }
+    private float GetAccelerationFactor()
+    {
+        float accelerationFactor = 1;
+        foreach (var modifier in moveSpeedModifiers)
+        {
+            accelerationFactor *= modifier.accelerationFactor;
+        }
+
+        return accelerationFactor;
+    }
+    private float GetAddedMaxSpeed()
+    {
+        float addedMaxSpeed = 0;
+        foreach (var modifier in moveSpeedModifiers)
+        {
+            addedMaxSpeed += modifier.addedMaxSpeed;
         }
 
         return addedMaxSpeed;
     }
-    private float GetAccelerationFactor()
+    private float GetAddedAcceleration()
     {
-        float addedAcceleration = 1;
+        float addedAcceleration = 0;
         foreach (var modifier in moveSpeedModifiers)
         {
-            addedAcceleration *= modifier.accelerationFactor;
+            addedAcceleration += modifier.addedAcceleration;
         }
 
         return addedAcceleration;
     }
     
-    private float MaxSpeed =>
-        grappling.Grappling ? maxGrappleSpeed :
-        (run.Running ? maxRunSpeed - maxWalkSpeed : 0) + maxWalkSpeed * GetMaxSpeedFactor();
-    private float Acceleration =>
-        grappling.Grappling ? grappleAcceleration :
-        (grounded.FullyGrounded() ? acceleration : acceleration * airAccelMultiplier) * GetAccelerationFactor();
+    private float GetMaxSpeed()
+    {
+        if (grappling.Grappling) return maxGrappleSpeed;
+        float maxSpeed = maxWalkSpeed;
+        maxSpeed *= GetMaxSpeedFactor();
+        maxSpeed += GetAddedMaxSpeed();
+        if (run.Running) maxSpeed += maxRunSpeed - maxWalkSpeed;
+        return maxSpeed;
+    }
+
+    private float GetAcceleration()
+    {
+        if (grappling.Grappling) return grappleAcceleration;
+        float a = acceleration;
+        a *= GetAccelerationFactor();
+        a += GetAddedAcceleration();
+        if (!grounded.FullyGrounded()) a *= airAccelMultiplier;
+        return a;
+    }
+
     private void FixedUpdate()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
@@ -64,7 +100,7 @@ public class PMovement : NetworkBehaviour
     {
         Vector3 dir = orientation.forward * InputManager.instance.MoveInput.y + orientation.right * InputManager.instance.MoveInput.x;
         
-        Vector3 force = dir * Acceleration;
+        Vector3 force = dir * GetAcceleration();
 
         Vector3 vel = rb.linearVelocity;
         vel = grounded.WorldToLocalUp * vel;
@@ -72,11 +108,12 @@ public class PMovement : NetworkBehaviour
         float y = vel.y;
         vel.y = 0;
         
-        if ((vel + force * Time.fixedDeltaTime).magnitude > MaxSpeed && Vector3.Dot(vel, force) > 0)
+        float maxSpeed = GetMaxSpeed();
+        if ((vel + force * Time.fixedDeltaTime).magnitude > maxSpeed && Vector3.Dot(vel, force) > 0)
         {
-            if (vel.magnitude < MaxSpeed)
+            if (vel.magnitude < maxSpeed)
             {
-                force = ((vel + force * Time.fixedDeltaTime).normalized * MaxSpeed - vel) / Time.fixedDeltaTime;
+                force = ((vel + force * Time.fixedDeltaTime).normalized * maxSpeed - vel) / Time.fixedDeltaTime;
             }
             else
             {
@@ -102,11 +139,17 @@ public class PMovement : NetworkBehaviour
     {
         public float maxSpeedFactor;
         public float accelerationFactor;
+
+        public float addedMaxSpeed;
+        public float addedAcceleration;
         
-        public MoveSpeedModifiers(float maxSpeedFactor, float accelerationFactor)
+        public MoveSpeedModifiers(float maxSpeedFactor = 1, float accelerationFactor = 1, float addedMaxSpeed = 0, float addedAcceleration = 0)
         {
             this.maxSpeedFactor = maxSpeedFactor;
             this.accelerationFactor = accelerationFactor;
+            
+            this.addedMaxSpeed = addedMaxSpeed;
+            this.addedAcceleration = addedAcceleration;
         }
     }
 }

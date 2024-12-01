@@ -1,12 +1,23 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Upgrade", menuName = "Upgrade")]
-public class ScriptableUpgrade : ScriptableObject
+public abstract class ScriptableUpgrade : ScriptableObject
 {
-    public StatData BaseStatData;
+    [TitleGroup("Info")][SerializeField] private string upgradeName;
+    [TitleGroup("Info")][SerializeField][TextArea] private string upgradeDescription;
+    public string UpgradeName => upgradeName;
+    public string UpgradeDescription => upgradeDescription;
+
+    public abstract float GetAccelerationFactor();
+    public abstract float GetMaxSpeedFactor();
+    public abstract float GetAddedMaxSpeed();
+    public abstract float GetAddedAcceleration();
     
-    public virtual StatData GetStatData()
-    {
-        return BaseStatData;
-    }
+    
+    public abstract float GetJumpHeightFactor();
+    public abstract float GetGravityFactor();
+    
+    
+    public abstract float GetStaminaRecoveryFactor();
+    public abstract int GetAddedStaminaParts();
 }

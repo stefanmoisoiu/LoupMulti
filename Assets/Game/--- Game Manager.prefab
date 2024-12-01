@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4033694297705636425}
   - component: {fileID: 5434820202124141069}
   - component: {fileID: 1153693554774647391}
+  - component: {fileID: -2571867455000331064}
   m_Layer: 0
   m_Name: --- Game Manager
   m_TagString: Untagged
@@ -74,6 +75,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   maps:
   - Map 1
+  gameData: {fileID: 0}
+  upgradesManager: {fileID: 0}
   gameState:
     m_InternalValue: 0
 --- !u!114 &1153693554774647391
@@ -95,3 +98,19 @@ MonoBehaviour:
     CurrentPlayerState: 0
     InGameData:
       score: 0
+      upgradesIndexArray: 
+--- !u!114 &-2571867455000331064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3379183740241247975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35d506ca7a704648a273b5e32dcc3823, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  upgrades:
+  - {fileID: 0}
