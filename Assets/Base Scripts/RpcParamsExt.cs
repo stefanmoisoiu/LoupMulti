@@ -1,7 +1,8 @@
 ﻿using System;
 using Unity.Netcode;
+using UnityEngine;
 
-public class RpcParamsExt : NetworkBehaviour
+public class RpcParamsExt : MonoBehaviour
 {
     public static RpcParamsExt Instance { get; private set; }
 
@@ -10,11 +11,11 @@ public class RpcParamsExt : NetworkBehaviour
         Instance = this;
     }
 
-    public RpcParams SendToClientIDs(ulong[] clientIDs) => new RpcParams
+    public RpcParams SendToClientIDs(ulong[] clientIDs, NetworkManager manager) => new RpcParams
     {
         Send = new RpcSendParams
         {
-            Target = RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
+            Target = manager.RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
         }
     };
     public RpcParams SenderClientID(ulong clientID) => new RpcParams
@@ -24,11 +25,11 @@ public class RpcParamsExt : NetworkBehaviour
             SenderClientId = clientID
         }
     };
-    public RpcParams SendToAllClients() => new RpcParams
+    public RpcParams SendToAllClients(NetworkManager manager) => new RpcParams
     {
         Send = new RpcSendParams
         {
-            Target = RpcTarget.Everyone
+            Target = manager.RpcTarget.Everyone
         }
     };
 }

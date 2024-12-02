@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5434820202124141069}
   - component: {fileID: 1153693554774647391}
   - component: {fileID: -2571867455000331064}
+  - component: {fileID: 4823457383044820859}
   m_Layer: 0
   m_Name: --- Game Manager
   m_TagString: Untagged
@@ -73,12 +74,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  maps:
-  - Map 1
-  gameData: {fileID: 0}
-  upgradesManager: {fileID: 0}
   gameState:
     m_InternalValue: 0
+  roundCount: 2
+  timeToUpgrade: 20
+  startCountdown: 5
+  gameLength: 60
 --- !u!114 &1153693554774647391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,3 +115,18 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   upgrades:
   - {fileID: 11400000, guid: 56419e3ce3c4e864db5d07250b93bb69, type: 2}
+--- !u!114 &4823457383044820859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3379183740241247975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fb027c29d214957a156136adb10654e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  gameMaps:
+  - Map 1

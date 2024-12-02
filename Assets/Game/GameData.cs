@@ -21,8 +21,6 @@ public class GameData : NetworkBehaviour
 
         if (IsServer)
         {
-            LogRpc("Starting Game Manager");
-            
             _playerDataList = new ();
             _playerDataList.SetupPlayerData();
         
@@ -42,18 +40,17 @@ public class GameData : NetworkBehaviour
         PlayerData data = new PlayerData(NetworkManager.Singleton.ConnectedClients[clientId]);
         _playerDataList.AddPlayerData(data);
         
-        UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToAllClients());
-        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToClientIDs(new []{clientId}));
+        UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
+        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToClientIDs(new []{clientId}, NetworkManager.Singleton));
     }
     private void OnClientDisconnected(ulong clientId)
     {
         if (NetworkManager.Singleton == null) return;
         if (NetworkManager.Singleton.ConnectedClients.Count == 0) return;
         
-        LogRpc("Client disconnected: " + clientId);
         _playerDataList.RemovePlayerData(clientId);
         
-        RemoveClientPlayerData_ClientRpc(clientId, RpcParamsExt.Instance.SendToAllClients());
+        RemoveClientPlayerData_ClientRpc(clientId, RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
     }
         
     
@@ -109,9 +106,9 @@ public class GameData : NetworkBehaviour
         ulong clientId = @params.Receive.SenderClientId;
         PlayerData data = _playerDataList.GetPlayerData(clientId);
         
-        LogRpc(clientId + " Requested player data");
+        GameManager.Instance.LogRpc(clientId + " Requested player data", GameManager.LogType.GameDataInfo);
         
-        UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToClientIDs(new []{clientId}));
+        UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToClientIDs(new []{clientId}, NetworkManager.Singleton));
     }
     
     [Rpc(SendTo.Server)]
@@ -119,9 +116,9 @@ public class GameData : NetworkBehaviour
     {
         ulong clientId = @params.Receive.SenderClientId;
         
-        LogRpc(clientId + " Requested all player data");
+        GameManager.Instance.LogRpc(clientId + " Requested all player data", GameManager.LogType.GameDataInfo);
         
-        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToClientIDs(new []{clientId}));
+        UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToClientIDs(new []{clientId}, NetworkManager.Singleton));
     }
     
     public void SetPlayerState(PlayerData.PlayerState state, ulong clientId)
@@ -130,12 +127,8 @@ public class GameData : NetworkBehaviour
         data.SetState(state);
         _playerDataList.UpdatePlayerData(data);
         
-        UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToAllClients());
+        UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
         
-        LogRpc(clientId + " is now " + state);
+        GameManager.Instance.LogRpc(clientId + " is now " + state, GameManager.LogType.GameDataInfo);
     }
-
-    
-    [Rpc(SendTo.Everyone)] public void LogRpc(string message) => Debug.Log($"<color=#80eeee><b>{message}");
-
 }

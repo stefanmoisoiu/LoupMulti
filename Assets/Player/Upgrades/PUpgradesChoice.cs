@@ -12,11 +12,28 @@ public class PUpgradesChoice : PNetworkBehaviour
     protected override void StartOnlineOwner()
     {
         SetupUpgradesList();
+        GameManager.Instance.upgradesManager.OnUpgradeChoices += DisplayUpgrades;
+        GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
+    }
+
+    private void OnGameStateChanged(GameManager.GameState state, GameManager.GameStateCallbackType type)
+    {
+        if (state != GameManager.GameState.ChoosingUpgrade) return;
+        if (type != GameManager.GameStateCallbackType.StateEnded) return;
+        HideUpgrades();
     }
 
     private void SetupUpgradesList()
     {
         _upgradesList = Instantiate(upgradesListLayout, canvas.transform);
+    }
+    
+    public void DisplayUpgrades(ushort[] upgradesIndex)
+    {
+        ScriptableUpgrade[] upgrades = new ScriptableUpgrade[upgradesIndex.Length];
+        for (int i = 0; i < upgradesIndex.Length; i++)
+            upgrades[i] = GameManager.Instance.upgradesManager.GetUpgrade(upgradesIndex[i]);
+        DisplayUpgrades(upgrades);
     }
     
     public void DisplayUpgrades(ScriptableUpgrade[] upgrades)
@@ -40,6 +57,18 @@ public class PUpgradesChoice : PNetworkBehaviour
         
         for (int i = 0; i < upgrades.Length; i++)
             SetUpgradeCardInfo(_upgradeCards[i], upgrades[i]);
+        
+        ShowUpgrades();
+    }
+    public void ShowUpgrades()
+    {
+        foreach (UpgradeCard upgradeCard in _upgradeCards)
+            upgradeCard.gameObject.SetActive(true);
+    }
+    public void HideUpgrades()
+    {
+        foreach (UpgradeCard upgradeCard in _upgradeCards)
+            upgradeCard.gameObject.SetActive(false);
     }
     
     private void SetUpgradeCardInfo(UpgradeCard upgradeCard, ScriptableUpgrade upgrade)

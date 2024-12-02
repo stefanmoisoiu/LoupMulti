@@ -107,7 +107,7 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void StartGame()
     {
         Debug.Log("Start Game button pressed");
-        GameManager.instance.StartGameServerRpc();
+        GameManager.Instance.StartGameServerRpc();
         startButtonGroup.interactable = false;
     }
     private void PlayerCountChanged(ulong playerID) => UpdateLobbyDashboardInfo();
@@ -151,16 +151,16 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void ChangePlayerState()
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
-        PlayerData.PlayerState state = GameManager.instance.gameData.myPlayerData.CurrentPlayerState;
+        PlayerData.PlayerState state = GameManager.Instance.gameData.myPlayerData.CurrentPlayerState;
         if (state == PlayerData.PlayerState.SpectatingGame)
         {
-            GameManager.instance.BecomePlayer(clientID);
+            GameManager.Instance.BecomePlayer(clientID);
             changeStateText.text = "Spectate";
             
         }
         else
         {
-            GameManager.instance.Spectate(clientID);
+            GameManager.Instance.Spectate(clientID);
             changeStateText.text = "Be Player";
         }
     }

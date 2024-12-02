@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using Smooth;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,45 +10,54 @@ using Random = UnityEngine.Random;
 
 public class GameManager : NetworkBehaviour
 {
-    [SerializeField] private string[] maps;
 
-    public static GameManager instance;
-    public GameData gameData;
-    public UpgradesManager upgradesManager;
+
+    public static GameManager Instance;
+    public GameData gameData { get; private set; }
+    public UpgradesManager upgradesManager { get; private set; }
+    public MapManager mapManager { get; private set; }
     
 
     public NetworkVariable<GameState> gameState = new();
 
+    public enum GameStateCallbackType
+    {
+        StateStarted,
+        StateEnded,
+    }
+    public Action<GameState, GameStateCallbackType> OnGameStateChanged;
+    [Rpc(SendTo.Everyone)] private void OnGameStateChangedClientRpc(GameState state, GameStateCallbackType type) => OnGameStateChanged?.Invoke(state, type);
+
+    [BoxGroup("Game Info")][Range(0,10)][SerializeField] private int roundCount = 2;
+    [BoxGroup("Game Info")][SerializeField] private int timeToUpgrade = 20;
+    [BoxGroup("Game Info")][SerializeField] private int startCountdown = 5;
+    [BoxGroup("Game Info")][SerializeField] private int gameLength = 60;
     
-    public const int RoundCount = 2;
-    public const int TimeToUpgrade = 20;
-    public const int StartCountdown = 5;
-    public const int GameLength = 60;
+    public int RoundCount => roundCount;
+    public int TimeToUpgrade => timeToUpgrade;
+    public int StartCountdown => startCountdown;
+    public int GameLength => gameLength;
 
     private Coroutine _gameLoopCoroutine;
-
-    private const string LobbyMap = "MultiLobby";
-    private string currentMap;
-    
-    public Action<string> OnMapLoaded;
-    [Rpc(SendTo.Everyone)] private void OnMapLoadedClientRpc(string map) => OnMapLoaded?.Invoke(map);
     
     public Action OnGameStart;
     [Rpc(SendTo.Everyone)] private void OnGameStartClientRpc() => OnGameStart?.Invoke();
 
     private void Awake()
     {
-        instance = this;
+        Instance = this;
         gameData = GetComponent<GameData>();
         upgradesManager = GetComponent<UpgradesManager>();
+        mapManager = GetComponent<MapManager>();
     }
 
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
-        instance = null;
+        Instance = null;
         gameData = null;
         upgradesManager = null;
+        mapManager = null;
         Destroy(gameObject);
     }
 
@@ -78,90 +88,80 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
     {
-        gameState.Value = GameState.InGame;
-        
-        string map = GetRandomMap(maps);
-        NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
-        currentMap = map;
-        LogRpc("Loading map " + map + "...", LogType.ServerInfo);
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += StartGameMapLoaded;
+        LogRpc("Starting game", LogType.ServerInfo);
+        mapManager.LoadRandomGameMap();
+        mapManager.OnMapLoaded += StartGameMapLoaded;
     }
 
     // SERVER SIDE
-    private void StartGameMapLoaded(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
+    private void StartGameMapLoaded(string mapName)
     {
-        LogRpc("Map loaded", LogType.ServerInfo);
-        OnMapLoadedClientRpc(currentMap);
+        mapManager.OnMapLoaded -= StartGameMapLoaded;
 
         foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
-        {
-            data.ResetGameData();
-            
-            if (data.CurrentPlayerState == PlayerData.PlayerState.SpectatingGame)
-            {
-                
-            }
-            else
-            {
-                if (data.CurrentPlayerState == PlayerData.PlayerState.NotAssigned) data.SetState(PlayerData.PlayerState.Playing);
-            }
-        }
+            if (data.CurrentPlayerState == PlayerData.PlayerState.NotAssigned)
+                data.SetState(PlayerData.PlayerState.Playing);
+        
+        gameState.Value = GameState.InGame;
         OnGameStartClientRpc();
         
         if (_gameLoopCoroutine != null) StopCoroutine(_gameLoopCoroutine);
         _gameLoopCoroutine = StartCoroutine(GameLoop());
     }
 
-    private void SetPlayerSpawnPositions()
-    {
-        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(gameData.ServerSidePlayerDataList.playerDatas.Count);
-        for(int i = 0; i < gameData.ServerSidePlayerDataList.playerDatas.Count; i++)
-        {
-            PlayerData data = gameData.ServerSidePlayerDataList.playerDatas[i];
-            ushort spawnIndex = spawnIndexes[i];
-            
-            Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(spawnIndex);
-            SmoothSyncNetcode sync = NetworkManager.Singleton.ConnectedClients[data.ClientId].PlayerObject.GetComponent<SmoothSyncNetcode>();
-            sync.teleportAnyObjectFromServer(spawnPoint.position, spawnPoint.rotation, Vector3.one);
-        }
-    }
+
 
     private IEnumerator GameLoop()
     {
+        OnGameStateChangedClientRpc(GameState.Lobby, GameStateCallbackType.StateEnded);
+        
         // Choose Upgrade -> Play Round -> Repeat
         int round = 1;
         
         while (round <= RoundCount)
         {
             LogRpc("Round " + round, LogType.InGameInfo);
-            SetPlayerSpawnPositions();
+            mapManager.SetPlayerSpawnPositions();
             yield return ChooseUpgrade();
             yield return PlayRound();
             round++;
         }
 
         yield return EndGame();
+        
+        OnGameStateChangedClientRpc(GameState.Lobby, GameStateCallbackType.StateStarted);
     }
     
     private IEnumerator ChooseUpgrade()
     {
         LogRpc($"Choosing upgrade for {TimeToUpgrade} seconds...", LogType.InGameInfo);
         gameState.Value = GameState.ChoosingUpgrade;
+        
+        OnGameStateChangedClientRpc(GameState.ChoosingUpgrade, GameStateCallbackType.StateStarted);
+        
         foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
         {
             if (data.CurrentPlayerState == PlayerData.PlayerState.SpectatingGame) continue;
-            upgradesManager.ChoosePlayerUpgradesServer(data);
+            upgradesManager.ChooseRandomPlayerUpgradesServer(data);
         }
         yield return new WaitForSeconds(TimeToUpgrade);
+        upgradesManager.UpgradeTimeFinished();
+        
+        OnGameStateChangedClientRpc(GameState.ChoosingUpgrade, GameStateCallbackType.StateEnded);
     }
     private IEnumerator PlayRound()
     {
         LogRpc($"Countdown of {StartCountdown} seconds", LogType.InGameInfo);
         gameState.Value = GameState.InGame;
+        
+        OnGameStateChangedClientRpc(GameState.InGame, GameStateCallbackType.StateStarted);
+        
         yield return new WaitForSeconds(StartCountdown);
         
         LogRpc($"Playing round for {GameLength} seconds", LogType.InGameInfo);
         yield return new WaitForSeconds(GameLength);
+        
+        OnGameStateChangedClientRpc(GameState.InGame, GameStateCallbackType.StateEnded);
     }
     private IEnumerator EndGame()
     {
@@ -179,7 +179,7 @@ public class GameManager : NetworkBehaviour
         switch (gameState.Value)
         {
             case GameState.ChoosingUpgrade:
-                upgradesManager.ChoosePlayerUpgradesServer(data);
+                upgradesManager.ChooseRandomPlayerUpgradesServer(data);
                 break;
             case GameState.InGame:
                 data = data.SetState(PlayerData.PlayerState.SpectatingUntilNextRound);
@@ -202,7 +202,7 @@ public class GameManager : NetworkBehaviour
         
         gameData.SetPlayerState(PlayerData.PlayerState.Playing, @params.Receive.SenderClientId);
     }
-    private bool CanBecomePlayer() => GameManager.instance.gameState.Value == GameManager.GameState.Lobby;
+    private bool CanBecomePlayer() => GameManager.Instance.gameState.Value == GameManager.GameState.Lobby;
     
 
     
@@ -210,6 +210,8 @@ public class GameManager : NetworkBehaviour
     {
         ServerInfo,
         InGameInfo,
+        MapInfo,
+        GameDataInfo,
         Error,
     }
 
@@ -217,13 +219,26 @@ public class GameManager : NetworkBehaviour
     public void LogRpc(string message, LogType type)
     {
         string color = "<color=#29b929>";
-        if (type == LogType.ServerInfo) color = "<color=#80eeee>";
-        else if (type == LogType.Error) color = "<color=#ff0000>";
+        switch (type)
+        {
+            case LogType.ServerInfo:
+                color = "<color=#80eeee>";
+                break;
+            case LogType.Error:
+                color = "<color=#ff0000>";
+                break;
+            case LogType.MapInfo:
+                color = "<color=#ff00ff>";
+                break;
+            case LogType.GameDataInfo:
+                color = "<color=#ff9900>";
+                break;
+        }
         
         Debug.Log($"{color}<b>{message}");
     }
 
-    private string GetRandomMap(string[] mapPool) => maps[Random.Range(0, mapPool.Length)];
+
     
     public enum GameState
     {

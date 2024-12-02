@@ -122,6 +122,8 @@
         {
             return HashCode.Combine(ClientId, (int)CurrentPlayerState, InGameData);
         }
+        
+        public RpcParams ToRpcParams() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
     }
 
     [Serializable]
@@ -199,7 +201,7 @@
                     upgrades[i] = null;
                     continue;
                 }
-                ScriptableUpgrade upgrade = GameManager.instance.upgradesManager.GetUpgrade((ushort)(upgradesIndexArray[i] - 1));
+                ScriptableUpgrade upgrade = GameManager.Instance.upgradesManager.GetUpgrade((ushort)(upgradesIndexArray[i] - 1));
                 upgrades[i] = upgrade;
             }
         }

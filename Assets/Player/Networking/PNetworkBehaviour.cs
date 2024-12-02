@@ -32,7 +32,6 @@ public abstract class PNetworkBehaviour : NetworkBehaviour
         {
             DisableOffline();
         }
-        Debug.Log("Disabled");
         DisableAnyOwner();
     }
 
