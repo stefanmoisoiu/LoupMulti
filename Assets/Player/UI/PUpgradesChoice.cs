@@ -4,14 +4,15 @@ using UnityEngine;
 public class PUpgradesChoice : PNetworkBehaviour
 {
     [SerializeField] private PCanvas canvas;
-    [SerializeField] private GameObject upgradesListLayout;
-    private GameObject _upgradesList;
+    private GameObject _upgradesListLayout;
+    private const string UpgradesListLayoutTag = "UpgradesList";
+    private Transform _upgradesList;
     [SerializeField] private GameObject upgradeCardPrefab;
     private List<UpgradeCard> _upgradeCards = new();
 
     protected override void StartOnlineOwner()
     {
-        SetupUpgradesList();
+        _upgradesList = GameObject.FindGameObjectWithTag(UpgradesListLayoutTag).transform;
         GameManager.OnCreated += OnGameManagerCreated;
     }
 
@@ -31,11 +32,6 @@ public class PUpgradesChoice : PNetworkBehaviour
         if (type != GameManager.GameStateCallbackType.StateEnded) return;
         HideUpgrades();
     }
-
-    private void SetupUpgradesList()
-    {
-        _upgradesList = Instantiate(upgradesListLayout, canvas.transform);
-    }
     
     public void DisplayUpgrades(ushort[] upgradesIndex)
     {
@@ -51,7 +47,7 @@ public class PUpgradesChoice : PNetworkBehaviour
         {
             for (int i = _upgradeCards.Count; i < upgrades.Length; i++)
             {
-                GameObject upgradeCard = Instantiate(upgradeCardPrefab, _upgradesList.transform);
+                GameObject upgradeCard = Instantiate(upgradeCardPrefab, _upgradesList);
                 _upgradeCards.Add(upgradeCard.GetComponent<UpgradeCard>());
             }
         }
@@ -65,7 +61,7 @@ public class PUpgradesChoice : PNetworkBehaviour
         }
         
         for (int i = 0; i < upgrades.Length; i++)
-            SetUpgradeCardInfo(_upgradeCards[i], upgrades[i]);
+            SetUpgradeCardInfo(_upgradeCards[i], upgrades[i],(ushort)i);
         
         ShowUpgrades();
     }
@@ -80,8 +76,8 @@ public class PUpgradesChoice : PNetworkBehaviour
             upgradeCard.gameObject.SetActive(false);
     }
     
-    private void SetUpgradeCardInfo(UpgradeCard upgradeCard, ScriptableUpgrade upgrade)
+    private void SetUpgradeCardInfo(UpgradeCard upgradeCard, ScriptableUpgrade upgrade, ushort upgradeIndex)
     {
-        upgradeCard.SetUpgrade(upgrade);
+        upgradeCard.SetUpgrade(upgrade,GameManager.Instance.upgradesManager.ChooseUpgrade, upgradeIndex);
     }
 }

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cdce5e6d8c2b4e3e92a4fbda9ffab833, type: 3}
-  m_Name: base Upgrade
+  m_Name: base Upgrade 4
   m_EditorClassIdentifier: 
-  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  upgradeName: A
+  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  upgradeName: E
   upgradeDescription: Base Upgrade
   upgradeType: 0
   accelerationFactor: 1

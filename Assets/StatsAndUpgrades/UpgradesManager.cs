@@ -13,9 +13,9 @@ public class UpgradesManager : NetworkBehaviour
     
     [SerializeField] private ScriptableUpgrade[] upgrades;
     private readonly Dictionary<ulong,ushort[]> _playerUpgradeChoices = new();
+    private readonly Dictionary<ulong,ushort> _playerUpgradeChosenChoice = new();
     
     public Action<ushort[]> OnUpgradeChoices;
-    public Action OnUpgradeTimeFinished;
     
     public ScriptableUpgrade GetUpgrade(ushort upgradeIndex)
     {
@@ -41,9 +41,14 @@ public class UpgradesManager : NetworkBehaviour
         return randomUpgradesIndex;
     }
 
+    // server
     public void UpgradeTimeFinished()
     {
-        _playerUpgradeChoices.Clear();
+        foreach (var player in NetworkManager.ConnectedClientsList)
+            if (!_playerUpgradeChosenChoice.TryGetValue(player.ClientId, out var upgradeIndex))
+                _playerUpgradeChosenChoice.Add(player.ClientId, 0);
+        
+        LogUpgradeChoices();
     }
     public void ChooseRandomPlayerUpgradesServer(PlayerData playerData)
     {
@@ -53,10 +58,26 @@ public class UpgradesManager : NetworkBehaviour
         else
         {
             randomUpgradesIndex = GetDistinctRandomUpgradesIndex(UpgradeChoices);
-            // _playerUpgradeChoices.Add(playerData.ClientId, randomUpgradesIndex);
+            _playerUpgradeChoices.Add(playerData.ClientId, randomUpgradesIndex);
         }
-        // OnUpgradeChoices_ClientRpc(randomUpgradesIndex, playerData.ToRpcParams());
+        OnUpgradeChoices_ClientRpc(randomUpgradesIndex, playerData.ToRpcParams());
     }
-    
+    public void ResetChoices()
+    {
+        _playerUpgradeChoices.Clear();
+        _playerUpgradeChosenChoice.Clear();
+    }
+    private void LogUpgradeChoices()
+    {
+        foreach (var clientID in _playerUpgradeChosenChoice)
+            GameManager.Instance.LogRpc($"Player {clientID.Key} chose upgrade {clientID.Value}", GameManager.LogType.UpgradeInfo);
+    }
+    // client
+    public void ChooseUpgrade(ushort upgradeIndex) => UpgradeChosenServerRpc(upgradeIndex, RpcParamsExt.Instance.SenderClientID(NetworkManager.LocalClientId));
+    [Rpc(SendTo.Server)]
+    public void UpgradeChosenServerRpc(ushort upgradeIndex, RpcParams @params)
+    {
+        _playerUpgradeChosenChoice[@params.Receive.SenderClientId] = upgradeIndex;
+    }
     [Rpc(SendTo.SpecifiedInParams)] private void OnUpgradeChoices_ClientRpc(ushort[] upgradesIndex, RpcParams @params) => OnUpgradeChoices?.Invoke(upgradesIndex);
 }

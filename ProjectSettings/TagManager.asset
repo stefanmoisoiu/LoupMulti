@@ -9,6 +9,7 @@ TagManager:
   - RotationStyleText
   - Canvas
   - Scoreboard
+  - UpgradesList
   layers:
   - Default
   - TransparentFX

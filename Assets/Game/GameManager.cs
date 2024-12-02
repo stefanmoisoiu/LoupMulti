@@ -50,8 +50,22 @@ public class GameManager : NetworkBehaviour
         gameData = GetComponent<GameData>();
         upgradesManager = GetComponent<UpgradesManager>();
         mapManager = GetComponent<MapManager>();
-        
         OnCreated?.Invoke(this);
+
+        OnGameStateChanged += (state, type) =>
+        {
+            if (state != GameState.ChoosingUpgrade) return;
+            if (type == GameStateCallbackType.StateStarted)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        };
     }
 
     public override void OnNetworkDespawn()
@@ -136,7 +150,7 @@ public class GameManager : NetworkBehaviour
             LogRpc("Round " + round, LogType.InGameInfo);
             mapManager.SetPlayerSpawnPositions();
             yield return ChooseUpgrade();
-        //     yield return PlayRound();
+            yield return PlayRound();
             round++;
         }
 
@@ -159,7 +173,8 @@ public class GameManager : NetworkBehaviour
         }
         yield return new WaitForSeconds(TimeToUpgrade);
         upgradesManager.UpgradeTimeFinished();
-        
+        // apply upgrades
+        upgradesManager.ResetChoices();
         OnGameStateChangedClientRpc(GameState.ChoosingUpgrade, GameStateCallbackType.StateEnded);
     }
     private IEnumerator PlayRound()
@@ -215,7 +230,7 @@ public class GameManager : NetworkBehaviour
         
         gameData.SetPlayerState(PlayerData.PlayerState.Playing, @params.Receive.SenderClientId);
     }
-    private bool CanBecomePlayer() => GameManager.Instance.gameState.Value == GameManager.GameState.Lobby;
+    private bool CanBecomePlayer() => Instance.gameState.Value == GameState.Lobby;
     
 
     
@@ -225,6 +240,7 @@ public class GameManager : NetworkBehaviour
         InGameInfo,
         MapInfo,
         GameDataInfo,
+        UpgradeInfo,
         Error,
     }
 
@@ -245,6 +261,9 @@ public class GameManager : NetworkBehaviour
                 break;
             case LogType.GameDataInfo:
                 color = "<color=#ff9900>";
+                break;
+            case LogType.UpgradeInfo:
+                color = "<color=#00ff00>";
                 break;
         }
         

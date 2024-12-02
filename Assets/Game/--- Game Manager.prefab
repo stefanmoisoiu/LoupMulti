@@ -30,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 3379183740241247975}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 10.619649, y: -3.5094748, z: -7.8858495}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -115,6 +115,10 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   upgrades:
   - {fileID: 11400000, guid: 56419e3ce3c4e864db5d07250b93bb69, type: 2}
+  - {fileID: 11400000, guid: 7abe0f5007880ec4aa32d3d035be5097, type: 2}
+  - {fileID: 11400000, guid: 636ea46e0e1c80e438076589e6ef8963, type: 2}
+  - {fileID: 11400000, guid: 0d084e2fd9f30f546bb5452b9129c279, type: 2}
+  - {fileID: 11400000, guid: b0e3ec27d3ccbff4d9277a5a56051c82, type: 2}
 --- !u!114 &4823457383044820859
 MonoBehaviour:
   m_ObjectHideFlags: 0

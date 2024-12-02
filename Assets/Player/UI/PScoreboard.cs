@@ -6,18 +6,20 @@ public class PScoreboard : PNetworkBehaviour
 {
     [SerializeField] private GameObject scorePrefab;
     private List<GameObject> scores = new();
-    [SerializeField] private GameObject scoreboardPrefab;
+    private const string ScoreboardTag = "Scoreboard";
     
     private Transform _scoreboard;
     
     private Transform _scoreboardLayout;
+    private CanvasGroup _scoreboardCanvasGroup;
     private TMP_Text _spectatorText;
     private TMP_Text _spectatorList;
     
 
     protected override void StartOnlineOwner()
     {
-        _scoreboard = Instantiate(scoreboardPrefab, PCanvas.Canvas.transform).transform;
+        _scoreboard = GameObject.FindGameObjectWithTag(ScoreboardTag).transform;
+        _scoreboardCanvasGroup = _scoreboard.GetComponent<CanvasGroup>();
         _scoreboardLayout = _scoreboard.GetChild(0);
         _spectatorText = _scoreboard.GetChild(1).GetComponent<TMP_Text>();
         _spectatorList = _scoreboard.GetChild(2).GetComponent<TMP_Text>();
@@ -42,11 +44,11 @@ public class PScoreboard : PNetworkBehaviour
 
     private void ShowScoreboard()
     {
-        _scoreboard.gameObject.SetActive(true);
+        _scoreboardCanvasGroup.alpha = 1;
     }
     private void HideScoreboard()
     {
-        _scoreboard.gameObject.SetActive(false);
+        _scoreboardCanvasGroup.alpha = 0;
     }
     private void UpdateScoreboard(List<PlayerData> newPlayerData)
     {
