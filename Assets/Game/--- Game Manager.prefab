@@ -77,9 +77,9 @@ MonoBehaviour:
   gameState:
     m_InternalValue: 0
   roundCount: 2
-  timeToUpgrade: 20
+  timeToUpgrade: 10
   startCountdown: 5
-  gameLength: 60
+  gameLength: 5
 --- !u!114 &1153693554774647391
 MonoBehaviour:
   m_ObjectHideFlags: 0

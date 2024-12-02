@@ -12,10 +12,19 @@ public class PUpgradesChoice : PNetworkBehaviour
     protected override void StartOnlineOwner()
     {
         SetupUpgradesList();
-        GameManager.Instance.upgradesManager.OnUpgradeChoices += DisplayUpgrades;
-        GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
+        GameManager.OnCreated += OnGameManagerCreated;
     }
 
+    protected override void DisableOnlineOwner()
+    {
+        GameManager.OnCreated -= OnGameManagerCreated;
+    }
+
+    private void OnGameManagerCreated(GameManager instance)
+    {
+        instance.upgradesManager.OnUpgradeChoices += DisplayUpgrades;
+        instance.OnGameStateChanged += OnGameStateChanged;
+    }
     private void OnGameStateChanged(GameManager.GameState state, GameManager.GameStateCallbackType type)
     {
         if (state != GameManager.GameState.ChoosingUpgrade) return;

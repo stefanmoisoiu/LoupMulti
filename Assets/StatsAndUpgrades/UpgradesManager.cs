@@ -24,7 +24,11 @@ public class UpgradesManager : NetworkBehaviour
     
     public ushort[] GetDistinctRandomUpgradesIndex(int amount)
     {
+        if (amount > upgrades.Length) amount = upgrades.Length;
+        
         ushort[] randomUpgradesIndex = new ushort[amount];
+        for (int i = 0; i < randomUpgradesIndex.Length; i++) randomUpgradesIndex[i] = ushort.MaxValue;
+        
         for (int i = 0; i < amount; i++)
         {
             ushort upgrade;
@@ -49,9 +53,9 @@ public class UpgradesManager : NetworkBehaviour
         else
         {
             randomUpgradesIndex = GetDistinctRandomUpgradesIndex(UpgradeChoices);
-            _playerUpgradeChoices.Add(playerData.ClientId, randomUpgradesIndex);
+            // _playerUpgradeChoices.Add(playerData.ClientId, randomUpgradesIndex);
         }
-        OnUpgradeChoices_ClientRpc(randomUpgradesIndex, playerData.ToRpcParams());
+        // OnUpgradeChoices_ClientRpc(randomUpgradesIndex, playerData.ToRpcParams());
     }
     
     [Rpc(SendTo.SpecifiedInParams)] private void OnUpgradeChoices_ClientRpc(ushort[] upgradesIndex, RpcParams @params) => OnUpgradeChoices?.Invoke(upgradesIndex);

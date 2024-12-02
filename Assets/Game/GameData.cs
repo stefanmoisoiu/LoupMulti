@@ -45,12 +45,7 @@ public class GameData : NetworkBehaviour
     }
     private void OnClientDisconnected(ulong clientId)
     {
-        if (NetworkManager.Singleton == null) return;
-        if (NetworkManager.Singleton.ConnectedClients.Count == 0) return;
         
-        _playerDataList.RemovePlayerData(clientId);
-        
-        RemoveClientPlayerData_ClientRpc(clientId, RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
     }
         
     
@@ -85,18 +80,6 @@ public class GameData : NetworkBehaviour
         clientPlayerData.Add(data);
         
         OnClientPlayerDataChanged?.Invoke(clientPlayerData);
-    }
-    [Rpc(SendTo.SpecifiedInParams)]
-    public void RemoveClientPlayerData_ClientRpc(ulong clientId, RpcParams @params)
-    {
-        for (int i = 0; i < clientPlayerData.Count; i++)
-        {
-            if (clientPlayerData[i].ClientId != clientId) continue;
-            
-            clientPlayerData.RemoveAt(i);
-            OnClientPlayerDataChanged?.Invoke(clientPlayerData);
-            return;
-        }
     }
     
     

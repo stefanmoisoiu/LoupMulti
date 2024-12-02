@@ -14,8 +14,9 @@ public class MapManager : NetworkBehaviour
     
     public string CurrentMap { get; private set; }
     
-    public Action<string> OnMapLoaded;
-    [Rpc(SendTo.Everyone)] private void OnMapLoadedClientRpc(string map) => OnMapLoaded?.Invoke(map);
+    public Action<string> OnMapLoadedServer;
+    public Action<string> OnMapLoadedAll;
+    [Rpc(SendTo.Everyone)] private void OnMapLoadedClientRpc(string map) => OnMapLoadedAll?.Invoke(map);
     
     public void LoadRandomGameMap()
     {
@@ -28,14 +29,19 @@ public class MapManager : NetworkBehaviour
         if (CurrentMap == map) return;
         
         CurrentMap = map;
-        NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
+        
         GameManager.Instance.LogRpc("Loading map: " + map, GameManager.LogType.MapInfo);
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += MapLoaded;
+        
+        NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
     }
 
     private void MapLoaded(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
     {
+        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= MapLoaded;
+        
         GameManager.Instance.LogRpc("Map loaded", GameManager.LogType.MapInfo);
+        OnMapLoadedServer?.Invoke(CurrentMap);
         OnMapLoadedClientRpc(CurrentMap);
     }
     

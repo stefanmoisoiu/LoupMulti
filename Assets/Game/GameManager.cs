@@ -13,6 +13,7 @@ public class GameManager : NetworkBehaviour
 
 
     public static GameManager Instance;
+    public static Action<GameManager> OnCreated;
     public GameData gameData { get; private set; }
     public UpgradesManager upgradesManager { get; private set; }
     public MapManager mapManager { get; private set; }
@@ -49,6 +50,8 @@ public class GameManager : NetworkBehaviour
         gameData = GetComponent<GameData>();
         upgradesManager = GetComponent<UpgradesManager>();
         mapManager = GetComponent<MapManager>();
+        
+        OnCreated?.Invoke(this);
     }
 
     public override void OnNetworkDespawn()
@@ -80,7 +83,17 @@ public class GameManager : NetworkBehaviour
     }
     private void OnClientDisconnected(ulong clientId)
     {
+        if (NetworkManager.Singleton == null) return;
+        if (gameData == null) return;
         
+        if (!gameData.ServerSidePlayerDataList.ContainsPlayerData(clientId)) return;
+        
+        if (gameState.Value == GameState.Lobby)
+        {
+            gameData.ServerSidePlayerDataList.RemovePlayerData(clientId);
+            gameData.UpdateEntireClientPlayerData_ClientRpc(gameData.ServerSidePlayerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
+        }
+        else gameData.SetPlayerState(PlayerData.PlayerState.NotAssigned, clientId);
     }
     
     
@@ -90,13 +103,13 @@ public class GameManager : NetworkBehaviour
     {
         LogRpc("Starting game", LogType.ServerInfo);
         mapManager.LoadRandomGameMap();
-        mapManager.OnMapLoaded += StartGameMapLoaded;
+        mapManager.OnMapLoadedServer += StartGameMapLoaded;
     }
 
     // SERVER SIDE
     private void StartGameMapLoaded(string mapName)
     {
-        mapManager.OnMapLoaded -= StartGameMapLoaded;
+        mapManager.OnMapLoadedServer -= StartGameMapLoaded;
 
         foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
             if (data.CurrentPlayerState == PlayerData.PlayerState.NotAssigned)
@@ -123,7 +136,7 @@ public class GameManager : NetworkBehaviour
             LogRpc("Round " + round, LogType.InGameInfo);
             mapManager.SetPlayerSpawnPositions();
             yield return ChooseUpgrade();
-            yield return PlayRound();
+        //     yield return PlayRound();
             round++;
         }
 
