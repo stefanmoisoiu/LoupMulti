@@ -37,6 +37,8 @@ public class GameData : NetworkBehaviour
     
     private void OnClientConnected(ulong clientId)
     {
+        if (_playerDataList.ContainsPlayerData(clientId)) return;
+        
         PlayerData data = new PlayerData(NetworkManager.Singleton.ConnectedClients[clientId]);
         _playerDataList.AddPlayerData(data);
         

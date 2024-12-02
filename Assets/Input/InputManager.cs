@@ -34,6 +34,20 @@ public class InputManager : MonoBehaviour
     public bool ScoreboardPressed { get; set; }
     public Action OnScoreboard { get; set; }
     public Action OnStopScoreboard { get; set; }
+    
+    public enum AbilityInput
+    {
+        Action1,
+        Action2,
+        Action3,
+        None
+    }
+
+    public enum ActionType
+    {
+        Start,
+        Stop
+    }
 
     private void OnEnable()
     {
@@ -76,5 +90,84 @@ public class InputManager : MonoBehaviour
         
         _controls.UI.Scoreboard.performed += ctx => { OnScoreboard?.Invoke(); ScoreboardPressed = true; };
         _controls.UI.Scoreboard.canceled += ctx => { OnStopScoreboard?.Invoke(); ScoreboardPressed = false; };
+    }
+    
+    public void AddAbilityInputListener(AbilityInput abilityInput, ActionType type, Action action)
+    {
+        switch (abilityInput)
+        {
+            case AbilityInput.Action1:
+                switch (type)
+                {
+                    case ActionType.Start:
+                        OnAction1 += action;
+                        break;
+                    case ActionType.Stop:
+                        OnStopAction1 += action;
+                        break;
+                }
+                break;
+            case AbilityInput.Action2:
+                switch (type)
+                {
+                    case ActionType.Start:
+                        OnAction2 += action;
+                        break;
+                    case ActionType.Stop:
+                        OnStopAction2 += action;
+                        break;
+                }
+                break;
+            case AbilityInput.Action3:
+                switch (type)
+                {
+                    case ActionType.Start:
+                        OnAction3 += action;
+                        break;
+                    case ActionType.Stop:
+                        OnStopAction3 += action;
+                        break;
+                }
+                break;
+        }
+    }
+    public void RemoveAbilityInputListener(AbilityInput abilityInput, ActionType type, Action action)
+    {
+        switch (abilityInput)
+        {
+            case AbilityInput.Action1:
+                switch (type)
+                {
+                    case ActionType.Start:
+                        OnAction1 -= action;
+                        break;
+                    case ActionType.Stop:
+                        OnStopAction1 -= action;
+                        break;
+                }
+                break;
+            case AbilityInput.Action2:
+                switch (type)
+                {
+                    case ActionType.Start:
+                        OnAction2 -= action;
+                        break;
+                    case ActionType.Stop:
+                        OnStopAction2 -= action;
+                        break;
+                }
+                break;
+            case AbilityInput.Action3:
+                switch (type)
+                {
+                    case ActionType.Start:
+                        OnAction3 -= action;
+                        break;
+                    case ActionType.Stop:
+                        OnStopAction3 -= action;
+                        break;
+                }
+                break;
+        }
     }
 }

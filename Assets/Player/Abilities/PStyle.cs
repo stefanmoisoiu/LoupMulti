@@ -3,9 +3,8 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-public class PStyle : PNetworkBehaviour
+public class PStyle : PNetworkAbility
 {
-    private ushort _currentStylePoints;
     public NoLookStyle[] noLookStyles;
     public RotationStyle[] rotationStyles;
 
@@ -40,24 +39,36 @@ public class PStyle : PNetworkBehaviour
     
     
     public bool NoLook { get; private set; }
+    
+    public override void EnableAbility()
+    {
+        base.EnableAbility();
+        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartNoLook);
+        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, StopNoLook);
+    }
+
+    public override void DisableAbility()
+    {
+        base.DisableAbility();
+        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartNoLook);
+        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, StopNoLook);
+    }
 
     protected override void StartAnyOwner()
     {
-        InputManager.instance.OnAction1 += StartNoLook;
-        InputManager.instance.OnStopAction1 += StopNoLook;
+        noLookPanel = GameObject.FindGameObjectWithTag(NoLookPanelTag).GetComponent<CanvasGroup>();
         
         movement.AddMoveSpeedModifier(_noLookSpeedModifier);
         movement.AddMoveSpeedModifier(_rotationSpeedModifier);
-        
-        noLookPanel = GameObject.FindGameObjectWithTag(NoLookPanelTag).GetComponent<CanvasGroup>();
     }
-
-    protected override void DisableAnyOwner()
+    protected override void UpdateAnyOwner()
     {
-        InputManager.instance.OnAction1 -= StartNoLook;
-        InputManager.instance.OnStopAction1 -= StopNoLook;
+        if (!AbilityEnabled) return;
+        
+        UpdateNoLook();
+        UpdateRotation();
     }
-
+    
     private void StartNoLook()
     {
         NoLook = true;
@@ -88,11 +99,6 @@ public class PStyle : PNetworkBehaviour
         }
         
         noLookPanel.alpha = endAlpha;
-    }
-    protected override void UpdateAnyOwner()
-    {
-        UpdateNoLook();
-        UpdateRotation();
     }
     private IEnumerator BoostSpeed(PMovement.MoveSpeedModifiers speedModifier, Style style)
     {

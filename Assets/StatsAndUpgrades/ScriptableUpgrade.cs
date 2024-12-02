@@ -3,10 +3,20 @@ using UnityEngine;
 
 public abstract class ScriptableUpgrade : ScriptableObject
 {
+    [TitleGroup("Info")][SerializeField] private Sprite icon;
     [TitleGroup("Info")][SerializeField] private string upgradeName;
     [TitleGroup("Info")][SerializeField][TextArea] private string upgradeDescription;
+    [TitleGroup("Info")][SerializeField] private UpgradeType upgradeType;
+    public Sprite Icon => icon;
     public string UpgradeName => upgradeName;
     public string UpgradeDescription => upgradeDescription;
+    public UpgradeType Type => upgradeType;
+
+    public enum UpgradeType
+    {
+        Ability,
+        Passive
+    }
 
     public abstract float GetAccelerationFactor();
     public abstract float GetMaxSpeedFactor();

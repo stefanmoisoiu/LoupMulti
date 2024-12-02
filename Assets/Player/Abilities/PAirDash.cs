@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PAirDash : PNetworkBehaviour
+public class PAirDash : PNetworkAbility
 {
     [SerializeField] private float dashLength;
     [SerializeField] private float dashForce;
@@ -19,16 +19,17 @@ public class PAirDash : PNetworkBehaviour
 
     [SerializeField] private PStamina stamina;
     
-    
     private Coroutine _dashCoroutine;
-    protected override void StartAnyOwner()
+    public override void EnableAbility()
     {
-        InputManager.instance.OnAction1 += TryStartDash;
+        base.EnableAbility();
+        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, TryStartDash);
     }
 
-    protected override void DisableAnyOwner()
+    public override void DisableAbility()
     {
-        InputManager.instance.OnAction1 -= TryStartDash;
+        base.DisableAbility();
+        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, TryStartDash);
     }
 
     private void TryStartDash()

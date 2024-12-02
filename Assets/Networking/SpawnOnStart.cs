@@ -11,21 +11,21 @@ public class SpawnOnStart : NetworkBehaviour
         Server,
         Client
     }
-    private void Start()
+
+    public override void OnNetworkSpawn()
     {
-        if (IsServer)
-        {
-            prefabToSpawn = Instantiate(prefabToSpawn,transform.position,transform.rotation);
-            NetworkObject networkObject = prefabToSpawn.GetComponent<NetworkObject>();
+        base.OnNetworkSpawn();
+        if (!IsServer) return;
+        prefabToSpawn = Instantiate(prefabToSpawn,transform.position,transform.rotation);
+        NetworkObject networkObject = prefabToSpawn.GetComponent<NetworkObject>();
             
-            if (spawnOwner == SpawnOwner.Server)
-            {
-                networkObject.Spawn();
-            }
-            else
-            {
-                networkObject.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
-            }
+        if (spawnOwner == SpawnOwner.Server)
+        {
+            networkObject.Spawn();
+        }
+        else
+        {
+            networkObject.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
         }
     }
 }

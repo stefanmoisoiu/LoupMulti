@@ -13,7 +13,10 @@ public class PApplyStatsUpgrades : PNetworkBehaviour
     {
         ScriptableUpgrade[] upgrades = GameManager.instance.gameData.myPlayerData.InGameData.upgrades;
         
-        _moveSpeedModifiers = new();
+        if (upgrades == null) return;
+        if (upgrades.Length == 0) return;
+        
+        _moveSpeedModifiers.Reset();
         foreach (ScriptableUpgrade upgrade in upgrades) ApplyUpgrade(upgrade);
     }
     

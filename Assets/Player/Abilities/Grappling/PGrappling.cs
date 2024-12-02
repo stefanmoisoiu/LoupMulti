@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PGrappling : PNetworkBehaviour
+public class PGrappling : PNetworkAbility
 {
     [SerializeField] private float springConstant = 1000;
     [SerializeField] private float dampingFactor = 10;
@@ -39,20 +39,27 @@ public class PGrappling : PNetworkBehaviour
     private NetworkVariable<Vector3> grapplePoint = new (writePerm: NetworkVariableWritePermission.Owner);
 
     public Vector3 GetUpVector() => Grappling ? (_grapplePoint - rb.position).normalized : Vector3.up;
-    protected override void StartAnyOwner()
+    
+    public override void EnableAbility()
     {
-        InputManager.instance.OnJump += TryJumpGrapple;
-        InputManager.instance.OnAction3 += PressedGrapple;
+        base.EnableAbility();
+        Debug.Log("Grappling enabled");
+        // InputManager.instance.OnJump += TryJumpGrapple;
+        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedGrapple);
     }
 
-    protected override void DisableAnyOwner()
+    public override void DisableAbility()
     {
-        InputManager.instance.OnJump -= TryJumpGrapple;
-        InputManager.instance.OnAction3 -= PressedGrapple;
+        base.DisableAbility();
+        Debug.Log("Grappling disabled");
+        // InputManager.instance.OnJump -= TryJumpGrapple;
+        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedGrapple);
     }
 
     protected override void UpdateAnyOwner()
     {
+        if (!AbilityEnabled) return;
+        
         if (Grappling && !CanGrapple()) StopGrapple();
         if(Grappling) UpdateGrapple();
     }

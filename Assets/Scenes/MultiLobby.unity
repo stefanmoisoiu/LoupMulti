@@ -14173,6 +14173,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   prefabToSpawn: {fileID: 3379183740241247975, guid: dcca162325acd654ca2a3a297510f315,
     type: 3}
+  spawnOwner: 0
 --- !u!4 &1285272131
 Transform:
   m_ObjectHideFlags: 0
@@ -22534,7 +22535,7 @@ PrefabInstance:
     - target: {fileID: 8751059046187362418, guid: 1ab8f9dde80a5cc41ba157c8f7f09845,
         type: 3}
       propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 0
+      value: 4046952389
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

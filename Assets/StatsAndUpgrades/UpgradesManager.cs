@@ -13,18 +13,23 @@ public class UpgradesManager : NetworkBehaviour
         return upgrades[upgradeIndex];
     }
     
-    public ScriptableUpgrade[] GetDistinctRandomUpgrades(int amount)
+    public ushort[] GetDistinctRandomUpgradesIndex(int amount)
     {
-        ScriptableUpgrade[] randomUpgrades = new ScriptableUpgrade[amount];
+        ushort[] randomUpgradesIndex = new ushort[amount];
         for (int i = 0; i < amount; i++)
         {
-            ScriptableUpgrade upgrade;
+            ushort upgrade;
             
-            do upgrade = upgrades[Random.Range(0, upgrades.Length)];
-            while (randomUpgrades.Contains(upgrade));
+            do upgrade = (ushort)Random.Range(0, upgrades.Length);
+            while (randomUpgradesIndex.Contains(upgrade));
             
-            randomUpgrades[i] = upgrade;
+            randomUpgradesIndex[i] = upgrade;
         }
-        return randomUpgrades;
+        return randomUpgradesIndex;
+    }
+
+    public void ChoosePlayerUpgradesServer(PlayerData playerData)
+    {
+        
     }
 }

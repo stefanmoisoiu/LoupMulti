@@ -33,7 +33,7 @@ public class PCamera : PNetworkBehaviour
 
     protected override void UpdateAnyOwner()
     {
-        GetLookTarget();
+        if (!Cursor.visible) GetLookTarget();
         Look();
     }
 

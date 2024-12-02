@@ -53,7 +53,7 @@ public class PScoreboard : PNetworkBehaviour
         int spectatingPlayers = 0;
         for (int i = 0; i < newPlayerData.Count; i++)
         {
-            if (newPlayerData[i].CurrentPlayerState == PlayerData.PlayerState.Spectating)
+            if (newPlayerData[i].CurrentPlayerState == PlayerData.PlayerState.SpectatingGame || newPlayerData[i].CurrentPlayerState == PlayerData.PlayerState.SpectatingUntilNextRound)
             {
                 spectatingPlayers++;
             }
@@ -84,7 +84,7 @@ public class PScoreboard : PNetworkBehaviour
         int a = 0;
         for (int i = 0; i < newPlayerData.Count; i++)
         {
-            if (newPlayerData[i].CurrentPlayerState == PlayerData.PlayerState.Spectating)
+            if (newPlayerData[i].CurrentPlayerState == PlayerData.PlayerState.SpectatingGame || newPlayerData[i].CurrentPlayerState == PlayerData.PlayerState.SpectatingUntilNextRound)
             {
                 _spectatorList.text += $"{newPlayerData[i].ClientId}  ";
             }

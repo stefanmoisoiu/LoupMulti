@@ -152,7 +152,7 @@ public class MultiplayerDashboard : NetworkBehaviour
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
         PlayerData.PlayerState state = GameManager.instance.gameData.myPlayerData.CurrentPlayerState;
-        if (state == PlayerData.PlayerState.Spectating)
+        if (state == PlayerData.PlayerState.SpectatingGame)
         {
             GameManager.instance.BecomePlayer(clientID);
             changeStateText.text = "Spectate";

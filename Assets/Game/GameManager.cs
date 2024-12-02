@@ -66,7 +66,7 @@ public class GameManager : NetworkBehaviour
     }
     private void OnClientConnected(ulong clientId)
     {
-        
+        if (gameState.Value != GameState.Lobby) LatePlayerJoined(clientId);
     }
     private void OnClientDisconnected(ulong clientId)
     {
@@ -97,7 +97,7 @@ public class GameManager : NetworkBehaviour
         {
             data.ResetGameData();
             
-            if (data.CurrentPlayerState == PlayerData.PlayerState.Spectating)
+            if (data.CurrentPlayerState == PlayerData.PlayerState.SpectatingGame)
             {
                 
             }
@@ -147,6 +147,11 @@ public class GameManager : NetworkBehaviour
     {
         LogRpc($"Choosing upgrade for {TimeToUpgrade} seconds...", LogType.InGameInfo);
         gameState.Value = GameState.ChoosingUpgrade;
+        foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
+        {
+            if (data.CurrentPlayerState == PlayerData.PlayerState.SpectatingGame) continue;
+            upgradesManager.ChoosePlayerUpgradesServer(data);
+        }
         yield return new WaitForSeconds(TimeToUpgrade);
     }
     private IEnumerator PlayRound()
@@ -165,12 +170,29 @@ public class GameManager : NetworkBehaviour
         yield break;
     }
     
+    private void LatePlayerJoined(ulong clientId)
+    {
+        if (gameState.Value == GameState.Lobby) return;
+        
+        PlayerData data = gameData.ServerSidePlayerDataList.GetPlayerData(clientId);
+
+        switch (gameState.Value)
+        {
+            case GameState.ChoosingUpgrade:
+                upgradesManager.ChoosePlayerUpgradesServer(data);
+                break;
+            case GameState.InGame:
+                data = data.SetState(PlayerData.PlayerState.SpectatingUntilNextRound);
+                gameData.ServerSidePlayerDataList.UpdatePlayerData(data);
+                break;
+        }
+    }
     
     public void Spectate(ulong clientId) => SpectateServerRpc(RpcParamsExt.Instance.SenderClientID(clientId));
     [Rpc(SendTo.Server)]
     private void SpectateServerRpc(RpcParams @params)
     {
-        gameData.SetPlayerState(PlayerData.PlayerState.Spectating, @params.Receive.SenderClientId);
+        gameData.SetPlayerState(PlayerData.PlayerState.SpectatingGame, @params.Receive.SenderClientId);
     }
     public void BecomePlayer(ulong clientId) => BecomePlayerServerRpc(RpcParamsExt.Instance.SenderClientID(clientId));
     [Rpc(SendTo.Server)]

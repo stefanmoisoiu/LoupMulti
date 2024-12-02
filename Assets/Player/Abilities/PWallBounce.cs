@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PWallBounce : PNetworkBehaviour
+public class PWallBounce : PNetworkAbility
 {
     
     [SerializeField] private float wallCheckDistance;
@@ -27,22 +27,24 @@ public class PWallBounce : PNetworkBehaviour
     [SerializeField] private Rigidbody rb;
     [SerializeField] private PCamera cam;
     [SerializeField] private PStamina stamina;
-    
-    
-    
 
-    protected override void StartAnyOwner()
+
+    public override void EnableAbility()
     {
-        InputManager.instance.OnAction2 += PressedWallBounce;
+        base.EnableAbility();
+        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedWallBounce);
     }
 
-    protected override void DisableAnyOwner()
+    public override void DisableAbility()
     {
-        InputManager.instance.OnAction2 -= PressedWallBounce;
+        base.DisableAbility();
+        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedWallBounce);
     }
 
     protected override void UpdateAnyOwner()
     {
+        if (!AbilityEnabled) return;
+        
         if (_bufferTime > 0) TryWallBounce();
         _bufferTime -= Time.deltaTime;
     }

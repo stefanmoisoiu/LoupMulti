@@ -33,12 +33,14 @@ public class PJump : PNetworkBehaviour
 
     protected override void StartAnyOwner()
     {
+        Debug.LogError("Jump enabled");
         InputManager.instance.OnJump += StartPressJump;
         grounded.OnGroundedChanged += CheckCoyote;
     }
 
     protected override void DisableAnyOwner()
     {
+        Debug.LogError("Jump disabled");
         InputManager.instance.OnJump -= StartPressJump;
         grounded.OnGroundedChanged -= CheckCoyote;
     }

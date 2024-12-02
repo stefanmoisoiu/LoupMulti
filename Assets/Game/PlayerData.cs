@@ -20,6 +20,13 @@
             }
         }
         
+        public bool ContainsPlayerData(ulong clientId)
+        {
+            foreach (PlayerData data in playerDatas)
+                if (data.ClientId == clientId) return true;
+            return false;
+        }
+        
         public PlayerData GetPlayerData(ulong clientId)
         {
             foreach (PlayerData data in playerDatas)
@@ -71,7 +78,8 @@
         {
             NotAssigned,
             Playing,
-            Spectating,
+            SpectatingGame,
+            SpectatingUntilNextRound
         }
 
         public PlayerData(NetworkClient client = null)
@@ -81,12 +89,18 @@
             InGameData = new PlayerInGameData();
         }
 
-        public void ResetGameData()
+        public PlayerData ResetGameData()
         {
             InGameData = new();
+            return this;
         }
         
-        public void SetState(PlayerState state) => CurrentPlayerState = state;
+        public PlayerData SetState(PlayerState state)
+        {
+            CurrentPlayerState = state;
+            return this;
+        }
+        
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref ClientId);

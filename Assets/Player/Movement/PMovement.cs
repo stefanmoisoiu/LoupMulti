@@ -151,5 +151,14 @@ public class PMovement : NetworkBehaviour
             this.addedMaxSpeed = addedMaxSpeed;
             this.addedAcceleration = addedAcceleration;
         }
+        
+        public void Reset()
+        {
+            maxSpeedFactor = 1;
+            accelerationFactor = 1;
+            
+            addedMaxSpeed = 0;
+            addedAcceleration = 0;
+        }
     }
 }
