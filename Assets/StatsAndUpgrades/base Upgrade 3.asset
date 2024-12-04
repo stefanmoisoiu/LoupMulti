@@ -16,11 +16,16 @@ MonoBehaviour:
   upgradeName: D
   upgradeDescription: Base Upgrade
   upgradeType: 0
+  evolutions: []
   accelerationFactor: 1
   addedAcceleration: 0
   maxSpeedFactor: 1
   addedMaxSpeed: 0
   gravityFactor: 1
   jumpHeightFactor: 1
+  addedJumpHeight: 0
   staminaRecoveryFactor: 1
-  addedStaminaParts: 0
+  addedStaminaParts: 1
+  staminaPartFactor: 1
+  staminaPerPartFactor: 1
+  addedStaminaPerPart: 0

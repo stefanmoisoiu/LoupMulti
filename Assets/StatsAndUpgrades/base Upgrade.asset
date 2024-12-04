@@ -16,9 +16,14 @@ MonoBehaviour:
   upgradeName: A
   upgradeDescription: Base Upgrade
   upgradeType: 0
-  accelerationFactor: 1
+  evolutions:
+  - evolution: {fileID: 11400000, guid: e1cd3db5f7adf6244a2849632e585bf8, type: 2}
+    requiredUpgrades: []
+  - evolution: {fileID: 11400000, guid: b56c1e62f69521b4e98d5e51b7c65c29, type: 2}
+    requiredUpgrades: []
+  accelerationFactor: 3
   addedAcceleration: 0
-  maxSpeedFactor: 1
+  maxSpeedFactor: 3
   addedMaxSpeed: 0
   gravityFactor: 1
   jumpHeightFactor: 1

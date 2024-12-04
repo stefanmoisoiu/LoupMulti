@@ -14,10 +14,7 @@
         {
             playerDatas = new (NetcodeManager.MaxPlayers);
             foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
-            {
-                PlayerData data = new PlayerData(client);
-                AddPlayerData(data);
-            }
+                AddPlayerData(new PlayerData(client));
         }
         
         public bool ContainsPlayerData(ulong clientId)
@@ -39,6 +36,7 @@
         
         public void AddPlayerData(PlayerData data)
         {
+            if (ContainsPlayerData(data.ClientId)) return;
             playerDatas.Add(data);
         }
         
@@ -65,14 +63,46 @@
             playerDatas.Remove(data);
         }
     }
-    
+
     [Serializable]
     public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
     {
-
         public ulong ClientId;
-        public PlayerState CurrentPlayerState;
+        
+        public PlayerOuterData OuterData;
         public PlayerInGameData InGameData;
+        
+        public PlayerData(NetworkClient client = null)
+        {
+            ClientId = client?.ClientId ?? ulong.MaxValue;
+            OuterData = new PlayerOuterData(client);
+            InGameData = new PlayerInGameData(0,PlayerInGameData.DefaultUpgradesIndexArray());
+        }
+        
+        public PlayerData(PlayerData copy)
+        {
+            ClientId = copy.ClientId;
+            OuterData = new PlayerOuterData(copy.OuterData);
+            InGameData = new PlayerInGameData(copy.InGameData.score, copy.InGameData.upgradesIndexArray);
+        }
+        
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref ClientId);
+            serializer.SerializeValue(ref OuterData);
+            serializer.SerializeValue(ref InGameData);
+        }
+        public bool Equals(PlayerData other)
+        {
+            return ClientId == other.ClientId;
+        }
+        public RpcParams ToRpcParams() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
+    }
+    
+    [Serializable]
+    public struct PlayerOuterData : INetworkSerializable
+    {
+        public PlayerState CurrentPlayerState;
         
         public enum PlayerState
         {
@@ -82,20 +112,17 @@
             SpectatingUntilNextRound
         }
 
-        public PlayerData(NetworkClient client = null)
+        public PlayerOuterData(NetworkClient client = null)
         {
-            ClientId = client?.ClientId ?? ulong.MaxValue;
             CurrentPlayerState = PlayerState.NotAssigned;
-            InGameData = new PlayerInGameData();
         }
 
-        public PlayerData ResetGameData()
+        public PlayerOuterData(PlayerOuterData copy)
         {
-            InGameData = new();
-            return this;
+            CurrentPlayerState = copy.CurrentPlayerState;
         }
         
-        public PlayerData SetState(PlayerState state)
+        public PlayerOuterData SetState(PlayerState state)
         {
             CurrentPlayerState = state;
             return this;
@@ -103,27 +130,8 @@
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref ClientId);
             serializer.SerializeValue(ref CurrentPlayerState);
-            InGameData.NetworkSerialize(serializer);
         }
-
-        public bool Equals(PlayerData other)
-        {
-            return ClientId == other.ClientId;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is PlayerData other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(ClientId, (int)CurrentPlayerState, InGameData);
-        }
-        
-        public RpcParams ToRpcParams() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
     }
 
     [Serializable]
@@ -131,44 +139,14 @@
     {
         public int score;
         public ushort[] upgradesIndexArray;
-        public ScriptableUpgrade[] upgrades { get; private set; }
         
         public void AddScore(int amount) => score += amount;
         public void RemoveScore(int amount) => score -= amount;
         public void ResetScore() => score = 0;
-        
-        private string UpgradesText()
-        {
-            string text = "";
-            foreach (ScriptableUpgrade upgrade in upgrades)
-            {
-                if (upgrade == null) continue;
-                text += upgrade.UpgradeName + "\n";
-            }
-            return text;
-        }
-        [ShowInInspector] private string _upgradesText => UpgradesText();
 
-        public bool Equals(PlayerInGameData other)
+        public override string ToString()
         {
-            return score == other.score;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is PlayerInGameData other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return score;
-        }
-        
-        public PlayerInGameData(int score = 0)
-        {
-            this.score = score;
-            upgradesIndexArray = new ushort[UpgradesManager.MaxUpgrades];
-            upgrades = new ScriptableUpgrade[UpgradesManager.MaxUpgrades];
+            return $"score: {score}, upgradesIndexArray: {string.Join(',',upgradesIndexArray)}, size: {upgradesIndexArray.Length}";
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -176,33 +154,54 @@
             serializer.SerializeValue(ref score);
             
             upgradesIndexArray ??= new ushort[UpgradesManager.MaxUpgrades];
-            serializer.SerializeValue(ref upgradesIndexArray);
+            for (int i = 0; i < upgradesIndexArray.Length; i++)
+                serializer.SerializeValue(ref upgradesIndexArray[i]);
         }
         
-        public void AddUpgrade(ushort upgradeIndex)
+        public PlayerInGameData(int Score = 0, ushort[] UpgradesIndexArray = null)
         {
-            for (int i = 0; i < upgradesIndexArray.Length; i++)
-            {
-                if (upgradesIndexArray[i] != 0) continue;
-                
-                upgradesIndexArray[i] = (ushort)(upgradeIndex + 1);
-                UpdateUpgradesArray();
-                return;
-            }
-        }
-        private void UpdateUpgradesArray()
-        {
-            upgrades ??= new ScriptableUpgrade[UpgradesManager.MaxUpgrades];
+            score = Score;
             
+            upgradesIndexArray = UpgradesIndexArray;
+            
+            if(UpgradesIndexArray == null) Debug.LogError("initialise upgradesIndexArray ca marche pas sinon");
+        }
+        
+        public PlayerInGameData AddUpgrade(ushort upgradeIndex)
+        {
+            upgradesIndexArray ??= DefaultUpgradesIndexArray();
             for (int i = 0; i < upgradesIndexArray.Length; i++)
             {
-                if (upgradesIndexArray[i] == 0)
-                {
-                    upgrades[i] = null;
-                    continue;
-                }
-                ScriptableUpgrade upgrade = GameManager.Instance.upgradesManager.GetUpgrade((ushort)(upgradesIndexArray[i] - 1));
-                upgrades[i] = upgrade;
+                if (upgradesIndexArray[i] != ushort.MaxValue) continue;
+                
+                upgradesIndexArray[i] = upgradeIndex;
+                return this;
             }
+            return this;
+        }
+        public ScriptableUpgrade[] GetUpgrades()
+        {
+            if (upgradesIndexArray == null || upgradesIndexArray.Length == 0) return new ScriptableUpgrade[] {};
+            
+            List<ScriptableUpgrade> upgrades = new();
+
+            for (int i = 0; i < UpgradesManager.MaxUpgrades; i++)
+            {
+                if (upgradesIndexArray[i] == ushort.MaxValue) continue;
+                upgrades.Add(GameManager.Instance.upgradesManager.GetUpgrade(upgradesIndexArray[i]));
+            }
+            return upgrades.ToArray();
+        }
+        public static ushort[] DefaultUpgradesIndexArray()
+        { 
+            ushort[] res = new ushort[UpgradesManager.MaxUpgrades];
+            for (int i = 0; i < UpgradesManager.MaxUpgrades; i++) res[i] = ushort.MaxValue;
+            return res;
+        }
+        public NativeArray<ushort> DefaultUpgradesIndexArrayNative()
+        {
+            NativeArray<ushort> res = new NativeArray<ushort>(UpgradesManager.MaxUpgrades, Allocator.Temp);
+            for (int i = 0; i < UpgradesManager.MaxUpgrades; i++) res[i] = ushort.MaxValue;
+            return res;
         }
     }

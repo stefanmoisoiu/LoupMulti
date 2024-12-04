@@ -24,8 +24,10 @@ public class PStyle : PNetworkAbility
     
     
 
-    private PMovement.MoveSpeedModifiers _noLookSpeedModifier = new(1,1);
-    private PMovement.MoveSpeedModifiers _rotationSpeedModifier = new(1,1);
+    private Modifier<float>.ModifierComponent _noLookMaxSpeedModifier = new(1,0);
+    private Modifier<float>.ModifierComponent _noLookAccelerationModifier = new(1,0);
+    private Modifier<float>.ModifierComponent _rotationMaxSpeedModifier = new(1,0);
+    private Modifier<float>.ModifierComponent _rotationAccelerationModifier = new(1,0);
     
     private Coroutine _noLookCoroutine;
     private Coroutine _rotationCoroutine;
@@ -58,8 +60,11 @@ public class PStyle : PNetworkAbility
     {
         noLookPanel = GameObject.FindGameObjectWithTag(NoLookPanelTag).GetComponent<CanvasGroup>();
         
-        movement.AddMoveSpeedModifier(_noLookSpeedModifier);
-        movement.AddMoveSpeedModifier(_rotationSpeedModifier);
+        movement.MaxSpeedModifier.AddModifier(_noLookMaxSpeedModifier);
+        movement.AccelerationModifier.AddModifier(_noLookMaxSpeedModifier);
+        
+        movement.MaxSpeedModifier.AddModifier(_rotationMaxSpeedModifier);
+        movement.AccelerationModifier.AddModifier(_rotationAccelerationModifier);
     }
     protected override void UpdateAnyOwner()
     {
@@ -100,10 +105,10 @@ public class PStyle : PNetworkAbility
         
         noLookPanel.alpha = endAlpha;
     }
-    private IEnumerator BoostSpeed(PMovement.MoveSpeedModifiers speedModifier, Style style)
+    private IEnumerator BoostSpeed(Modifier<float>.ModifierComponent maxSpeedModifier, Modifier<float>.ModifierComponent accelModifier, Style style)
     {
-        speedModifier.maxSpeedFactor = style.maxSpeedFactor;
-        speedModifier.accelerationFactor = style.accelerationFactor;
+        maxSpeedModifier.factor = style.maxSpeedFactor;
+        accelModifier.factor = style.accelerationFactor;
 
         float t = 0;
         
@@ -112,14 +117,14 @@ public class PStyle : PNetworkAbility
             t += Time.deltaTime;
             float adv = Mathf.Pow(t / style.boostDuration, 2);
             
-            speedModifier.maxSpeedFactor = Mathf.Lerp(style.maxSpeedFactor, 1, adv);
-            speedModifier.accelerationFactor = Mathf.Lerp(style.accelerationFactor, 1, adv);
+            maxSpeedModifier.factor = Mathf.Lerp(style.maxSpeedFactor, 1, adv);
+            accelModifier.factor = Mathf.Lerp(style.accelerationFactor, 1, adv);
             
             yield return null;
         }
         
-        speedModifier.maxSpeedFactor = 1;
-        speedModifier.accelerationFactor = 1;
+        maxSpeedModifier.factor = 1;
+        accelModifier.factor = 1;
     }
     
     private void UpdateNoLook()
@@ -157,7 +162,7 @@ public class PStyle : PNetworkAbility
             if (_currentNoLookStyleIndex != -1 && grounded.FullyGrounded())
             {
                 if (_noLookCoroutine != null) StopCoroutine(_noLookCoroutine);
-                _noLookCoroutine = StartCoroutine(BoostSpeed(_noLookSpeedModifier, noLookStyles[_currentNoLookStyleIndex]));
+                _noLookCoroutine = StartCoroutine(BoostSpeed(_noLookMaxSpeedModifier, _noLookAccelerationModifier, noLookStyles[_currentNoLookStyleIndex]));
             }
             
             _currentNoLookStyleIndex = -1;
@@ -202,7 +207,7 @@ public class PStyle : PNetworkAbility
             if (_currentRotationStyleIndex != -1)
             {
                 if (_rotationCoroutine != null) StopCoroutine(_rotationCoroutine);
-                _rotationCoroutine = StartCoroutine(BoostSpeed(_rotationSpeedModifier, rotationStyles[_currentRotationStyleIndex]));
+                _rotationCoroutine = StartCoroutine(BoostSpeed(_rotationMaxSpeedModifier, _rotationAccelerationModifier, rotationStyles[_currentRotationStyleIndex]));
             }
             
             _currentRotationStyleIndex = -1;

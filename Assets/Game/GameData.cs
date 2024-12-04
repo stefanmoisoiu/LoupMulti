@@ -51,9 +51,9 @@ public class GameData : NetworkBehaviour
     
     
     [Rpc(SendTo.SpecifiedInParams)]
-    public void UpdateEntireClientPlayerData_ClientRpc(PlayerData[] playerDatas, RpcParams @params)
+    public void UpdateEntireClientPlayerData_ClientRpc(PlayerData[] datas, RpcParams @params)
     {
-        clientPlayerData = new List<PlayerData>(playerDatas);
+        clientPlayerData = new List<PlayerData>(datas);
         
         myPlayerData = clientPlayerData.Find(data => data.ClientId == NetworkManager.Singleton.LocalClientId);
         
@@ -104,10 +104,10 @@ public class GameData : NetworkBehaviour
         UpdateEntireClientPlayerData_ClientRpc(_playerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToClientIDs(new []{clientId}, NetworkManager.Singleton));
     }
     
-    public void SetPlayerState(PlayerData.PlayerState state, ulong clientId)
+    public void SetPlayerState(PlayerOuterData.PlayerState state, ulong clientId)
     {
         PlayerData data = _playerDataList.GetPlayerData(clientId);
-        data.SetState(state);
+        data.OuterData.SetState(state);
         _playerDataList.UpdatePlayerData(data);
         
         UpdateSpecificClientPlayerData_ClientRpc(data, RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));

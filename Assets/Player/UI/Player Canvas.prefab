@@ -1149,6 +1149,7 @@ GameObject:
   - component: {fileID: 3137253943657447210}
   - component: {fileID: 5167596975231823899}
   - component: {fileID: 495819089237107532}
+  - component: {fileID: 5492060687537588192}
   m_Layer: 5
   m_Name: Player Canvas
   m_TagString: Canvas
@@ -1198,7 +1199,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 25
+  m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: -2044588207
   m_SortingOrder: 5
@@ -1226,6 +1227,23 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &5492060687537588192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6661752744929025915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 0
+  m_BlockingObjects: 3
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 127
 --- !u!1 &7142952754727506837
 GameObject:
   m_ObjectHideFlags: 0

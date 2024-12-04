@@ -12,11 +12,20 @@ public class PCamEffects : NetworkBehaviour
     [SerializeField] private CinemachineCamera cam;
     private float _baseFov;
 
+    private void OnEnable()
+    {
+        Effects = new();
+    }
+
+    private void OnDisable()
+    {
+        Effects = new();
+    }
+
     private void Start()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
         _baseFov = cam.Lens.FieldOfView;
-
     }
 
     private void LateUpdate()

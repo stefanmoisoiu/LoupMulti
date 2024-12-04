@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PDrag : NetworkBehaviour
+public class PDrag : PNetworkBehaviour
 {
     [SerializeField] private Rigidbody rb;
     [SerializeField] [Range(0,1)] private float drag;
     [SerializeField] [Range(0,1)] private float airDrag = 0.05f;
 
     [SerializeField] private PGrounded grounded;
-    
-    
-    private void FixedUpdate()
+
+
+    protected override void FixedUpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         ApplyDrag();
     }
-    
+
     private void ApplyDrag()
     {
         Vector3 vel = rb.linearVelocity;

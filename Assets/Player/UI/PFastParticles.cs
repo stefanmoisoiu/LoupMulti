@@ -4,29 +4,17 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PFastParticles : NetworkBehaviour
+public class PFastParticles : PNetworkBehaviour
 {
     [SerializeField] private Rigidbody rb;
     [SerializeField] private ParticleSystem particles;
     [SerializeField] private float speedParticlesThreshold = 1;
 
-    // private void Start()
-    // {
-    //     // PRun.OnRun += StartParticles;
-    //     // PRun.OnStopRun += StopParticles;
-    // }
-
-    private void Start()
-    {
-        if (!IsOwner && NetcodeManager.InGame) enabled = false;
-    }
-
-    private void Update()
+    protected override void UpdateAnyOwner()
     {
         if(rb.linearVelocity.magnitude > speedParticlesThreshold) StartParticles();
         else StopParticles();
     }
-
     private void StopParticles()
     {
         if(!particles.isPlaying) return;

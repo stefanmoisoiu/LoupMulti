@@ -67,17 +67,27 @@ public class PUpgradesChoice : PNetworkBehaviour
     }
     public void ShowUpgrades()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         foreach (UpgradeCard upgradeCard in _upgradeCards)
             upgradeCard.gameObject.SetActive(true);
     }
     public void HideUpgrades()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         foreach (UpgradeCard upgradeCard in _upgradeCards)
             upgradeCard.gameObject.SetActive(false);
     }
     
     private void SetUpgradeCardInfo(UpgradeCard upgradeCard, ScriptableUpgrade upgrade, ushort upgradeIndex)
     {
-        upgradeCard.SetUpgrade(upgrade,GameManager.Instance.upgradesManager.ChooseUpgrade, upgradeIndex);
+        upgradeCard.SetUpgrade(upgrade,UpgradeChosen, upgradeIndex);
+    }
+
+    private void UpgradeChosen(ushort index)
+    {
+        HideUpgrades();
+        GameManager.Instance.upgradesManager.ChooseUpgrade(index);
     }
 }

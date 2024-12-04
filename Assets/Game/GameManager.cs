@@ -51,21 +51,6 @@ public class GameManager : NetworkBehaviour
         upgradesManager = GetComponent<UpgradesManager>();
         mapManager = GetComponent<MapManager>();
         OnCreated?.Invoke(this);
-
-        OnGameStateChanged += (state, type) =>
-        {
-            if (state != GameState.ChoosingUpgrade) return;
-            if (type == GameStateCallbackType.StateStarted)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-        };
     }
 
     public override void OnNetworkDespawn()
@@ -107,10 +92,8 @@ public class GameManager : NetworkBehaviour
             gameData.ServerSidePlayerDataList.RemovePlayerData(clientId);
             gameData.UpdateEntireClientPlayerData_ClientRpc(gameData.ServerSidePlayerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
         }
-        else gameData.SetPlayerState(PlayerData.PlayerState.NotAssigned, clientId);
+        else gameData.SetPlayerState(PlayerOuterData.PlayerState.NotAssigned, clientId);
     }
-    
-    
 
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
@@ -125,9 +108,14 @@ public class GameManager : NetworkBehaviour
     {
         mapManager.OnMapLoadedServer -= StartGameMapLoaded;
 
-        foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
-            if (data.CurrentPlayerState == PlayerData.PlayerState.NotAssigned)
-                data.SetState(PlayerData.PlayerState.Playing);
+        for (int i = 0; i < gameData.ServerSidePlayerDataList.playerDatas.Count; i++)
+        {
+            PlayerData data = new(gameData.ServerSidePlayerDataList.playerDatas[i]);
+            data.OuterData = data.OuterData.SetState(PlayerOuterData.PlayerState.Playing);
+            gameData.ServerSidePlayerDataList.playerDatas[i] = data;
+        }
+        gameData.UpdateEntireClientPlayerData_ClientRpc(gameData.ServerSidePlayerDataList.playerDatas.ToArray(),
+            RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
         
         gameState.Value = GameState.InGame;
         OnGameStartClientRpc();
@@ -168,12 +156,11 @@ public class GameManager : NetworkBehaviour
         
         foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
         {
-            if (data.CurrentPlayerState == PlayerData.PlayerState.SpectatingGame) continue;
+            if (data.OuterData.CurrentPlayerState == PlayerOuterData.PlayerState.SpectatingGame) continue;
             upgradesManager.ChooseRandomPlayerUpgradesServer(data);
         }
         yield return new WaitForSeconds(TimeToUpgrade);
         upgradesManager.UpgradeTimeFinished();
-        // apply upgrades
         upgradesManager.ResetChoices();
         OnGameStateChangedClientRpc(GameState.ChoosingUpgrade, GameStateCallbackType.StateEnded);
     }
@@ -210,7 +197,7 @@ public class GameManager : NetworkBehaviour
                 upgradesManager.ChooseRandomPlayerUpgradesServer(data);
                 break;
             case GameState.InGame:
-                data = data.SetState(PlayerData.PlayerState.SpectatingUntilNextRound);
+                data.OuterData = data.OuterData.SetState(PlayerOuterData.PlayerState.SpectatingUntilNextRound);
                 gameData.ServerSidePlayerDataList.UpdatePlayerData(data);
                 break;
         }
@@ -220,7 +207,7 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void SpectateServerRpc(RpcParams @params)
     {
-        gameData.SetPlayerState(PlayerData.PlayerState.SpectatingGame, @params.Receive.SenderClientId);
+        gameData.SetPlayerState(PlayerOuterData.PlayerState.SpectatingGame, @params.Receive.SenderClientId);
     }
     public void BecomePlayer(ulong clientId) => BecomePlayerServerRpc(RpcParamsExt.Instance.SenderClientID(clientId));
     [Rpc(SendTo.Server)]
@@ -228,7 +215,7 @@ public class GameManager : NetworkBehaviour
     {
         if (!CanBecomePlayer()) return;
         
-        gameData.SetPlayerState(PlayerData.PlayerState.Playing, @params.Receive.SenderClientId);
+        gameData.SetPlayerState(PlayerOuterData.PlayerState.Playing, @params.Receive.SenderClientId);
     }
     private bool CanBecomePlayer() => Instance.gameState.Value == GameState.Lobby;
     
@@ -263,7 +250,7 @@ public class GameManager : NetworkBehaviour
                 color = "<color=#ff9900>";
                 break;
             case LogType.UpgradeInfo:
-                color = "<color=#00ff00>";
+                color = "<color=#ffcc00>";
                 break;
         }
         

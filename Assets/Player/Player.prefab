@@ -157,7 +157,7 @@ MonoBehaviour:
   maxWalkSpeed: 5
   maxRunSpeed: 8
   maxGrappleSpeed: 8
-  acceleration: 80
+  acceleration: 100
   grappleAcceleration: 5
   airAccelMultiplier: 0.2
   run: {fileID: 5898427228862310751}
@@ -5673,8 +5673,8 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   amplitude: 0.4
-  walkBobSpeed: 2.5
-  runBobSpeed: 4
+  frequency: 0.4
+  movement: {fileID: 4651922586073164586}
   lerpBackSpeed: 3
   hRunBobCurve:
     serializedVersion: 2
@@ -5718,8 +5718,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hRunBobAmplitude: 2
-  hRunBobSpeed: 2
+  hRunBobAmplitude: 3
+  hRunBobFrequency: 0.4
   run: {fileID: 5898427228862310751}
   grounded: {fileID: 5416708144197644157}
 --- !u!114 &4567314048121769531
@@ -6199,8 +6199,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   scorePrefab: {fileID: 4137574415697711860, guid: 0dc8f9b26860ae24594b5af1345d08a2,
     type: 3}
-  scoreboardPrefab: {fileID: 727231133566150857, guid: 00432f41d54e44c418db76b283c002ef,
-    type: 3}
 --- !u!1 &6762909433332885690
 GameObject:
   m_ObjectHideFlags: 0
@@ -6637,6 +6635,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   movement: {fileID: 4651922586073164586}
+  jump: {fileID: 3097593721952604330}
+  stamina: {fileID: 817862337912563999}
 --- !u!114 &7587226671342476339
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6651,8 +6651,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   canvas: {fileID: 3677539957991917152}
-  upgradesListLayout: {fileID: 8171399559067706334, guid: b2e310dc6dc0702428001a30c387acad,
-    type: 3}
   upgradeCardPrefab: {fileID: 2553056441576974476, guid: 112ce55a94f80ed46ab4fa0561277103,
     type: 3}
 --- !u!1 &7988758659819684247
@@ -6754,8 +6752,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 3065090764912606930}
-  drag: 0.15
-  airDrag: 0.004
+  drag: 0.1
+  airDrag: 0.0025
   grounded: {fileID: 5416708144197644157}
 --- !u!1 &9037462583631167911
 GameObject:

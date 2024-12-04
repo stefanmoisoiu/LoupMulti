@@ -1,17 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class PMovement : NetworkBehaviour
+public class PMovement : PNetworkBehaviour
 {
     [SerializeField] private Transform orientation;
     [SerializeField] private Rigidbody rb;
     
     [SerializeField] private float maxWalkSpeed = 10f;
     [SerializeField] private float maxRunSpeed = 20f;
+    public float MaxRunSpeed => maxRunSpeed;
     [SerializeField] private float maxGrappleSpeed = 12f;
     [SerializeField] private float acceleration = 10f;
     [SerializeField] private float grappleAcceleration = 30f;
@@ -21,61 +23,14 @@ public class PMovement : NetworkBehaviour
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PGrappling grappling;
     
-    public List<MoveSpeedModifiers> moveSpeedModifiers { get; private set; } = new();
+    public Modifier<float> MaxSpeedModifier = new();
+    public Modifier<float> AccelerationModifier = new();
     
-    public void AddMoveSpeedModifier(MoveSpeedModifiers modifier)
-    {
-        moveSpeedModifiers.Add(modifier);
-    }
-    private float GetMaxSpeedFactor()
-    {
-        float maxSpeedFactor = 1;
-        foreach (var modifier in moveSpeedModifiers)
-        {
-            maxSpeedFactor *= modifier.maxSpeedFactor;
-        }
-        
-        
-
-        return maxSpeedFactor;
-    }
-    private float GetAccelerationFactor()
-    {
-        float accelerationFactor = 1;
-        foreach (var modifier in moveSpeedModifiers)
-        {
-            accelerationFactor *= modifier.accelerationFactor;
-        }
-
-        return accelerationFactor;
-    }
-    private float GetAddedMaxSpeed()
-    {
-        float addedMaxSpeed = 0;
-        foreach (var modifier in moveSpeedModifiers)
-        {
-            addedMaxSpeed += modifier.addedMaxSpeed;
-        }
-
-        return addedMaxSpeed;
-    }
-    private float GetAddedAcceleration()
-    {
-        float addedAcceleration = 0;
-        foreach (var modifier in moveSpeedModifiers)
-        {
-            addedAcceleration += modifier.addedAcceleration;
-        }
-
-        return addedAcceleration;
-    }
     
-    private float GetMaxSpeed()
+    public float GetMaxSpeed()
     {
         if (grappling.Grappling) return maxGrappleSpeed;
-        float maxSpeed = maxWalkSpeed;
-        maxSpeed *= GetMaxSpeedFactor();
-        maxSpeed += GetAddedMaxSpeed();
+        float maxSpeed = MaxSpeedModifier.Apply(maxWalkSpeed);
         if (run.Running) maxSpeed += maxRunSpeed - maxWalkSpeed;
         return maxSpeed;
     }
@@ -83,16 +38,13 @@ public class PMovement : NetworkBehaviour
     private float GetAcceleration()
     {
         if (grappling.Grappling) return grappleAcceleration;
-        float a = acceleration;
-        a *= GetAccelerationFactor();
-        a += GetAddedAcceleration();
+        float a = AccelerationModifier.Apply(acceleration);
         if (!grounded.FullyGrounded()) a *= airAccelMultiplier;
         return a;
     }
 
-    private void FixedUpdate()
+    protected override void FixedUpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         Move();
     }
 
@@ -100,7 +52,8 @@ public class PMovement : NetworkBehaviour
     {
         Vector3 dir = orientation.forward * InputManager.instance.MoveInput.y + orientation.right * InputManager.instance.MoveInput.x;
         
-        Vector3 force = dir * GetAcceleration();
+        float accel = GetAcceleration();
+        Vector3 force = dir * accel;
 
         Vector3 vel = rb.linearVelocity;
         vel = grounded.WorldToLocalUp * vel;
@@ -109,11 +62,16 @@ public class PMovement : NetworkBehaviour
         vel.y = 0;
         
         float maxSpeed = GetMaxSpeed();
-        if ((vel + force * Time.fixedDeltaTime).magnitude > maxSpeed && Vector3.Dot(vel, force) > 0)
+
+        Vector3 nextVel = vel + force * Time.fixedDeltaTime;
+        Vector3 clampedVel = Vector3.ClampMagnitude(nextVel, maxSpeed);
+        
+        if (nextVel.magnitude > maxSpeed && Vector3.Dot(vel, force) > 0)
         {
             if (vel.magnitude < maxSpeed)
             {
-                force = ((vel + force * Time.fixedDeltaTime).normalized * maxSpeed - vel) / Time.fixedDeltaTime;
+                Vector3 newDir = (clampedVel - vel).normalized;
+                force = newDir * accel;
             }
             else
             {
@@ -133,32 +91,5 @@ public class PMovement : NetworkBehaviour
         
         Debug.DrawRay(transform.position, rb.linearVelocity, Color.red);
         Debug.DrawRay(transform.position + rb.linearVelocity,force * Time.fixedDeltaTime, Color.green);
-    }
-
-    public class MoveSpeedModifiers
-    {
-        public float maxSpeedFactor;
-        public float accelerationFactor;
-
-        public float addedMaxSpeed;
-        public float addedAcceleration;
-        
-        public MoveSpeedModifiers(float maxSpeedFactor = 1, float accelerationFactor = 1, float addedMaxSpeed = 0, float addedAcceleration = 0)
-        {
-            this.maxSpeedFactor = maxSpeedFactor;
-            this.accelerationFactor = accelerationFactor;
-            
-            this.addedMaxSpeed = addedMaxSpeed;
-            this.addedAcceleration = addedAcceleration;
-        }
-        
-        public void Reset()
-        {
-            maxSpeedFactor = 1;
-            accelerationFactor = 1;
-            
-            addedMaxSpeed = 0;
-            addedAcceleration = 0;
-        }
     }
 }

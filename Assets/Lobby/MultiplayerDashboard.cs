@@ -151,8 +151,8 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void ChangePlayerState()
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
-        PlayerData.PlayerState state = GameManager.Instance.gameData.myPlayerData.CurrentPlayerState;
-        if (state == PlayerData.PlayerState.SpectatingGame)
+        PlayerOuterData.PlayerState state = GameManager.Instance.gameData.myPlayerData.OuterData.CurrentPlayerState;
+        if (state == PlayerOuterData.PlayerState.SpectatingGame)
         {
             GameManager.Instance.BecomePlayer(clientID);
             changeStateText.text = "Spectate";

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -30,6 +31,8 @@ public class PJump : PNetworkBehaviour
 
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PStamina stamina;
+    
+    public Modifier<float> JumpHeightModifier = new ();
 
     protected override void StartAnyOwner()
     {
@@ -82,8 +85,10 @@ public class PJump : PNetworkBehaviour
         _jumpCooldown = jumpCooldown;
         
         rb.useGravity = true;
+
+        float finalJumpForce = JumpHeightModifier.Apply(jumpForce);
         
-        rb.linearVelocity = new Vector3(rb.linearVelocity.x, jumpForce, rb.linearVelocity.z);
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, finalJumpForce, rb.linearVelocity.z);
         
         stamina.DecreaseStamina(jumpStaminaCost);
         

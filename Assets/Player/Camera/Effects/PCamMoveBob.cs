@@ -7,15 +7,15 @@ public class PCamMoveBob : MonoBehaviour
 {
     [SerializeField] private AnimationCurve bobCurve;
     [SerializeField] private float amplitude;
-
-    [SerializeField] private float walkBobSpeed;
-    [SerializeField] private float runBobSpeed;
+    [SerializeField] [Range(0,1)] private float frequency = 0.25f;
+    
+    [SerializeField] private PMovement movement;
 
     [SerializeField] private float lerpBackSpeed;
 
     [SerializeField] private AnimationCurve hRunBobCurve;
     [SerializeField] private float hRunBobAmplitude;
-    [SerializeField] private float hRunBobSpeed;
+    [SerializeField] [Range(0,1)] private float hRunBobFrequency = 0.25f;
     
     private float _advancement;
     private float _hAdvancement;
@@ -41,7 +41,7 @@ public class PCamMoveBob : MonoBehaviour
     {
         if (CanBob())
         {
-            _advancement += Time.deltaTime * (run.Running ? runBobSpeed : walkBobSpeed) * InputManager.instance.MoveInput.magnitude;
+            _advancement += Time.deltaTime * movement.GetMaxSpeed() * frequency * InputManager.instance.MoveInput.magnitude;
             if (_advancement > 1) _advancement--;
             
             return bobCurve.Evaluate(_advancement) * amplitude;
@@ -55,9 +55,9 @@ public class PCamMoveBob : MonoBehaviour
 
     private float GetHBob()
     {
-        if (CanBob() && run.Running)
+        if (CanBob() && movement.GetMaxSpeed() > movement.MaxRunSpeed - .5f)
         {
-            _hAdvancement += Time.deltaTime * hRunBobSpeed * InputManager.instance.MoveInput.magnitude;
+            _hAdvancement += Time.deltaTime * hRunBobFrequency * movement.GetMaxSpeed() * InputManager.instance.MoveInput.magnitude;
             if (_hAdvancement > 1) _hAdvancement--;
             
             return hRunBobCurve.Evaluate(_hAdvancement) * hRunBobAmplitude;

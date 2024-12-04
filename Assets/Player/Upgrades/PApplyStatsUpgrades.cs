@@ -3,29 +3,52 @@
 public class PApplyStatsUpgrades : PNetworkBehaviour
 {
     [SerializeField] private PMovement movement;
-    private PMovement.MoveSpeedModifiers _moveSpeedModifiers = new();
+    [SerializeField] private PJump jump;
+    [SerializeField] private PStamina stamina;
+    
     
     protected override void StartOnlineOwner()
     {
-        movement.AddMoveSpeedModifier(_moveSpeedModifiers);
+        GameManager.OnCreated += GameManagerEnabled;
     }
+
+    private void GameManagerEnabled(GameManager manager)
+    {
+        manager.upgradesManager.OnUpgradeChosenOwner += UpgradeAdded;
+    }
+
+    protected override void DisableOnlineOwner()
+    {
+        if (GameManager.Instance == null) return;
+        GameManager.Instance.upgradesManager.OnUpgradeChosenOwner -= UpgradeAdded;
+    }
+
     protected override void UpdateOnlineOwner()
     {
-        ScriptableUpgrade[] upgrades = GameManager.Instance.gameData.myPlayerData.InGameData.upgrades;
+        ScriptableUpgrade[] upgrades = GameManager.Instance.gameData.myPlayerData.InGameData.GetUpgrades();
         
         if (upgrades == null) return;
         if (upgrades.Length == 0) return;
         
-        _moveSpeedModifiers.Reset();
-        foreach (ScriptableUpgrade upgrade in upgrades) ApplyUpgrade(upgrade);
+        foreach (ScriptableUpgrade upgrade in upgrades) UpdateUpgradeStats(upgrade);
     }
     
-    private void ApplyUpgrade(ScriptableUpgrade upgrade)
+    private void UpdateUpgradeStats(ScriptableUpgrade upgrade)
     {
+        upgrade.Update();
+    }
 
-        _moveSpeedModifiers.maxSpeedFactor *= upgrade.GetMaxSpeedFactor();
-        _moveSpeedModifiers.accelerationFactor *= upgrade.GetAccelerationFactor();
-        _moveSpeedModifiers.addedMaxSpeed += upgrade.GetAddedMaxSpeed();
-        _moveSpeedModifiers.addedAcceleration += upgrade.GetAddedAcceleration();
+    private void UpgradeAdded(ushort upgradeIndex)
+    {
+        ScriptableUpgrade upgrade = GameManager.Instance.upgradesManager.GetUpgrade(upgradeIndex);
+        
+        upgrade.Update();
+        
+        movement.AccelerationModifier.AddModifier(upgrade.GetAccelerationModifier());
+        movement.MaxSpeedModifier.AddModifier(upgrade.GetMaxSpeedModifier());
+        jump.JumpHeightModifier.AddModifier(upgrade.GetJumpHeightModifier());
+        stamina.StaminaRecoverRateModifier.AddModifier(upgrade.GetStaminaRecoveryModifier());
+        stamina.StaminaPerPartModifier.AddModifier(upgrade.GetStaminaPerPartModifier());
+        stamina.AddedStaminaPartsModifier.AddModifier(upgrade.GetAddedStaminaParts());
     }
 }
