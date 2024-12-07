@@ -6,10 +6,13 @@ using UnityEngine;
 
 public abstract class ScriptableUpgrade : ScriptableObject
 {
-    [TitleGroup("Info")][SerializeField] private Sprite icon;
-    [TitleGroup("Info")][SerializeField] private string upgradeName;
-    [TitleGroup("Info")][SerializeField][TextArea] private string upgradeDescription;
-    [TitleGroup("Info")][SerializeField] private UpgradeType upgradeType;
+    [TitleGroup("Base")]
+    [FoldoutGroup("Base/Info")][SerializeField] private Sprite icon;
+    [FoldoutGroup("Base/Info")][SerializeField] private string upgradeName;
+    [FoldoutGroup("Base/Info")][SerializeField][TextArea] private string upgradeDescription;
+    [FoldoutGroup("Base/Info")][SerializeField] private UpgradeType upgradeType;
+
+    [BoxGroup("Base/Info/Active Ability")] [ShowIf(("@upgradeType == UpgradeType.Ability"))] [SerializeField] private string abilityName;
     [TitleGroup("Evolution")][SerializeField] private Evolution[] evolutions;
 
     
