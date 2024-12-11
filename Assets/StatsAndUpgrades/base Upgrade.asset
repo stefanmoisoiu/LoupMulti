@@ -15,7 +15,8 @@ MonoBehaviour:
   icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   upgradeName: A
   upgradeDescription: Base Upgrade
-  upgradeType: 0
+  upgradeType: 1
+  activeAbility: 0
   evolutions:
   - evolution: {fileID: 11400000, guid: e1cd3db5f7adf6244a2849632e585bf8, type: 2}
     requiredUpgrades: []
@@ -27,5 +28,9 @@ MonoBehaviour:
   addedMaxSpeed: 0
   gravityFactor: 1
   jumpHeightFactor: 1
+  addedJumpHeight: 0
   staminaRecoveryFactor: 1
   addedStaminaParts: 0
+  staminaPartFactor: 1
+  staminaPerPartFactor: 1
+  addedStaminaPerPart: 0

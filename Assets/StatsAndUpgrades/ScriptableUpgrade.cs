@@ -12,12 +12,13 @@ public abstract class ScriptableUpgrade : ScriptableObject
     [FoldoutGroup("Base/Info")][SerializeField][TextArea] private string upgradeDescription;
     [FoldoutGroup("Base/Info")][SerializeField] private UpgradeType upgradeType;
 
-    [BoxGroup("Base/Info/Active Ability")] [ShowIf(("@upgradeType == UpgradeType.Ability"))] [SerializeField] private string abilityName;
+    [BoxGroup("Base/Info/Active Ability")] [ShowIf(("@upgradeType == UpgradeType.Active"))] [SerializeField] private PAbilityManager.Ability activeAbility;
     [TitleGroup("Evolution")][SerializeField] private Evolution[] evolutions;
 
     
     public Sprite Icon => icon;
     public string UpgradeName => upgradeName;
+    public PAbilityManager.Ability ActiveAbility => activeAbility;
     public string UpgradeDescription => upgradeDescription;
     public UpgradeType Type => upgradeType;
 
@@ -28,7 +29,7 @@ public abstract class ScriptableUpgrade : ScriptableObject
 
     public enum UpgradeType
     {
-        Ability,
+        Active,
         Passive
     }
 
@@ -51,5 +52,10 @@ public abstract class ScriptableUpgrade : ScriptableObject
             if (requiredUpgrades == null) return true;
             return requiredUpgrades.All(ownedUpgrades.Contains);
         }
+    }
+    
+    public override string ToString()
+    {
+        return upgradeName;
     }
 }

@@ -1,12 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Sirenix.OdinInspector;
-using Smooth;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 
 public class GameManager : NetworkBehaviour
 {
@@ -41,8 +37,7 @@ public class GameManager : NetworkBehaviour
 
     private Coroutine _gameLoopCoroutine;
     
-    public Action OnGameStart;
-    [Rpc(SendTo.Everyone)] private void OnGameStartClientRpc() => OnGameStart?.Invoke();
+    public Action OnGameStartedServer, OnStartPlayRound, OnEndPlayRound, OnGameEndedServer;
 
     private void Awake()
     {
@@ -69,7 +64,7 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            LogRpc("Starting Game Manager", LogType.ServerInfo);
+            NetcodeLogger.Instance.LogRpc("Starting Game Manager", NetcodeLogger.ColorType.Green);
         
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
@@ -78,47 +73,28 @@ public class GameManager : NetworkBehaviour
     }
     private void OnClientConnected(ulong clientId)
     {
-        if (gameState.Value != GameState.Lobby) LatePlayerJoined(clientId);
+        
     }
     private void OnClientDisconnected(ulong clientId)
     {
-        if (NetworkManager.Singleton == null) return;
-        if (gameData == null) return;
         
-        if (!gameData.ServerSidePlayerDataList.ContainsPlayerData(clientId)) return;
-        
-        if (gameState.Value == GameState.Lobby)
-        {
-            gameData.ServerSidePlayerDataList.RemovePlayerData(clientId);
-            gameData.UpdateEntireClientPlayerData_ClientRpc(gameData.ServerSidePlayerDataList.playerDatas.ToArray(), RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
-        }
-        else gameData.SetPlayerState(PlayerOuterData.PlayerState.NotAssigned, clientId);
     }
 
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
     {
-        LogRpc("Starting game", LogType.ServerInfo);
+        NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.ColorType.Green);
         mapManager.LoadRandomGameMap();
-        mapManager.OnMapLoadedServer += StartGameMapLoaded;
+        mapManager.OnMapLoadedServer += StartGameMapLoadedServer;
+        
+        OnGameStartedServer?.Invoke();
     }
 
-    // SERVER SIDE
-    private void StartGameMapLoaded(string mapName)
+    private void StartGameMapLoadedServer(string mapName)
     {
-        mapManager.OnMapLoadedServer -= StartGameMapLoaded;
-
-        for (int i = 0; i < gameData.ServerSidePlayerDataList.playerDatas.Count; i++)
-        {
-            PlayerData data = new(gameData.ServerSidePlayerDataList.playerDatas[i]);
-            data.OuterData = data.OuterData.SetState(PlayerOuterData.PlayerState.Playing);
-            gameData.ServerSidePlayerDataList.playerDatas[i] = data;
-        }
-        gameData.UpdateEntireClientPlayerData_ClientRpc(gameData.ServerSidePlayerDataList.playerDatas.ToArray(),
-            RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
+        mapManager.OnMapLoadedServer -= StartGameMapLoadedServer;
         
         gameState.Value = GameState.InGame;
-        OnGameStartClientRpc();
         
         if (_gameLoopCoroutine != null) StopCoroutine(_gameLoopCoroutine);
         _gameLoopCoroutine = StartCoroutine(GameLoop());
@@ -135,72 +111,58 @@ public class GameManager : NetworkBehaviour
         
         while (round <= RoundCount)
         {
-            LogRpc("Round " + round, LogType.InGameInfo);
+            OnStartPlayRound?.Invoke();
+            
+            NetcodeLogger.Instance.LogRpc("Round " + round, NetcodeLogger.ColorType.Green);
+            
             mapManager.SetPlayerSpawnPositions();
             yield return ChooseUpgrade();
+            
             yield return PlayRound();
             round++;
+            
+            OnEndPlayRound?.Invoke();
         }
 
         yield return EndGame();
+        
+        OnGameEndedServer?.Invoke();
         
         OnGameStateChangedClientRpc(GameState.Lobby, GameStateCallbackType.StateStarted);
     }
     
     private IEnumerator ChooseUpgrade()
     {
-        LogRpc($"Choosing upgrade for {TimeToUpgrade} seconds...", LogType.InGameInfo);
+        NetcodeLogger.Instance.LogRpc($"Choosing upgrade for {TimeToUpgrade} seconds...", NetcodeLogger.ColorType.Green);
         gameState.Value = GameState.ChoosingUpgrade;
         
         OnGameStateChangedClientRpc(GameState.ChoosingUpgrade, GameStateCallbackType.StateStarted);
-        
-        foreach (PlayerData data in gameData.ServerSidePlayerDataList.playerDatas)
-        {
-            if (data.OuterData.CurrentPlayerState == PlayerOuterData.PlayerState.SpectatingGame) continue;
-            upgradesManager.ChooseRandomPlayerUpgradesServer(data);
-        }
+
+        upgradesManager.ChooseUpgradesForPlayingPlayersServer();
         yield return new WaitForSeconds(TimeToUpgrade);
-        upgradesManager.UpgradeTimeFinished();
-        upgradesManager.ResetChoices();
+        upgradesManager.UpgradeTimeFinishedServer();
+        
         OnGameStateChangedClientRpc(GameState.ChoosingUpgrade, GameStateCallbackType.StateEnded);
     }
     private IEnumerator PlayRound()
     {
-        LogRpc($"Countdown of {StartCountdown} seconds", LogType.InGameInfo);
+        NetcodeLogger.Instance.LogRpc($"Countdown of {StartCountdown} seconds", NetcodeLogger.ColorType.Green);
         gameState.Value = GameState.InGame;
         
         OnGameStateChangedClientRpc(GameState.InGame, GameStateCallbackType.StateStarted);
         
         yield return new WaitForSeconds(StartCountdown);
         
-        LogRpc($"Playing round for {GameLength} seconds", LogType.InGameInfo);
+        NetcodeLogger.Instance.LogRpc($"Playing round for {GameLength} seconds", NetcodeLogger.ColorType.Green);
         yield return new WaitForSeconds(GameLength);
         
         OnGameStateChangedClientRpc(GameState.InGame, GameStateCallbackType.StateEnded);
     }
     private IEnumerator EndGame()
     {
-        LogRpc("Game ended", LogType.InGameInfo);
+        NetcodeLogger.Instance.LogRpc("Game ended", NetcodeLogger.ColorType.Green);
         gameState.Value = GameState.Lobby;
         yield break;
-    }
-    
-    private void LatePlayerJoined(ulong clientId)
-    {
-        if (gameState.Value == GameState.Lobby) return;
-        
-        PlayerData data = gameData.ServerSidePlayerDataList.GetPlayerData(clientId);
-
-        switch (gameState.Value)
-        {
-            case GameState.ChoosingUpgrade:
-                upgradesManager.ChooseRandomPlayerUpgradesServer(data);
-                break;
-            case GameState.InGame:
-                data.OuterData = data.OuterData.SetState(PlayerOuterData.PlayerState.SpectatingUntilNextRound);
-                gameData.ServerSidePlayerDataList.UpdatePlayerData(data);
-                break;
-        }
     }
     
     public void Spectate(ulong clientId) => SpectateServerRpc(RpcParamsExt.Instance.SenderClientID(clientId));
@@ -231,31 +193,6 @@ public class GameManager : NetworkBehaviour
         Error,
     }
 
-    [Rpc(SendTo.Everyone)]
-    public void LogRpc(string message, LogType type)
-    {
-        string color = "<color=#29b929>";
-        switch (type)
-        {
-            case LogType.ServerInfo:
-                color = "<color=#80eeee>";
-                break;
-            case LogType.Error:
-                color = "<color=#ff0000>";
-                break;
-            case LogType.MapInfo:
-                color = "<color=#ff00ff>";
-                break;
-            case LogType.GameDataInfo:
-                color = "<color=#ff9900>";
-                break;
-            case LogType.UpgradeInfo:
-                color = "<color=#ffcc00>";
-                break;
-        }
-        
-        Debug.Log($"{color}<b>{message}");
-    }
 
 
     

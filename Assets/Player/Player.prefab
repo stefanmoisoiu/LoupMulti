@@ -5043,7 +5043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  passive: 0
+  abilityName: Grappling
   abilityEnabled: 0
   abilityInput: 3
   springConstant: 50
@@ -5122,7 +5122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  passive: 0
+  abilityName: Wall Bounce
   abilityEnabled: 0
   abilityInput: 3
   wallCheckDistance: 1
@@ -5386,7 +5386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  passive: 0
+  abilityName: Air Dash
   abilityEnabled: 0
   abilityInput: 3
   dashLength: 0.3
@@ -6800,7 +6800,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  passive: 0
+  abilityName: Style
   abilityEnabled: 0
   abilityInput: 3
   noLookStyles:
@@ -7979,6 +7979,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7389640782170387324}
+  - component: {fileID: 652727250560518867}
   m_Layer: 6
   m_Name: Abilities
   m_TagString: Untagged
@@ -8005,3 +8006,20 @@ Transform:
   - {fileID: 7643051774262343640}
   m_Father: {fileID: 6107008973671010010}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &652727250560518867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9125026333678461273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60f5a5ab87534ca6993e34cc394e6e3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  abilities:
+  - {fileID: 7587270886417019891}
+  - {fileID: 4239995739731351817}
+  - {fileID: 3871697241124389449}
+  - {fileID: 5193751502431897428}

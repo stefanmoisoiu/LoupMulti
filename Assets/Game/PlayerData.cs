@@ -1,30 +1,69 @@
 ﻿    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Sirenix.OdinInspector;
     using Unity.Collections;
     using Unity.Netcode;
     using UnityEngine;
 
-    [Serializable] 
-    public class PlayerDataList
+    [Serializable]
+    public struct PlayerGameData : INetworkSerializable
     {
-        public List<PlayerData> playerDatas;
+        public PlayerData[] playerDatas;
 
-        public void SetupPlayerData()
+        public static PlayerData[] BasePlayerDatas()
         {
-            playerDatas = new (NetcodeManager.MaxPlayers);
-            foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
-                AddPlayerData(new PlayerData(client));
+            PlayerData[] res = new PlayerData[NetcodeManager.MaxPlayers];
+            for (int i = 0; i < NetcodeManager.MaxPlayers; i++) res[i] = new PlayerData(null);
+            return res;
         }
-        
-        public bool ContainsPlayerData(ulong clientId)
+        public PlayerGameData(PlayerData[] playerDatas)
         {
-            foreach (PlayerData data in playerDatas)
-                if (data.ClientId == clientId) return true;
-            return false;
+            this.playerDatas = playerDatas;
         }
-        
-        public PlayerData GetPlayerData(ulong clientId)
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            playerDatas ??= BasePlayerDatas();
+            if (serializer.IsReader) playerDatas = BasePlayerDatas();
+            for (int i = 0; i < NetcodeManager.MaxPlayers; i++) serializer.SerializeValue(ref playerDatas[i]);
+        }
+
+        public PlayerGameData AddOrUpdateData(PlayerData data)
+        {
+            for (int i = 0; i < playerDatas.Length; i++)
+            {
+                if (playerDatas[i].ClientId != ulong.MaxValue && playerDatas[i].ClientId != data.ClientId) continue;
+                playerDatas[i] = data;
+                return this;
+            }
+            Debug.LogError("Add PlayerData failed for clientId: " + data.ClientId);
+            return this;
+        }
+
+        public PlayerGameData RemoveData(PlayerData data)
+        {
+            for (int i = 0; i < playerDatas.Length; i++)
+            {
+                if (playerDatas[i].ClientId != data.ClientId) continue;
+                playerDatas[i] = new PlayerData();
+                return this;
+            }
+            Debug.LogError("Remove PlayerData failed for clientId: " + data.ClientId);
+            return this;
+        }
+        public PlayerGameData RemoveData(ulong clientId)
+        {
+            for (int i = 0; i < playerDatas.Length; i++)
+            {
+                if (playerDatas[i].ClientId != clientId) continue;
+                playerDatas[i] = new PlayerData();
+                return this;
+            }
+            Debug.LogError("Remove PlayerData failed for clientId: " + clientId);
+            return this;
+        }
+
+        public PlayerData GetDataOrDefault(ulong clientId)
         {
             foreach (PlayerData data in playerDatas)
             {
@@ -34,33 +73,32 @@
             return new();
         }
         
-        public void AddPlayerData(PlayerData data)
+        public PlayerGameData UpdateData(PlayerData data)
         {
-            if (ContainsPlayerData(data.ClientId)) return;
-            playerDatas.Add(data);
-        }
-        
-        public void UpdatePlayerData(PlayerData data)
-        {
-            for (int i = 0; i < playerDatas.Count; i++)
+            for (int i = 0; i < playerDatas.Length; i++)
             {
                 if (playerDatas[i].ClientId != data.ClientId) continue;
-                
                 playerDatas[i] = data;
+                return this;
             }
+            Debug.LogError("Update PlayerData failed for clientId: " + data.ClientId);
+            return this;
         }
-        public void RemovePlayerData(ulong clientId)
+        
+        public PlayerData[] GetDatas()
         {
-            for (int i = 0; i < playerDatas.Count; i++)
+            List<PlayerData> res = new();
+            foreach (PlayerData data in playerDatas)
             {
-                if (playerDatas[i].ClientId != clientId) continue;
-                
-                playerDatas.RemoveAt(i);
+                if (data.ClientId == ulong.MaxValue) continue;
+                res.Add(data);
             }
+            return res.ToArray();
         }
-        public void RemovePlayerData(PlayerData data)
+        
+        public bool HasPlayerData(ulong clientId)
         {
-            playerDatas.Remove(data);
+            return playerDatas.Any(data => data.ClientId == clientId);
         }
     }
 
@@ -72,7 +110,7 @@
         public PlayerOuterData OuterData;
         public PlayerInGameData InGameData;
         
-        public PlayerData(NetworkClient client = null)
+        public PlayerData(NetworkClient client)
         {
             ClientId = client?.ClientId ?? ulong.MaxValue;
             OuterData = new PlayerOuterData(client);
@@ -97,8 +135,14 @@
             return ClientId == other.ClientId;
         }
         public RpcParams ToRpcParams() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
+        
+        public override string ToString()
+        {
+            return $"ClientId: {ClientId}\nOuterData: {OuterData}\nInGameData: {InGameData}";
+        }
     }
-    
+
+
     [Serializable]
     public struct PlayerOuterData : INetworkSerializable
     {
@@ -132,6 +176,11 @@
         {
             serializer.SerializeValue(ref CurrentPlayerState);
         }
+        
+        public override string ToString()
+        {
+            return $"CurrentPlayerState: {CurrentPlayerState}";
+        }
     }
 
     [Serializable]
@@ -140,13 +189,17 @@
         public int score;
         public ushort[] upgradesIndexArray;
         
+        public bool debugUpgrades;
+        [ShowInInspector] [ShowIf("@debugUpgrades")] public string upgradesString => string.Join(", ", GetUpgrades().Select(u => u.UpgradeName));
+        
         public void AddScore(int amount) => score += amount;
         public void RemoveScore(int amount) => score -= amount;
         public void ResetScore() => score = 0;
 
         public override string ToString()
         {
-            return $"score: {score}, upgradesIndexArray: {string.Join(',',upgradesIndexArray)}, size: {upgradesIndexArray.Length}";
+            ScriptableUpgrade[] upgrades = GetUpgrades();
+            return $"Score: {score}\nUpgrades: {string.Join(", ", upgrades.Select(u => u))}";
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -163,6 +216,7 @@
             score = Score;
             
             upgradesIndexArray = UpgradesIndexArray;
+            debugUpgrades = false;
             
             if(UpgradesIndexArray == null) Debug.LogError("initialise upgradesIndexArray ca marche pas sinon");
         }

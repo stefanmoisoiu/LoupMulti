@@ -12,33 +12,14 @@ public class UpgradesManager : NetworkBehaviour
     public const ushort UpgradeChoices = 3;
     
     [SerializeField] private ScriptableUpgrade[] upgrades;
+    public ScriptableUpgrade[] Upgrades => upgrades;
     private readonly Dictionary<ulong,ushort[]> _playerUpgradeChoices = new();
     private readonly Dictionary<ulong,ushort> _playerUpgradeChosenChoice = new();
-
-    public List<ScriptableUpgrade> cachedClientUpgrades;
     
     public Action<ushort[]> OnUpgradeChoices;
     
     public Action<ushort> OnUpgradeChosenOwner;
     [Rpc(SendTo.SpecifiedInParams)]private void OnUpgradeChosenClientRpc(ushort upgradeIndex, RpcParams @params) => OnUpgradeChosenOwner?.Invoke(upgradeIndex);
-
-    private void Start()
-    {
-        SetupCachedClientUpgrades();
-    }
-    
-    private void SetupCachedClientUpgrades()
-    {
-        PlayerData myPlayerData = GameManager.Instance.gameData.myPlayerData;
-        cachedClientUpgrades = myPlayerData.InGameData.GetUpgrades().ToList();
-        
-        OnUpgradeChosenOwner += UpdateCachedClientUpgrades;
-    }
-
-    private void UpdateCachedClientUpgrades(ushort upgradeIndex)
-    {
-        cachedClientUpgrades.Add(GetUpgrade(upgradeIndex));
-    }
 
     public ScriptableUpgrade GetUpgrade(ushort upgradeIndex)
     {
@@ -49,8 +30,10 @@ public class UpgradesManager : NetworkBehaviour
     {
         return (ushort)Array.IndexOf(upgrades, upgrade);
     }
+    
+    
 
-    public ushort[] GetUpgradesIndex(int amount, PlayerData data)
+    public ushort[] DrawUpgradesIndex(int amount, PlayerData data)
     {
         ushort[] ownedUpgrades = data.InGameData.upgradesIndexArray;
         ScriptableUpgrade[] ownedUpgradesScriptable = data.InGameData.GetUpgrades();
@@ -92,22 +75,33 @@ public class UpgradesManager : NetworkBehaviour
     }
 
     // server
-    public void UpgradeTimeFinished()
+    public void UpgradeTimeFinishedServer()
     {
         foreach (var player in NetworkManager.ConnectedClientsList)
             if (!_playerUpgradeChosenChoice.TryGetValue(player.ClientId, out var upgradeIndex))
                 _playerUpgradeChosenChoice.Add(player.ClientId, 0);
         
-        ApplyUpgradesToPlayers();
+        ApplyUpgradesToPlayersServer();
+        ResetChoices();
     }
-    public void ChooseRandomPlayerUpgradesServer(PlayerData data)
+
+    public void ChooseUpgradesForPlayingPlayersServer()
+    {
+        foreach (PlayerData data in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
+        {
+            if (data.OuterData.CurrentPlayerState != PlayerOuterData.PlayerState.Playing) continue;
+            ChooseUpgradesForPlayerServer(data);
+        }
+    }
+    
+    public void ChooseUpgradesForPlayerServer(PlayerData data)
     {
         ushort[] randomUpgradesIndex;
         if (_playerUpgradeChoices.TryGetValue(data.ClientId, out var upgradesIndex))
             randomUpgradesIndex = upgradesIndex;
         else
         {
-            randomUpgradesIndex = GetUpgradesIndex(UpgradeChoices, data);
+            randomUpgradesIndex = DrawUpgradesIndex(UpgradeChoices, data);
             _playerUpgradeChoices.Add(data.ClientId, randomUpgradesIndex);
         }
         OnUpgradeChoices_ClientRpc(randomUpgradesIndex, data.ToRpcParams());
@@ -118,31 +112,29 @@ public class UpgradesManager : NetworkBehaviour
         _playerUpgradeChosenChoice.Clear();
     }
 
-    private void ApplyUpgradesToPlayers()
+    private void ApplyUpgradesToPlayersServer()
     { 
-        List<PlayerData> playerDatas = GameManager.Instance.gameData.ServerSidePlayerDataList.playerDatas;
+        PlayerData[] playerDatas = GameManager.Instance.gameData.playerGameData.Value.GetDatas();
         
-        for (int i = 0; i < playerDatas.Count; i++)
+        for (int i = 0; i < playerDatas.Length; i++)
         {
             ulong clientId = playerDatas[i].ClientId;
             int choice = _playerUpgradeChosenChoice[clientId];
             ushort[] availableChoices = _playerUpgradeChoices[clientId];
             ushort upgradeIndex = availableChoices[choice];
             // log
-            GameManager.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", GameManager.LogType.UpgradeInfo);
-            GameManager.Instance.LogRpc($"and chose {choice}: {GetUpgrade(upgradeIndex).UpgradeName}", GameManager.LogType.UpgradeInfo);
+            NetcodeLogger.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", NetcodeLogger.ColorType.Orange);
+            NetcodeLogger.Instance.LogRpc($"and chose {choice}: {GetUpgrade(upgradeIndex).UpgradeName}", NetcodeLogger.ColorType.Orange);
             
             PlayerInGameData inGameData = playerDatas[i].InGameData.AddUpgrade(upgradeIndex);
             PlayerData finalPlayerData = new PlayerData(playerDatas[i]) { InGameData = inGameData };
             
-            GameManager.Instance.gameData.ServerSidePlayerDataList.UpdatePlayerData(finalPlayerData);
-            
+            GameManager.Instance.gameData.playerGameData.Value = GameManager.Instance.gameData.playerGameData.Value.UpdateData(finalPlayerData);
             OnUpgradeChosenClientRpc(upgradeIndex, playerDatas[i].ToRpcParams());
         }
-        GameManager.Instance.gameData.UpdateEntireClientPlayerData_ClientRpc(playerDatas.ToArray(), RpcParamsExt.Instance.SendToAllClients(NetworkManager.Singleton));
     }
     // client
-    public void ChooseUpgrade(ushort upgradeIndex) => UpgradeChosenServerRpc(upgradeIndex, RpcParamsExt.Instance.SenderClientID(NetworkManager.LocalClientId));
+    public void ChooseUpgradeClient(ushort upgradeIndex) => UpgradeChosenServerRpc(upgradeIndex, RpcParamsExt.Instance.SenderClientID(NetworkManager.LocalClientId));
     [Rpc(SendTo.Server)]
     public void UpgradeChosenServerRpc(ushort upgradeIndex, RpcParams @params)
     {

@@ -25,7 +25,8 @@ public class PApplyStatsUpgrades : PNetworkBehaviour
 
     protected override void UpdateOnlineOwner()
     {
-        ScriptableUpgrade[] upgrades = GameManager.Instance.gameData.myPlayerData.InGameData.GetUpgrades();
+        Debug.Log("a changer");
+        ScriptableUpgrade[] upgrades = GameManager.Instance.gameData.playerGameData.Value.GetDataOrDefault(OwnerClientId).InGameData.GetUpgrades();
         
         if (upgrades == null) return;
         if (upgrades.Length == 0) return;

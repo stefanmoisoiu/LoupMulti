@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Smooth;
 using Unity.Netcode;
 using UnityEngine;
@@ -30,7 +31,7 @@ public class MapManager : NetworkBehaviour
         
         CurrentMap = map;
         
-        GameManager.Instance.LogRpc("Loading map: " + map, GameManager.LogType.MapInfo);
+        NetcodeLogger.Instance.LogRpc("Loading map: " + map, NetcodeLogger.ColorType.Purple);
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += MapLoaded;
         
         NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
@@ -40,22 +41,21 @@ public class MapManager : NetworkBehaviour
     {
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= MapLoaded;
         
-        GameManager.Instance.LogRpc("Map loaded", GameManager.LogType.MapInfo);
+        NetcodeLogger.Instance.LogRpc("Map loaded", NetcodeLogger.ColorType.Purple);
         OnMapLoadedServer?.Invoke(CurrentMap);
         OnMapLoadedClientRpc(CurrentMap);
     }
     
     public void SetPlayerSpawnPositions()
     {
-        GameData gameData = GameManager.Instance.gameData;
-        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(gameData.ServerSidePlayerDataList.playerDatas.Count);
-        for(int i = 0; i < gameData.ServerSidePlayerDataList.playerDatas.Count; i++)
+        NetworkClient[] clients = NetworkManager.ConnectedClients.Values.ToArray();
+        ushort[] spawnIndexes = MapSpawnPositions.instance.GetTransformIndexes(NetworkManager.ConnectedClients.Count);
+        for(int i = 0; i < clients.Length; i++)
         {
-            PlayerData data = gameData.ServerSidePlayerDataList.playerDatas[i];
             ushort spawnIndex = spawnIndexes[i];
             
             Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(spawnIndex);
-            SmoothSyncNetcode sync = NetworkManager.Singleton.ConnectedClients[data.ClientId].PlayerObject.GetComponent<SmoothSyncNetcode>();
+            SmoothSyncNetcode sync = clients[i].PlayerObject.GetComponent<SmoothSyncNetcode>();
             sync.teleportAnyObjectFromServer(spawnPoint.position, spawnPoint.rotation, Vector3.one);
         }
     }

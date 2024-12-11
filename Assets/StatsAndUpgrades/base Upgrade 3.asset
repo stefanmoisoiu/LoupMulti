@@ -16,6 +16,7 @@ MonoBehaviour:
   upgradeName: D
   upgradeDescription: Base Upgrade
   upgradeType: 0
+  activeAbility: 0
   evolutions: []
   accelerationFactor: 1
   addedAcceleration: 0

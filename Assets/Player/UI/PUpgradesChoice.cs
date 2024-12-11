@@ -88,6 +88,6 @@ public class PUpgradesChoice : PNetworkBehaviour
     private void UpgradeChosen(ushort index)
     {
         HideUpgrades();
-        GameManager.Instance.upgradesManager.ChooseUpgrade(index);
+        GameManager.Instance.upgradesManager.ChooseUpgradeClient(index);
     }
 }
