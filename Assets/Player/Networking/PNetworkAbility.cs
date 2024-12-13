@@ -11,6 +11,7 @@ public class PNetworkAbility : PNetworkBehaviour
     public bool AbilityEnabled => abilityEnabled;
     public InputManager.AbilityInput AbilityInput => abilityInput;
 
+    public void SetAbilityInput(InputManager.AbilityInput input) => abilityInput = input;
     public virtual void EnableAbility()
     {
         abilityEnabled = true;

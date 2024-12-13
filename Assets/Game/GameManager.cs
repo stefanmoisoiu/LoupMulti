@@ -13,7 +13,6 @@ public class GameManager : NetworkBehaviour
     public GameData gameData { get; private set; }
     public UpgradesManager upgradesManager { get; private set; }
     public MapManager mapManager { get; private set; }
-    
 
     public NetworkVariable<GameState> gameState = new();
 
@@ -85,6 +84,7 @@ public class GameManager : NetworkBehaviour
     {
         NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.ColorType.Green);
         mapManager.LoadRandomGameMap();
+        gameData.StartedGameServer();
         mapManager.OnMapLoadedServer += StartGameMapLoadedServer;
         
         OnGameStartedServer?.Invoke();

@@ -15,7 +15,11 @@ public class POfflinePlayer : NetworkBehaviour
     private void OnEnable()
     {
         if (NetcodeManager.InGame) TryDeletePlayer();
-        else NetworkManager.Singleton.OnConnectionEvent += DelConnectionEvent;
+        else
+        {
+            NetcodeManager.OnEnterGame += TryDeletePlayer;
+            NetworkManager.Singleton.OnConnectionEvent += DelConnectionEvent;
+        }
     }
 
     private void OnDisable()

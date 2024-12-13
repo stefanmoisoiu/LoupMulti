@@ -99,6 +99,7 @@ Transform:
   m_Children:
   - {fileID: 606041644603230737}
   - {fileID: 4354526187739653439}
+  - {fileID: 3428549248325674044}
   m_Father: {fileID: 984096862632987811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1389195496517896037
@@ -5045,7 +5046,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   abilityName: Grappling
   abilityEnabled: 0
-  abilityInput: 3
+  abilityInput: 2
   springConstant: 50
   dampingFactor: 5
   grappleJumpForce: 3
@@ -5124,7 +5125,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   abilityName: Wall Bounce
   abilityEnabled: 0
-  abilityInput: 3
+  abilityInput: 1
   wallCheckDistance: 1
   verticalBounceSpeed: 7
   horizontalBounceSpeed: 5
@@ -5388,7 +5389,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   abilityName: Air Dash
   abilityEnabled: 0
-  abilityInput: 3
+  abilityInput: 0
   dashLength: 0.3
   dashForce: 15
   dashCurve:
@@ -6588,6 +6589,58 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 3065090764912606930}
+--- !u!1 &6819761759383815555
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4966922021982109116}
+  - component: {fileID: 6239825336906052314}
+  m_Layer: 0
+  m_Name: Projectile
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4966922021982109116
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6819761759383815555}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7389640782170387324}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6239825336906052314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6819761759383815555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ec6b6def9b456287734986d63fdf43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  abilityName: Projectile
+  abilityEnabled: 0
+  abilityInput: 2
+  throwPosition: {fileID: 3428549248325674044}
+  throwSpeed: 10
+  projectilePrefab: {fileID: 31684008991957892, guid: bff806dc2ee45de4dbc2069135354285,
+    type: 3}
 --- !u!1 &6985033664700072511
 GameObject:
   m_ObjectHideFlags: 0
@@ -7970,6 +8023,37 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &9040491214685134097
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3428549248325674044}
+  m_Layer: 0
+  m_Name: Throw Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3428549248325674044
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9040491214685134097}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8594345963656003457}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9125026333678461273
 GameObject:
   m_ObjectHideFlags: 0
@@ -8002,6 +8086,7 @@ Transform:
   m_Children:
   - {fileID: 186313579562787467}
   - {fileID: 7595118309001814568}
+  - {fileID: 4966922021982109116}
   - {fileID: 4494709189534034638}
   - {fileID: 7643051774262343640}
   m_Father: {fileID: 6107008973671010010}
@@ -8018,8 +8103,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60f5a5ab87534ca6993e34cc394e6e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   abilities:
-  - {fileID: 7587270886417019891}
-  - {fileID: 4239995739731351817}
-  - {fileID: 3871697241124389449}
-  - {fileID: 5193751502431897428}
+  - ability: 0
+    script: {fileID: 7587270886417019891}
+  - ability: 4
+    script: {fileID: 4239995739731351817}
+  - ability: 1
+    script: {fileID: 6239825336906052314}
+  - ability: 2
+    script: {fileID: 3871697241124389449}
+  - ability: 3
+    script: {fileID: 5193751502431897428}

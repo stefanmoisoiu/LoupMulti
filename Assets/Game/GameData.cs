@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -12,6 +11,9 @@ public class GameData : NetworkBehaviour
         
     public static Action<List<PlayerData>> OnClientPlayerDataChanged;
     public static Action<PlayerData> OnMyPlayerDataChanged;
+    
+    // cached Owner data:
+    public ScriptableUpgrade[] CachedOwnerOwnedUpgrades { get; private set; }
     
     public override void OnNetworkSpawn()
     {
@@ -27,8 +29,18 @@ public class GameData : NetworkBehaviour
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
             NetworkObject.DestroyWithScene = false;
         }
+        else
+        {
+            playerGameData.OnValueChanged += UpdateCachedOwnerData;
+        }
     }
 
+    private void UpdateCachedOwnerData(PlayerGameData previousData, PlayerGameData newData)
+    {
+        ulong id = NetworkManager.LocalClientId;
+        PlayerData newOwnerData = newData.GetDataOrDefault(id);
+        CachedOwnerOwnedUpgrades = newOwnerData.InGameData.GetUpgrades();
+    }
     private void Update()
     {
         playerGameDataPreview = playerGameData.Value;

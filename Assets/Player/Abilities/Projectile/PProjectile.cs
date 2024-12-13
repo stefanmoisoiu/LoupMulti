@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using Smooth;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PProjectile : PNetworkAbility
@@ -6,8 +7,9 @@ public class PProjectile : PNetworkAbility
     [SerializeField] private Transform throwPosition;
     [SerializeField] private float throwSpeed = 10f;
     [SerializeField] private GameObject projectilePrefab;
-    private NetworkVariable<NetworkObjectReference> _pooledProjectile;
+    private NetworkVariable<NetworkObjectReference> _pooledProjectile = new();
     private Rigidbody _pooledProjectileRb;
+    private SmoothSyncNetcode _pooledProjectileSync;
     private bool _previewingThrow;
 
     public override void OnNetworkSpawn()

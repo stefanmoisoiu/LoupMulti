@@ -12,23 +12,24 @@ public class PAbilityManager : PNetworkBehaviour
         Projectile,
         Style,
         WallBounce,
+        Grappling,
     }
 
     protected override void StartOnlineOwner()
     {
-        // UpdateAllAbilityStates();
-        // if(GameManager.Instance != null)
-        // {
-        //     GameManager.Instance.upgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
-        // }
-        // else
-        // {
-        //     GameManager.OnCreated += gm =>
-        //     {
-        //         gm.upgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
-        //         UpdateAllAbilityStates();
-        //     };
-        // }
+        if(GameManager.Instance != null)
+        {
+            UpdateAllAbilityStates();
+            GameManager.Instance.upgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
+        }
+        else
+        {
+            GameManager.OnCreated += gm =>
+            {
+                gm.upgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
+                UpdateAllAbilityStates();
+            };
+        }
     }
 
     private void UpdateAllAbilityStates()
