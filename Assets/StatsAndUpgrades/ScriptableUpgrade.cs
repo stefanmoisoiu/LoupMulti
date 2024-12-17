@@ -32,7 +32,6 @@ public abstract class ScriptableUpgrade : ScriptableObject
         Active,
         Passive
     }
-
     public abstract void Update();
 
     public abstract Modifier<float>.ModifierComponent GetAccelerationModifier();

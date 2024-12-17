@@ -60,6 +60,7 @@ public class GameManager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        Debug.LogError($"IsServer: {IsServer}, IsClient: {IsClient}, IsHost: {IsHost}, IsOwner(of gameManager): {IsOwner}");
 
         if (IsServer)
         {

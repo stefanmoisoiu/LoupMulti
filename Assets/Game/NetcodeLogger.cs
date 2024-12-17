@@ -38,6 +38,7 @@ public class NetcodeLogger : NetworkBehaviour
         Purple,
         Orange,
         Yellow,
+        Red,
     }
     public string GetHexColor(ColorType type)
     {
@@ -58,6 +59,9 @@ public class NetcodeLogger : NetworkBehaviour
                 break;
             case ColorType.Yellow:
                 color = "#ffcc00";
+                break;
+            case ColorType.Red:
+                color = "#ff0000";
                 break;
         }
         return color;

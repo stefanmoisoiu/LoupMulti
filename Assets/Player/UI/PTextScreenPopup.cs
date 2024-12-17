@@ -5,20 +5,22 @@ using UnityEngine;
 
 public class PTextScreenPopup : PNetworkBehaviour
 {
-    private RectTransform _canvas;
+    private RectTransform _canvasObj;
     
 
     [SerializeField] private GameObject textPopupPrefab;
+    [SerializeField] private PCanvas canvas;
+    
     
     private List<Popup> _popups = new List<Popup>();
     protected override void StartAnyOwner()
     {
-        _canvas = PCanvas.Canvas.GetComponent<RectTransform>();
+        _canvasObj = canvas.Canvas.GetComponent<RectTransform>();
     }
 
     public void CreatePopup(PopupData popupData, Vector2 position, float rotation = 0)
     {
-        Transform instance = Instantiate(textPopupPrefab, _canvas).transform;
+        Transform instance = Instantiate(textPopupPrefab, _canvasObj).transform;
         TMP_Text text = instance.GetChild(0).GetComponent<TMP_Text>();
         
         text.text = popupData.text;

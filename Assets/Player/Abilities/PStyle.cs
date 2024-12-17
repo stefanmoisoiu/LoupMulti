@@ -22,6 +22,8 @@ public class PStyle : PNetworkAbility
     [SerializeField] private float popupRotationRange = 30;
     [SerializeField] private Bounds popupPositionBounds;
     
+    [SerializeField] private PCanvas canvas;
+    
     
 
     private Modifier<float>.ModifierComponent _noLookMaxSpeedModifier = new(1,0);
@@ -37,7 +39,7 @@ public class PStyle : PNetworkAbility
     [SerializeField] private AnimationCurve startNoLookPanelCurve;
     [SerializeField] private AnimationCurve stopNoLookPanelCurve;
     private Coroutine _noLookPanelCoroutine;
-    private const string NoLookPanelTag = "NoLookPanel";
+    private const string NoLookPanelName = "NoLookPanel";
     
     
     public bool NoLook { get; private set; }
@@ -58,7 +60,8 @@ public class PStyle : PNetworkAbility
 
     protected override void StartAnyOwner()
     {
-        noLookPanel = GameObject.FindGameObjectWithTag(NoLookPanelTag).GetComponent<CanvasGroup>();
+        
+        noLookPanel = canvas.Canvas.transform.Find(NoLookPanelName).GetComponent<CanvasGroup>();
         
         movement.MaxSpeedModifier.AddModifier(_noLookMaxSpeedModifier);
         movement.AccelerationModifier.AddModifier(_noLookMaxSpeedModifier);

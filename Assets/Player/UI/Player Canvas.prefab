@@ -1199,7 +1199,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: -2044588207
   m_SortingOrder: 5
@@ -1391,7 +1391,7 @@ GameObject:
   - component: {fileID: 1439939231840823773}
   - component: {fileID: 8615103223851902506}
   m_Layer: 5
-  m_Name: Stamina Bar
+  m_Name: StaminaBar
   m_TagString: StaminaBar
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

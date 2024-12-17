@@ -8,37 +8,49 @@ public class GameData : NetworkBehaviour
     
     public NetworkVariable<PlayerGameData> playerGameData = new();
     public PlayerGameData playerGameDataPreview;
-        
-    public static Action<List<PlayerData>> OnClientPlayerDataChanged;
-    public static Action<PlayerData> OnMyPlayerDataChanged;
     
     // cached Owner data:
     public ScriptableUpgrade[] CachedOwnerOwnedUpgrades { get; private set; }
-    
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
+    }
+
+    private void Start()
+    {
         if (IsServer)
         {
+            NetcodeLogger.Instance.LogRpc("Server spawned", NetcodeLogger.ColorType.Red, new []{NetcodeLogger.AddedEffects.Bold});
             playerGameData.Value = new PlayerGameData(PlayerGameData.BasePlayerDatas());
             foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
                 playerGameData.Value = playerGameData.Value.AddOrUpdateData(new PlayerData(client));
         
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-            NetworkObject.DestroyWithScene = false;
-        }
-        else
-        {
-            playerGameData.OnValueChanged += UpdateCachedOwnerData;
         }
     }
 
+    private void OnEnable()
+    {
+        GameManager.Instance.upgradesManager.OnUpgradeChosenOwner += UpdateCachedOwnerUpgrades;
+    }
+
+    //on client
     private void UpdateCachedOwnerData(PlayerGameData previousData, PlayerGameData newData)
     {
+        Debug.LogError("Cached owner data updated");
         ulong id = NetworkManager.LocalClientId;
         PlayerData newOwnerData = newData.GetDataOrDefault(id);
+        CachedOwnerOwnedUpgrades = newOwnerData.InGameData.GetUpgrades();
+    }
+
+    private void UpdateCachedOwnerUpgrades(ushort newUpgrade)
+    {
+        Debug.LogError("Cached upgrades updated");
+        ulong id = NetworkManager.LocalClientId;
+        PlayerData newOwnerData = playerGameData.Value.GetDataOrDefault(id);
         CachedOwnerOwnedUpgrades = newOwnerData.InGameData.GetUpgrades();
     }
     private void Update()

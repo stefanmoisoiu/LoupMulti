@@ -12,16 +12,18 @@ public class PStaminaBar : PNetworkBehaviour
     private List<Image> _staminaFillImages = new();
 
     [SerializeField] private Color fillingColor,graceColor,fullColor;
+    [SerializeField] private PCanvas canvas;
     
     
     
-    private GameObject _staminaBarParent;
-    private const string StaminaSliderTag = "StaminaBar";
+    
+    private Transform _staminaBarParent;
+    private const string StaminaSliderName = "StaminaBar";
 
     protected override void StartAnyOwner()
-    {
+    {;
         stamina.UpdatedStaminaParts += UpdateStaminaParts;
-        _staminaBarParent = GameObject.FindGameObjectWithTag(StaminaSliderTag);
+        _staminaBarParent = canvas.Canvas.transform.Find(StaminaSliderName);
         UpdateStaminaParts(stamina.StaminaPartCount);
     }
 
@@ -77,7 +79,7 @@ public class PStaminaBar : PNetworkBehaviour
         {
             for (int i = _staminaSliders.Count; i < parts; i++)
             {
-                GameObject slider = Instantiate(sliderPrefab, _staminaBarParent.transform);
+                GameObject slider = Instantiate(sliderPrefab, _staminaBarParent);
                 _staminaSliders.Add(slider.GetComponent<Slider>());
                 _staminaFillImages.Add(slider.transform.GetChild(1).GetChild(0).GetComponent<Image>());
             }

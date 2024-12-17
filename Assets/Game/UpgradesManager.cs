@@ -17,6 +17,7 @@ public class UpgradesManager : NetworkBehaviour
     private readonly Dictionary<ulong,ushort> _playerUpgradeChosenChoice = new();
     
     public Action<ushort[]> OnUpgradeChoices;
+    [Rpc(SendTo.SpecifiedInParams)] private void OnUpgradeChoicesClientRpc(ushort[] upgradesIndex, RpcParams @params) => OnUpgradeChoices?.Invoke(upgradesIndex);
     
     public Action<ushort> OnUpgradeChosenOwner;
     [Rpc(SendTo.SpecifiedInParams)]private void OnUpgradeChosenClientRpc(ushort upgradeIndex, RpcParams @params) => OnUpgradeChosenOwner?.Invoke(upgradeIndex);
@@ -104,7 +105,7 @@ public class UpgradesManager : NetworkBehaviour
             randomUpgradesIndex = DrawUpgradesIndex(UpgradeChoices, data);
             _playerUpgradeChoices.Add(data.ClientId, randomUpgradesIndex);
         }
-        OnUpgradeChoices_ClientRpc(randomUpgradesIndex, data.ToRpcParams());
+        OnUpgradeChoicesClientRpc(randomUpgradesIndex, data.ToRpcParams());
     }
     public void ResetChoices()
     {
@@ -135,10 +136,10 @@ public class UpgradesManager : NetworkBehaviour
     }
     // client
     public void ChooseUpgradeClient(ushort upgradeIndex) => UpgradeChosenServerRpc(upgradeIndex, RpcParamsExt.Instance.SenderClientID(NetworkManager.LocalClientId));
+
     [Rpc(SendTo.Server)]
     public void UpgradeChosenServerRpc(ushort upgradeIndex, RpcParams @params)
     {
         _playerUpgradeChosenChoice[@params.Receive.SenderClientId] = upgradeIndex;
     }
-    [Rpc(SendTo.SpecifiedInParams)] private void OnUpgradeChoices_ClientRpc(ushort[] upgradesIndex, RpcParams @params) => OnUpgradeChoices?.Invoke(upgradesIndex);
 }

@@ -6185,6 +6185,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   textPopupPrefab: {fileID: 2814847518941980968, guid: 300a56757dd5ab6488d58a6d0592ff3b,
     type: 3}
+  canvas: {fileID: 3677539957991917152}
 --- !u!114 &5341856138345156664
 MonoBehaviour:
   m_ObjectHideFlags: 0
