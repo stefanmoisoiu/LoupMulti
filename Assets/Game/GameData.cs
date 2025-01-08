@@ -30,10 +30,6 @@ public class GameData : NetworkBehaviour
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
         }
-    }
-
-    private void OnEnable()
-    {
         GameManager.Instance.upgradesManager.OnUpgradeChosenOwner += UpdateCachedOwnerUpgrades;
     }
 

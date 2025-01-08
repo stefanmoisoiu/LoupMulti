@@ -9,7 +9,11 @@ public abstract class PNetworkBehaviour : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        if (!IsOwner) return;
+        if (!IsOwner)
+        {
+            StartOnlineNotOwner();
+            return;
+        }
         StartOnlineOwner();
         if (!_initializedAny) StartAnyOwner();
         _initializedAny = true;
@@ -23,10 +27,16 @@ public abstract class PNetworkBehaviour : NetworkBehaviour
     }
     private void OnDisable()
     {
+        Debug.LogError("Disabled");
         if (IsSpawned || NetcodeManager.InGame)
         {
-            if (!IsOwner) return;
-            DisableOnlineOwner();
+            if (IsOwner) DisableOnlineOwner();
+            else
+            {
+                DisableOnlineNotOwner();
+                return;
+            }
+            
         }
         else
         {
@@ -73,20 +83,22 @@ public abstract class PNetworkBehaviour : NetworkBehaviour
 
 
     protected virtual void StartOnlineOwner() {}
+    protected virtual void StartOnlineNotOwner() {}
     protected virtual void StartOffline() {}
     protected virtual void StartAnyOwner() {}
     
     protected virtual void DisableOnlineOwner() {}
+    protected virtual void DisableOnlineNotOwner() {}
     protected virtual void DisableOffline() {}
     protected virtual void DisableAnyOwner() {}
     
     protected virtual void UpdateOnlineOwner() {}
     protected virtual void UpdateAnyOwner() {}
-    protected virtual void UpdateOnlineNotOwner() {}
     protected virtual void UpdateOffline() {}
+    protected virtual void UpdateOnlineNotOwner() {}
     
     protected virtual void FixedUpdateOnlineOwner() {}
     protected virtual void FixedUpdateAnyOwner() {}
-    protected virtual void FixedUpdateOnlineNotOwner() {}
     protected virtual void FixedUpdateOffline() {}
+    protected virtual void FixedUpdateOnlineNotOwner() {}
 }

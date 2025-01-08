@@ -68,6 +68,7 @@ MonoBehaviour:
   fillingColor: {r: 1, g: 0.5883559, b: 0, a: 1}
   graceColor: {r: 0.2971698, g: 0.84325576, b: 1, a: 1}
   fullColor: {r: 1, g: 0.80423534, b: 0, a: 1}
+  canvas: {fileID: 3677539957991917152}
 --- !u!1 &1011728115062695603
 GameObject:
   m_ObjectHideFlags: 0
@@ -6271,12 +6272,12 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6816010383681974616}
   - {fileID: 984096862632987811}
   - {fileID: 5462503276835374820}
   - {fileID: 7389640782170387324}
   - {fileID: 3102615499025263993}
   - {fileID: 8816325084267525726}
-  - {fileID: 6816010383681974616}
   - {fileID: 4810275626707454978}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7966,6 +7967,7 @@ MonoBehaviour:
   popupPositionBounds:
     m_Center: {x: 0, y: 100, z: 0}
     m_Extent: {x: 200, y: 50, z: 0}
+  canvas: {fileID: 3677539957991917152}
   noLookPanelLerpDuration: 0.25
   startNoLookPanelCurve:
     serializedVersion: 2

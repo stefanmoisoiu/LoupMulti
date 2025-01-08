@@ -21,7 +21,7 @@ public class PStaminaBar : PNetworkBehaviour
     private const string StaminaSliderName = "StaminaBar";
 
     protected override void StartAnyOwner()
-    {;
+    {
         stamina.UpdatedStaminaParts += UpdateStaminaParts;
         _staminaBarParent = canvas.Canvas.transform.Find(StaminaSliderName);
         UpdateStaminaParts(stamina.StaminaPartCount);

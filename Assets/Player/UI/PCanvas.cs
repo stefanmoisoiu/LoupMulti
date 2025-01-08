@@ -4,11 +4,12 @@ using UnityEngine.UI;
 public class PCanvas : PNetworkBehaviour
 {
     [SerializeField] private GameObject canvas;
-    private static GraphicRaycaster _graphicRaycaster;
+    private GraphicRaycaster _graphicRaycaster;
     public GameObject Canvas { get; private set; }
     
     protected override void StartAnyOwner()
     {
+        Debug.LogError("Canvas enabled");
         Canvas = Instantiate(canvas);
         _graphicRaycaster = Canvas.GetComponent<GraphicRaycaster>();
         DontDestroyOnLoad(Canvas);
@@ -16,6 +17,7 @@ public class PCanvas : PNetworkBehaviour
 
     protected override void DisableAnyOwner()
     {
+        Debug.LogError("Canvas disabled");
         Destroy(Canvas);
     }
 
