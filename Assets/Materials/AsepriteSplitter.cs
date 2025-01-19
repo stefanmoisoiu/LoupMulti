@@ -87,6 +87,7 @@ public class AsepriteSplitter : Editor
                 {
                     File.WriteAllBytes(texturePath + ".png", pngData);
                 }
+                AssetDatabase.Refresh();
             }
             else
             {
@@ -96,6 +97,8 @@ public class AsepriteSplitter : Editor
                 {
                     // Write the PNG file to disk
                     File.WriteAllBytes(texturePath + ".png", pngData);
+                    
+                    AssetDatabase.Refresh();
                     
                     File.WriteAllText(texturePath + ".png.meta", 
                         Regex.Replace(File.ReadAllText(texturePath + ".png.meta"), "filterMode: 1", "filterMode: 0"));
