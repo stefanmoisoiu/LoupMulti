@@ -5938,6 +5938,56 @@ MonoBehaviour:
   jumpStaminaCost: 0
   grounded: {fileID: 5416708144197644157}
   stamina: {fileID: 817862337912563999}
+--- !u!1 &5799071586009722388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7605402296053075202}
+  - component: {fileID: 997876921811925134}
+  m_Layer: 6
+  m_Name: Animations
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7605402296053075202
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5799071586009722388}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6107008973671010010}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &997876921811925134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5799071586009722388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0508b9f44e6a2f5449343f14a7954bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  anim: {fileID: 0}
+  loopAnims: []
+  triggerClips: []
+  loopAnim:
+    m_InternalValue: 65535
 --- !u!1 &6063350126481985612
 GameObject:
   m_ObjectHideFlags: 0
@@ -6279,6 +6329,7 @@ Transform:
   - {fileID: 3102615499025263993}
   - {fileID: 8816325084267525726}
   - {fileID: 4810275626707454978}
+  - {fileID: 7605402296053075202}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3697878794374232907

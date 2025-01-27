@@ -27,7 +27,6 @@ public abstract class PNetworkBehaviour : NetworkBehaviour
     }
     private void OnDisable()
     {
-        Debug.LogError("Disabled");
         if (IsSpawned || NetcodeManager.InGame)
         {
             if (IsOwner) DisableOnlineOwner();
