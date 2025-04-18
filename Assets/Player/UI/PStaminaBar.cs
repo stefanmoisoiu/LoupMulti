@@ -18,12 +18,12 @@ public class PStaminaBar : PNetworkBehaviour
     
     
     private Transform _staminaBarParent;
-    private const string StaminaSliderName = "StaminaBar";
+    private const string StaminaSliderTag = "StaminaBar";
 
     protected override void StartAnyOwner()
     {
         stamina.UpdatedStaminaParts += UpdateStaminaParts;
-        _staminaBarParent = canvas.Canvas.transform.Find(StaminaSliderName);
+        _staminaBarParent = GameObject.FindGameObjectWithTag(StaminaSliderTag).transform;
         UpdateStaminaParts(stamina.StaminaPartCount);
     }
 

@@ -1863,7 +1863,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 127
   hitDistance: 3
 --- !u!114 &1093416906273653246
 MonoBehaviour:

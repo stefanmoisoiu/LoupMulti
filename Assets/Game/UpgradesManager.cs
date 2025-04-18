@@ -35,51 +35,28 @@ public class UpgradesManager : NetworkBehaviour
 
     public ushort[] DrawUpgradesIndex(int amount, PlayerData data)
     {
-        ushort[] ownedUpgrades = data.InGameData.upgradesIndexArray;
-        ScriptableUpgrade[] ownedUpgradesScriptable = data.InGameData.GetUpgrades();
-        List<ushort> availableUpgrades = new();
-        
-        for (int i = 0; i < upgrades.Length; i++)
-        {
-            // ScriptableUpgrade upgrade = upgrades[i];
-            if (ownedUpgrades != null && ownedUpgrades.Contains((ushort)i))
-            {
-                
-            }
-            else
-            {
-                availableUpgrades.Add((ushort)i);
-            }
-        }
+        var owned = new HashSet<ushort>(data.InGameData.upgradesIndexArray);
+        List<ushort> availableUpgrades = Enumerable.Range(0, upgrades.Length)
+            .Select(i => (ushort)i)
+            .Where(i => !owned.Contains(i))
+            .ToList();
 
         return GetDistinctRandomUpgradesIndex(availableUpgrades.ToArray(), amount);
     }
     
-    public ushort[] GetDistinctRandomUpgradesIndex(ushort[] availableUpgrades, int amount)
+    private ushort[] GetDistinctRandomUpgradesIndex(ushort[] availableUpgrades, int amount)
     {
-        if (amount > availableUpgrades.Length) amount = availableUpgrades.Length;
-        
-        ushort[] randomUpgradesIndex = new ushort[amount];
-        for (int i = 0; i < randomUpgradesIndex.Length; i++) randomUpgradesIndex[i] = ushort.MaxValue;
-        
-        for (int i = 0; i < amount; i++)
-        {
-            ushort upgrade;
-            
-            do upgrade = (ushort)Random.Range(0, availableUpgrades.Length);
-            while (randomUpgradesIndex.Contains(upgrade));
-            
-            randomUpgradesIndex[i] = upgrade;
-        }
-        return randomUpgradesIndex;
+        amount = Mathf.Min(amount, availableUpgrades.Length);
+        return availableUpgrades.OrderBy(_ => Random.value).Take(amount).ToArray();
     }
 
     // server
     public void UpgradeTimeFinishedServer()
     {
-        foreach (var player in NetworkManager.ConnectedClientsList)
-            if (!_playerUpgradeChosenChoice.TryGetValue(player.ClientId, out var upgradeIndex))
-                _playerUpgradeChosenChoice.Add(player.ClientId, 0);
+        // If player did not choose, we give them the first upgrade
+        foreach (PlayerData data in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
+            if (!_playerUpgradeChosenChoice.TryGetValue(data.ClientId, out var upgradeIndex))
+                _playerUpgradeChosenChoice.Add(data.ClientId, 0);
         
         ApplyUpgradesToPlayersServer();
         ResetChoices();
@@ -89,8 +66,9 @@ public class UpgradesManager : NetworkBehaviour
     {
         foreach (PlayerData data in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
         {
-            if (data.OuterData.CurrentPlayerState != PlayerOuterData.PlayerState.Playing) continue;
-            ChooseUpgradesForPlayerServer(data);
+            PlayerOuterData.PlayerState state = data.OuterData.CurrentPlayerState;
+            if (state is PlayerOuterData.PlayerState.Playing or PlayerOuterData.PlayerState.Disconnected)
+                ChooseUpgradesForPlayerServer(data);
         }
     }
     
@@ -111,33 +89,40 @@ public class UpgradesManager : NetworkBehaviour
         _playerUpgradeChoices.Clear();
         _playerUpgradeChosenChoice.Clear();
     }
-
     private void ApplyUpgradesToPlayersServer()
     { 
-        PlayerData[] playerDatas = GameManager.Instance.gameData.playerGameData.Value.GetDatas();
-        
-        for (int i = 0; i < playerDatas.Length; i++)
+        foreach (var playerData in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
         {
-            ulong clientId = playerDatas[i].ClientId;
-            int choice = _playerUpgradeChosenChoice[clientId];
-            ushort[] availableChoices = _playerUpgradeChoices[clientId];
+            ulong clientId = playerData.ClientId;
+
+            if (!_playerUpgradeChosenChoice.TryGetValue(clientId, out var choice))
+                choice = 0; // défaut si absent
+
+            if (!_playerUpgradeChoices.TryGetValue(clientId, out var availableChoices) || availableChoices.Length <= choice)
+            {
+                Debug.LogError($"Invalid upgrade choice for player {clientId}");
+                continue; // Sécurité
+            }
+
             ushort upgradeIndex = availableChoices[choice];
-            // log
+
             NetcodeLogger.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", NetcodeLogger.ColorType.Orange);
             NetcodeLogger.Instance.LogRpc($"and chose {choice}: {GetUpgrade(upgradeIndex).UpgradeName}", NetcodeLogger.ColorType.Orange);
             
-            PlayerInGameData inGameData = playerDatas[i].InGameData.AddUpgrade(upgradeIndex);
-            PlayerData finalPlayerData = new PlayerData(playerDatas[i]) { InGameData = inGameData };
+            PlayerInGameData inGameData = playerData.InGameData.AddUpgrade(upgradeIndex);
+            PlayerData finalPlayerData = new PlayerData(playerData) { InGameData = inGameData };
             
             GameManager.Instance.gameData.playerGameData.Value = GameManager.Instance.gameData.playerGameData.Value.UpdateData(finalPlayerData);
-            OnUpgradeChosenClientRpc(upgradeIndex, playerDatas[i].ToRpcParams());
+            OnUpgradeChosenClientRpc(upgradeIndex, playerData.ToRpcParams());
         }
     }
+
+    
     // client
-    public void ChooseUpgradeClient(ushort upgradeIndex) => UpgradeChosenServerRpc(upgradeIndex, RpcParamsExt.Instance.SenderClientID(NetworkManager.LocalClientId));
+    public void ChooseUpgradeClient(ushort upgradeIndex) => ClientChoseUpgradeServerRpc(upgradeIndex, RpcParamsExt.Instance.SenderClientID(NetworkManager.LocalClientId));
 
     [Rpc(SendTo.Server)]
-    public void UpgradeChosenServerRpc(ushort upgradeIndex, RpcParams @params)
+    public void ClientChoseUpgradeServerRpc(ushort upgradeIndex, RpcParams @params)
     {
         _playerUpgradeChosenChoice[@params.Receive.SenderClientId] = upgradeIndex;
     }

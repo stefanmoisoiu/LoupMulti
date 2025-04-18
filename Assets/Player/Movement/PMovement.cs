@@ -23,8 +23,8 @@ public class PMovement : PNetworkBehaviour
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PGrappling grappling;
     
-    public Modifier<float> MaxSpeedModifier = new();
-    public Modifier<float> AccelerationModifier = new();
+    public StatModifier<float> MaxSpeedModifier = new();
+    public StatModifier<float> AccelerationModifier = new();
     
     
     public float GetMaxSpeed()

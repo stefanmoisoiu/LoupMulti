@@ -10,6 +10,7 @@ TagManager:
   - Canvas
   - Scoreboard
   - UpgradesList
+  - GameStateBar
   layers:
   - Default
   - TransparentFX

@@ -6,14 +6,6 @@ using UnityEngine;
 public class PAbilityManager : PNetworkBehaviour
 {
     [SerializeField] private PlayerAbility[] abilities;
-    public enum Ability
-    {
-        AirDash,
-        Projectile,
-        Style,
-        WallBounce,
-        Grappling,
-    }
 
     protected override void StartOnlineOwner()
     {
@@ -40,7 +32,6 @@ public class PAbilityManager : PNetworkBehaviour
             if (upgrade.Type != ScriptableUpgrade.UpgradeType.Active) continue;
             
             PNetworkAbility ability = GetAbility(upgrade.ActiveAbility);
-            
             if (ownedUpgrades.Contains(upgrade)) ability.EnableAbility();
             else ability.DisableAbility();
         }

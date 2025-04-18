@@ -1,4 +1,3 @@
-using System;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,11 +10,14 @@ public class PCamera : PNetworkBehaviour
     [SerializeField] private CinemachineCamera cam;
     
     [SerializeField] [Range(0,3)] private float sensMult = 1;
-    
+
+    public NetworkVariable<Vector2> lookTargetNet = new(Vector2.zero, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     
     public Vector2 LookTarget { get; private set; } 
     public Vector2 LookDir { get; private set; }
     public Vector2 LookDelta { get; private set; }
+
+    public const float MaxTilt = 90;
 
     public override void OnNetworkSpawn()
     {
@@ -37,6 +39,11 @@ public class PCamera : PNetworkBehaviour
         Look();
     }
 
+    protected override void UpdateOnlineOwner()
+    {
+        lookTargetNet.Value = LookTarget;
+    }
+
     private void Look()
     {
         LookDir = Vector2.Lerp(LookDir, LookTarget, cameraSmoothSpeed * Time.deltaTime);
@@ -48,11 +55,12 @@ public class PCamera : PNetworkBehaviour
     {
         LookDelta = InputManager.instance.LookInput * sensMult;
         LookTarget += LookDelta;
-        LookTarget = new(LookTarget.x,Mathf.Clamp(LookTarget.y, -90, 90));
+        LookTarget = new(LookTarget.x,Mathf.Clamp(LookTarget.y, -MaxTilt, MaxTilt));
     }
     
     public void AddRotation(Vector2 rotation)
     {
         LookTarget += rotation;
+        LookTarget = new(LookTarget.x, Mathf.Clamp(LookTarget.y, -MaxTilt, MaxTilt));
     }
 }

@@ -23,9 +23,9 @@ public class PStamina : PNetworkBehaviour
 
     public Action<int> UpdatedStaminaParts;
     
-    public Modifier<float> StaminaRecoverRateModifier = new ();
-    public Modifier<float> StaminaPerPartModifier = new ();
-    public Modifier<int> AddedStaminaPartsModifier = new ();
+    public StatModifier<float> StaminaRecoverRateModifier = new ();
+    public StatModifier<float> StaminaPerPartModifier = new ();
+    public StatModifier<int> AddedStaminaPartsModifier = new ();
 
     protected override void StartAnyOwner()
     {

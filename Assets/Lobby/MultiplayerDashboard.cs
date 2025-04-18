@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MultiplayerDashboard : NetworkBehaviour
 {
@@ -37,6 +38,7 @@ public class MultiplayerDashboard : NetworkBehaviour
     [SerializeField] private CanvasGroup createGamePanel;
     [SerializeField] private CanvasGroup lobbyInfoPanel;
 
+    public static Action StartEnterGame, SuccessEnterGame, FailedEnterGame;
     private void Start()
     {
         joinCodeInput.characterLimit = _maxCodeSize;
@@ -68,16 +70,20 @@ public class MultiplayerDashboard : NetworkBehaviour
     public async void CreateGame()
     {
         Debug.Log("Create Game button pressed");
+        
+        StartEnterGame?.Invoke();
         SetDashboardEnabled(false);
         try
         {
             await NetcodeManager.Instance.CreateGame();
             CopyToClipboardJoinCode();
             sceneChange.NetworkChangeScene(multiplayerLobbySceneName);
+            SuccessEnterGame?.Invoke();
         }
         catch (Exception e)
         {
             Debug.LogError(e);
+            FailedEnterGame?.Invoke();
             
         }
         SetDashboardEnabled(true);
@@ -87,13 +93,16 @@ public class MultiplayerDashboard : NetworkBehaviour
     {
         Debug.Log("Join Game button pressed");
         SetDashboardEnabled(false);
+        StartEnterGame?.Invoke();
         try
         {
             await NetcodeManager.Instance.JoinGame(joinCodeInput.text);
+            SuccessEnterGame?.Invoke();
         }
         catch (Exception e)
         {
             Debug.LogError(e);
+            FailedEnterGame?.Invoke();
         }
         SetDashboardEnabled(true);
     }
@@ -154,13 +163,13 @@ public class MultiplayerDashboard : NetworkBehaviour
         PlayerOuterData.PlayerState state = GameManager.Instance.gameData.playerGameData.Value.GetDataOrDefault(clientID).OuterData.CurrentPlayerState;
         if (state == PlayerOuterData.PlayerState.SpectatingGame)
         {
-            GameManager.Instance.BecomePlayer(clientID);
+            GameManager.Instance.gameData.SetStatePlaying(clientID);
             changeStateText.text = "Spectate";
             
         }
         else
         {
-            GameManager.Instance.Spectate(clientID);
+            GameManager.Instance.gameData.SetStateSpectate(clientID);
             changeStateText.text = "Be Player";
         }
     }

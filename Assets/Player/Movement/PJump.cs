@@ -32,7 +32,7 @@ public class PJump : PNetworkBehaviour
     [SerializeField] private PGrounded grounded;
     [SerializeField] private PStamina stamina;
     
-    public Modifier<float> JumpHeightModifier = new ();
+    public StatModifier<float> JumpHeightModifier = new ();
 
     protected override void StartAnyOwner()
     {

@@ -26,10 +26,10 @@ public class PStyle : PNetworkAbility
     
     
 
-    private Modifier<float>.ModifierComponent _noLookMaxSpeedModifier = new(1,0);
-    private Modifier<float>.ModifierComponent _noLookAccelerationModifier = new(1,0);
-    private Modifier<float>.ModifierComponent _rotationMaxSpeedModifier = new(1,0);
-    private Modifier<float>.ModifierComponent _rotationAccelerationModifier = new(1,0);
+    private StatModifier<float>.ModifierComponent _noLookMaxSpeedModifier = new(1,0);
+    private StatModifier<float>.ModifierComponent _noLookAccelerationModifier = new(1,0);
+    private StatModifier<float>.ModifierComponent _rotationMaxSpeedModifier = new(1,0);
+    private StatModifier<float>.ModifierComponent _rotationAccelerationModifier = new(1,0);
     
     private Coroutine _noLookCoroutine;
     private Coroutine _rotationCoroutine;
@@ -108,7 +108,7 @@ public class PStyle : PNetworkAbility
         
         noLookPanel.alpha = endAlpha;
     }
-    private IEnumerator BoostSpeed(Modifier<float>.ModifierComponent maxSpeedModifier, Modifier<float>.ModifierComponent accelModifier, Style style)
+    private IEnumerator BoostSpeed(StatModifier<float>.ModifierComponent maxSpeedModifier, StatModifier<float>.ModifierComponent accelModifier, Style style)
     {
         maxSpeedModifier.factor = style.maxSpeedFactor;
         accelModifier.factor = style.accelerationFactor;

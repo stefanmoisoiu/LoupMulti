@@ -25,7 +25,7 @@ public class PApplyStatsUpgrades : PNetworkBehaviour
 
     protected override void UpdateOnlineOwner()
     {
-        ScriptableUpgrade[] ownedUpgrades = GameManager.Instance.gameData.CachedOwnerOwnedUpgrades;
+        ScriptableUpgrade[] ownedUpgrades = CachedOwnerClientData.upgrades;
         
         if (ownedUpgrades == null) return;
         if (ownedUpgrades.Length == 0) return;

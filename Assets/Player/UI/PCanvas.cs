@@ -9,7 +9,6 @@ public class PCanvas : PNetworkBehaviour
     
     protected override void StartAnyOwner()
     {
-        Debug.LogError("Canvas enabled");
         Canvas = Instantiate(canvas);
         _graphicRaycaster = Canvas.GetComponent<GraphicRaycaster>();
         DontDestroyOnLoad(Canvas);
@@ -17,7 +16,6 @@ public class PCanvas : PNetworkBehaviour
 
     protected override void DisableAnyOwner()
     {
-        Debug.LogError("Canvas disabled");
         Destroy(Canvas);
     }
 

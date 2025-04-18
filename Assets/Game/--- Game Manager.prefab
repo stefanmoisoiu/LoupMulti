@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4823457383044820859}
   - component: {fileID: 7399916474714617596}
   - component: {fileID: 6805961600794992388}
+  - component: {fileID: 4451309398530118367}
   m_Layer: 0
   m_Name: --- Game Manager
   m_TagString: Untagged
@@ -77,10 +78,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   gameState:
     m_InternalValue: 0
-  roundCount: 2
-  timeToUpgrade: 10
-  startCountdown: 5
-  gameLength: 5
 --- !u!114 &1153693554774647391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,3 +143,22 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 636ea46e0e1c80e438076589e6ef8963, type: 2}
   - {fileID: 11400000, guid: 0d084e2fd9f30f546bb5452b9129c279, type: 2}
   - {fileID: 11400000, guid: b0e3ec27d3ccbff4d9277a5a56051c82, type: 2}
+--- !u!114 &4451309398530118367
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3379183740241247975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8069edfb72b64c45b50d343826b40783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  roundCount: 2
+  timeToUpgrade: 20
+  startCountdown: 5
+  gameLength: 60
+  roundState:
+    m_InternalValue: 0

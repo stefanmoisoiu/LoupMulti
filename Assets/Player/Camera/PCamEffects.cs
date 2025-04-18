@@ -4,7 +4,7 @@ using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PCamEffects : NetworkBehaviour
+public class PCamEffects : PNetworkBehaviour
 {
     public static List<Effect> Effects = new();
 
@@ -12,16 +12,10 @@ public class PCamEffects : NetworkBehaviour
     [SerializeField] private CinemachineCamera cam;
     private float _baseFov;
 
-    private void OnEnable()
+    protected override void StartAnyOwner()
     {
         Effects = new();
     }
-
-    private void OnDisable()
-    {
-        Effects = new();
-    }
-
     private void Start()
     {
         if (!IsOwner && NetcodeManager.InGame) return;
