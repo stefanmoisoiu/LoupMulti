@@ -2,7 +2,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class PGrounded : NetworkBehaviour
+public class PGrounded : PNetworkBehaviour
 {
     [SerializeField] private float rayLength = 0.5f;
     [SerializeField] private LayerMask groundMask;
@@ -10,6 +10,7 @@ public class PGrounded : NetworkBehaviour
 
 
     public bool IsGrounded { get; private set; } = true;
+    public NetworkVariable<bool> IsGroundedNet = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
     public RaycastHit GroundHit { get; private set; }
     public Quaternion WorldToLocalUp { get; private set; }
     public Quaternion LocalUpToWorld { get; private set; }
@@ -21,9 +22,9 @@ public class PGrounded : NetworkBehaviour
     
     
     public bool FullyGrounded() =>  IsGrounded && !jump.JumpCooldown;
-    private void Update()
+
+    protected override void UpdateAnyOwner()
     {
-        if (!IsOwner && NetcodeManager.InGame) return;
         CheckGrounded();
     }
 
@@ -38,6 +39,7 @@ public class PGrounded : NetworkBehaviour
         bool WasGrounded = IsGrounded;
         IsGrounded = Physics.Raycast(
             transform.position, Vector3.down, out var hit, rayLength, groundMask);
+        IsGroundedNet.Value = IsGrounded;
         GroundHit = hit;
 
         Vector3 localUp = LocalUp();

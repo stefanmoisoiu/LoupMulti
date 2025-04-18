@@ -2,14 +2,10 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PModelVerticalTilt : PNetworkBehaviour
+public class PModelVerticalTilt : PModelProceduralAnim
 {
     [Header("References")]
     [SerializeField] private PCamera cam;
-
-    [SerializeField] private Transform head;
-    [SerializeField] private Transform body;
-    
 
     [Header("Tilt properties")]
     [SerializeField] [Range(0,1)] private float tiltMult = 0.5f;
@@ -30,14 +26,21 @@ public class PModelVerticalTilt : PNetworkBehaviour
 
     private float currentBodyTilt;
     private float currentBodyVelocity;
-
-
-
     private void Update()
     {
         CalculateTilt();
+    }
 
-        ApplyTilt();
+    public override Data GetData()
+    {
+        return new Data
+        {
+            bodyRotation = Quaternion.Euler(currentBodyTilt/2*tiltMult, 0, 0),
+            headRotation = Quaternion.Euler(currentHeadTilt/2*tiltMult, 0, 0),
+            
+            bodyScale = Vector3.one,
+            headScale = Vector3.one,
+        };
     }
 
     private void CalculateTilt()
@@ -54,16 +57,5 @@ public class PModelVerticalTilt : PNetworkBehaviour
         float bodyForce = Spring.CalculateSpringForce(currentBodyTilt, bodyTarget, currentBodyVelocity, bodySpringConstant, bodyDampingFactor);
         currentBodyVelocity += bodyForce * Time.deltaTime;
         currentBodyTilt += currentBodyVelocity * Time.deltaTime;
-    }
-
-    private void ApplyTilt()
-    {
-        float bodyTilt = currentBodyTilt/2*tiltMult;
-
-        
-        float headTilt = currentHeadTilt/2*tiltMult;
-        
-        body.localRotation = Quaternion.Euler(bodyTilt, 0, 0);
-        head.localRotation = Quaternion.Euler(headTilt, 0, 0);
     }
 }

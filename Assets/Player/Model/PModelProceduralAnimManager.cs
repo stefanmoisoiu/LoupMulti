@@ -6,9 +6,17 @@ public class PModelProceduralAnimManager : MonoBehaviour
     [SerializeField] private Transform body;
     [SerializeField] private Transform head;
     
+    private PModelProceduralAnim.Data baseData;
     
     [SerializeField] private PModelProceduralAnim[] proceduralAnims;
 
+    private void Awake()
+    {
+        baseData = new PModelProceduralAnim.Data(
+            body.localPosition, body.localRotation, body.localScale,
+            head.localPosition, head.localRotation, head.localScale);
+    }
+    
     private void LateUpdate()
     {
         if (proceduralAnims.Length == 0) return;
@@ -19,22 +27,28 @@ public class PModelProceduralAnimManager : MonoBehaviour
 
     private void ApplyProceduralAnims(PModelProceduralAnim.Data[] datas)
     {
-        body.localPosition = Vector3.zero;
-        body.localRotation = Quaternion.identity;
-        body.localScale = Vector3.one;
-        head.localPosition = Vector3.zero;
-        head.localRotation = Quaternion.identity;
-        head.localScale = Vector3.one;
+        body.localPosition = baseData.bodyPosition;
+        body.localRotation = baseData.bodyRotation;
+        body.localScale = baseData.bodyScale;
+        head.localPosition = baseData.headPosition;
+        head.localRotation = baseData.headRotation;
+        head.localScale = baseData.headScale;
 
         foreach (PModelProceduralAnim.Data data in datas)
         {
             body.localPosition += data.bodyPosition;
-            body.localRotation *= Quaternion.Euler(data.bodyRotation);
-            body.localScale = new(body.localScale.x*data.bodyScale.x, body.localScale.z*data.bodyScale.z);
+            body.localRotation *= data.bodyRotation;
+            body.localScale = new(
+                body.localScale.x*data.bodyScale.x,
+                body.localScale.y*data.bodyScale.y,
+                body.localScale.z*data.bodyScale.z);
 
             head.localPosition += data.headPosition;
-            head.localRotation *= Quaternion.Euler(data.headRotation);
-            head.localScale = new(head.localScale.x*data.headScale.x, head.localScale.z*data.headScale.z);
+            head.localRotation *= data.headRotation;
+            head.localScale = new(
+                head.localScale.x*data.headScale.x,
+                head.localScale.y*data.headScale.y,
+                head.localScale.z*data.headScale.z);
         }
     }
 }
