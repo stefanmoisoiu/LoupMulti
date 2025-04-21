@@ -31,7 +31,7 @@ public class MapManager : NetworkBehaviour
         
         CurrentMap = map;
         
-        NetcodeLogger.Instance.LogRpc("Loading map: " + map, NetcodeLogger.ColorType.Purple);
+        NetcodeLogger.Instance.LogRpc("Loading map: " + map, NetcodeLogger.LogType.Map);
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += MapLoaded;
         
         NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
@@ -41,7 +41,7 @@ public class MapManager : NetworkBehaviour
     {
         NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= MapLoaded;
         
-        NetcodeLogger.Instance.LogRpc("Map loaded", NetcodeLogger.ColorType.Purple);
+        NetcodeLogger.Instance.LogRpc("Map loaded", NetcodeLogger.LogType.Map);
         OnMapLoadedServer?.Invoke(CurrentMap);
         OnMapLoadedClientRpc(CurrentMap);
     }

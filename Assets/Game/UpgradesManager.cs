@@ -54,7 +54,7 @@ public class UpgradesManager : NetworkBehaviour
     public void UpgradeTimeFinishedServer()
     {
         // If player did not choose, we give them the first upgrade
-        foreach (PlayerData data in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
+        foreach (PlayerData data in GameManager.Instance.GameData.PlayerGameData.GetDatas())
             if (!_playerUpgradeChosenChoice.TryGetValue(data.ClientId, out var upgradeIndex))
                 _playerUpgradeChosenChoice.Add(data.ClientId, 0);
         
@@ -64,7 +64,7 @@ public class UpgradesManager : NetworkBehaviour
 
     public void ChooseUpgradesForPlayingPlayersServer()
     {
-        foreach (PlayerData data in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
+        foreach (PlayerData data in GameManager.Instance.GameData.PlayerGameData.GetDatas())
         {
             PlayerOuterData.PlayerState state = data.OuterData.CurrentPlayerState;
             if (state is PlayerOuterData.PlayerState.Playing or PlayerOuterData.PlayerState.Disconnected)
@@ -91,7 +91,7 @@ public class UpgradesManager : NetworkBehaviour
     }
     private void ApplyUpgradesToPlayersServer()
     { 
-        foreach (var playerData in GameManager.Instance.gameData.playerGameData.Value.GetDatas())
+        foreach (var playerData in GameManager.Instance.GameData.PlayerGameData.GetDatas())
         {
             ulong clientId = playerData.ClientId;
 
@@ -106,13 +106,13 @@ public class UpgradesManager : NetworkBehaviour
 
             ushort upgradeIndex = availableChoices[choice];
 
-            NetcodeLogger.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", NetcodeLogger.ColorType.Orange);
-            NetcodeLogger.Instance.LogRpc($"and chose {choice}: {GetUpgrade(upgradeIndex).UpgradeName}", NetcodeLogger.ColorType.Orange);
+            NetcodeLogger.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", NetcodeLogger.LogType.Upgrades);
+            NetcodeLogger.Instance.LogRpc($"and chose {choice}: {GetUpgrade(upgradeIndex).UpgradeName}", NetcodeLogger.LogType.Upgrades);
             
             PlayerInGameData inGameData = playerData.InGameData.AddUpgrade(upgradeIndex);
-            PlayerData finalPlayerData = new PlayerData(playerData) { InGameData = inGameData };
+            PlayerData finalPlayerData = new PlayerData() { InGameData = inGameData };
             
-            GameManager.Instance.gameData.playerGameData.Value = GameManager.Instance.gameData.playerGameData.Value.UpdateData(finalPlayerData);
+            GameManager.Instance.GameData.SetPlayerGameData(GameManager.Instance.GameData.PlayerGameData.UpdateData(finalPlayerData));
             OnUpgradeChosenClientRpc(upgradeIndex, playerData.ToRpcParams());
         }
     }

@@ -11,6 +11,13 @@ public static class Spring
 
         return springForce + dampingForce;
     }
+    public static Vector2 CalculateSpringForce(Vector2 currentPos, Vector2 targetPos, Vector2 currentVel, float springConstant, float dampingFactor)
+    {
+        Vector2 springForce = (targetPos - currentPos) * springConstant;
+        Vector2 dampingForce = -currentVel * dampingFactor;
+
+        return springForce + dampingForce;
+    }
     public static float CalculateSpringForce(float currentPos, float targetPos, float currentVel, float springConstant, float dampingFactor)
     {
         float springForce = (targetPos - currentPos) * springConstant;

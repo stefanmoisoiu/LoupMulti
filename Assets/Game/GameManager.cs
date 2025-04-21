@@ -8,10 +8,15 @@ public class GameManager : NetworkBehaviour
 
     public static GameManager Instance;
     public static Action<GameManager> OnCreated;
-    public GameData gameData { get; private set; }
-    public UpgradesManager upgradesManager { get; private set; }
-    public MapManager mapManager { get; private set; }
-    public GameLoop gameLoop { get; private set; }
+    
+    [SerializeField] private GameData gameData;
+    public GameData GameData => gameData;
+    [SerializeField] private UpgradesManager upgradesManager;
+    public UpgradesManager UpgradesManager => upgradesManager;
+    [SerializeField] private MapManager mapManager;
+    public MapManager MapManager => mapManager;
+    [SerializeField] private GameLoop gameLoop;
+    public GameLoop GameLoop => gameLoop;
 
     public NetworkVariable<GameState> gameState = new();
 
@@ -28,7 +33,8 @@ public class GameManager : NetworkBehaviour
         gameData = GetComponent<GameData>();
         upgradesManager = GetComponent<UpgradesManager>();
         mapManager = GetComponent<MapManager>();
-        gameLoop = GetComponent<GameLoop>();
+        gameLoop = transform.GetChild(0).GetComponent<GameLoop>();
+
         OnCreated?.Invoke(this);
     }
 
@@ -40,7 +46,7 @@ public class GameManager : NetworkBehaviour
 
         if (IsServer)
         {
-            NetcodeLogger.Instance.LogRpc("Starting Game Manager", NetcodeLogger.ColorType.Green);
+            NetcodeLogger.Instance.LogRpc("Starting Game Manager", NetcodeLogger.LogType.Netcode);
         
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
@@ -70,7 +76,7 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
     {
-        NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.ColorType.Green);
+        NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.LogType.GameLoop);
         
         gameData.SetNotAssignedPlayersToPlaying();
         
@@ -78,7 +84,6 @@ public class GameManager : NetworkBehaviour
         mapManager.OnMapLoadedServer += StartGameMapLoadedServer;
         
         // When map is loaded call StartGameMapLoadedServer
-        
     }
     private void StartGameMapLoadedServer(string mapName)
     {
@@ -87,7 +92,7 @@ public class GameManager : NetworkBehaviour
         OnGameStateChangedClientRpc(GameState.InGame, NetworkManager.ServerTime.TimeAsFloat);
         OnGameStartedServer?.Invoke();
         
-        gameLoop.StartGameLoop();
+        gameLoop.StartGameLoop(this);
     }
 
     public enum GameState

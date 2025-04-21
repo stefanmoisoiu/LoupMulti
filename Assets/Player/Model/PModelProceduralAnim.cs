@@ -17,6 +17,7 @@ public abstract class PModelProceduralAnim : PNetworkBehaviour
             this.bodyPosition = bodyPosition;
             this.bodyRotation = bodyRotation;
             this.bodyScale = bodyScale;
+            
             this.headPosition = headPosition;
             this.headRotation = headRotation;
             this.headScale = headScale;

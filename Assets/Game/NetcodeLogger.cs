@@ -1,9 +1,20 @@
-﻿using Unity.Netcode;
+﻿using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class NetcodeLogger : NetworkBehaviour
 {
     public static NetcodeLogger Instance;
+    
+    private Dictionary<LogType, string> _logColors = new()
+    {
+        {LogType.Netcode, "#00FF00"},
+        {LogType.Data, "#0000FF"},
+        {LogType.Upgrades, "#FF00FF"},
+        {LogType.GameLoop, "#FFFF00"},
+        {LogType.TickLoop, "#FF0000"},
+        {LogType.Map, "#00FFFF"},
+    };
     
     private void Awake()
     {
@@ -11,9 +22,9 @@ public class NetcodeLogger : NetworkBehaviour
     }
     
     [Rpc(SendTo.Everyone)]
-    public void LogRpc(string message, ColorType type, AddedEffects[] effects = null)
+    public void LogRpc(string message, LogType type, AddedEffects[] effects = null)
     {
-        string color = GetHexColor(type);
+        string color = _logColors[type];
         string effect = "";
         if (effects != null)
             foreach (AddedEffects addedEffect in effects)
@@ -31,39 +42,13 @@ public class NetcodeLogger : NetworkBehaviour
         Bold,
         Italic,
     }
-    public enum ColorType
+    public enum LogType
     {
-        Green,
-        Blue,
-        Purple,
-        Orange,
-        Yellow,
-        Red,
-    }
-    public string GetHexColor(ColorType type)
-    {
-        string color = "#29b929";
-        switch (type)
-        {
-            case ColorType.Green:
-                color = "#29b929";
-                break;
-            case ColorType.Blue:
-                color = "#80eeee";
-                break;
-            case ColorType.Purple:
-                color = "#ff00ff";
-                break;
-            case ColorType.Orange:
-                color = "#ff9900";
-                break;
-            case ColorType.Yellow:
-                color = "#ffcc00";
-                break;
-            case ColorType.Red:
-                color = "#ff0000";
-                break;
-        }
-        return color;
+        Netcode,
+        Data,
+        Upgrades,
+        GameLoop,
+        TickLoop,
+        Map
     }
 }

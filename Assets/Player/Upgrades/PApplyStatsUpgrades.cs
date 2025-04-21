@@ -14,13 +14,13 @@ public class PApplyStatsUpgrades : PNetworkBehaviour
 
     private void GameManagerEnabled(GameManager manager)
     {
-        manager.upgradesManager.OnUpgradeChosenOwner += UpgradeAdded;
+        manager.UpgradesManager.OnUpgradeChosenOwner += UpgradeAdded;
     }
 
     protected override void DisableOnlineOwner()
     {
         if (GameManager.Instance == null) return;
-        GameManager.Instance.upgradesManager.OnUpgradeChosenOwner -= UpgradeAdded;
+        GameManager.Instance.UpgradesManager.OnUpgradeChosenOwner -= UpgradeAdded;
     }
 
     protected override void UpdateOnlineOwner()
@@ -35,7 +35,7 @@ public class PApplyStatsUpgrades : PNetworkBehaviour
 
     private void UpgradeAdded(ushort upgradeIndex)
     {
-        ScriptableUpgrade upgrade = GameManager.Instance.upgradesManager.GetUpgrade(upgradeIndex);
+        ScriptableUpgrade upgrade = GameManager.Instance.UpgradesManager.GetUpgrade(upgradeIndex);
         
         upgrade.Update();
         

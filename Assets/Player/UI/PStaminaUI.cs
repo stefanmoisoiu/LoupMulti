@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PStaminaBar : PNetworkBehaviour
+public class PStaminaUI : PNetworkBehaviour
 {
     [SerializeField] private PStamina stamina;
     [SerializeField] private GameObject sliderPrefab;

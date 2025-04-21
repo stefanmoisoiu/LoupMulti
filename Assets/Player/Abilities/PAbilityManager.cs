@@ -12,13 +12,13 @@ public class PAbilityManager : PNetworkBehaviour
         if(GameManager.Instance != null)
         {
             UpdateAllAbilityStates();
-            GameManager.Instance.upgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
+            GameManager.Instance.UpgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
         }
         else
         {
             GameManager.OnCreated += gm =>
             {
-                gm.upgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
+                gm.UpgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
                 UpdateAllAbilityStates();
             };
         }
@@ -26,8 +26,8 @@ public class PAbilityManager : PNetworkBehaviour
 
     private void UpdateAllAbilityStates()
     {
-        ScriptableUpgrade[] ownedUpgrades = GameManager.Instance.gameData.playerGameData.Value.GetDataOrDefault(OwnerClientId).InGameData.GetUpgrades();
-        foreach (ScriptableUpgrade upgrade in GameManager.Instance.upgradesManager.Upgrades)
+        ScriptableUpgrade[] ownedUpgrades = GameManager.Instance.GameData.PlayerGameData.GetDataOrDefault(OwnerClientId).InGameData.GetUpgrades();
+        foreach (ScriptableUpgrade upgrade in GameManager.Instance.UpgradesManager.Upgrades)
         {
             if (upgrade.Type != ScriptableUpgrade.UpgradeType.Active) continue;
             
@@ -38,7 +38,7 @@ public class PAbilityManager : PNetworkBehaviour
     }
     private void UpgradeAddedEnableAbility(ushort newUpgradeIndex)
     {
-        ScriptableUpgrade newUpgrade = GameManager.Instance.upgradesManager.GetUpgrade(newUpgradeIndex);
+        ScriptableUpgrade newUpgrade = GameManager.Instance.UpgradesManager.GetUpgrade(newUpgradeIndex);
         if (newUpgrade.Type != ScriptableUpgrade.UpgradeType.Active) return;
         
         PNetworkAbility ability = GetAbility(newUpgrade.ActiveAbility);

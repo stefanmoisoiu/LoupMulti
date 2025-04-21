@@ -92,6 +92,12 @@ public class MultiplayerDashboard : NetworkBehaviour
     public async void JoinGame()
     {
         Debug.Log("Join Game button pressed");
+        if (joinCodeInput.text.Length != _maxCodeSize)
+        {
+            Debug.LogError("Join code is not valid");
+            FailedEnterGame?.Invoke();
+            return;
+        }
         SetDashboardEnabled(false);
         StartEnterGame?.Invoke();
         try
@@ -160,16 +166,16 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void ChangePlayerState()
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
-        PlayerOuterData.PlayerState state = GameManager.Instance.gameData.playerGameData.Value.GetDataOrDefault(clientID).OuterData.CurrentPlayerState;
+        PlayerOuterData.PlayerState state = GameManager.Instance.GameData.PlayerGameData.GetDataOrDefault(clientID).OuterData.CurrentPlayerState;
         if (state == PlayerOuterData.PlayerState.SpectatingGame)
         {
-            GameManager.Instance.gameData.SetStatePlaying(clientID);
+            GameManager.Instance.GameData.SetStatePlaying(clientID);
             changeStateText.text = "Spectate";
             
         }
         else
         {
-            GameManager.Instance.gameData.SetStateSpectate(clientID);
+            GameManager.Instance.GameData.SetStateSpectate(clientID);
             changeStateText.text = "Be Player";
         }
     }

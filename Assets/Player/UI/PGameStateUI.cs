@@ -21,9 +21,9 @@ public class PGameStateUI : PNetworkBehaviour
         timeLeftText = gameStateBar.transform.GetChild(1).GetComponent<TMP_Text>();
         
         if(GameManager.Instance != null)
-            GameManager.Instance.gameLoop.OnRoundStateChanged += UpdateGameStateUI;
+            GameManager.Instance.GameLoop.OnRoundStateChanged += UpdateGameStateUI;
         else
-            GameManager.OnCreated += gm => gm.gameLoop.OnRoundStateChanged += UpdateGameStateUI;
+            GameManager.OnCreated += gm => gm.GameLoop.OnRoundStateChanged += UpdateGameStateUI;
     }
 
     private void UpdateGameStateUI(GameLoop.RoundState state, float serverTime)

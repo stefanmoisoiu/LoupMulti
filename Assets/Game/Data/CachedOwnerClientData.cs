@@ -1,34 +1,29 @@
-﻿using Unity.Netcode;
+﻿using System;
+using Unity.Netcode;
+using UnityEngine;
 
 public static class CachedOwnerClientData
 {
     public static ScriptableUpgrade[] upgrades { get; private set; }
     public static ushort score { get; private set; }
-
-    public static void UpdateCachedScore()
-    {
-        if (GameManager.Instance == null) return;
-        ulong id = NetworkManager.Singleton.LocalClientId;
-        PlayerData data = GameManager.Instance.gameData.playerGameData.Value.GetDataOrDefault(id);
-        if (data.ClientId == ulong.MaxValue) return;
-        score = data.InGameData.score;
-    }
+    public static ushort health { get; private set; }
     
-    public static void UpdateCachedUpgrades()
-    {
-        if (GameManager.Instance == null) return;
-        ulong id = NetworkManager.Singleton.LocalClientId;
-        PlayerData data = GameManager.Instance.gameData.playerGameData.Value.GetDataOrDefault(id);
-        if (data.ClientId == ulong.MaxValue) return;
-        upgrades = data.InGameData.GetUpgrades();
-    }
+    public static PlayerData ownerData { get; private set; }
+    
+    public static Action<PlayerData,PlayerData> onOwnerDataChanged;
 
-    public static void SetUpgrades(ScriptableUpgrade[] newCachedUpgrades)
+    public static void UpdateCachedDataOwner(PlayerData playerData)
     {
-        upgrades = newCachedUpgrades;
-    }
-    public static void SetScore(ushort newCachedScore)
-    {
-        score = newCachedScore;
+        Debug.LogError("UpdateCachedDataOwner 1 CLIENTID = " + playerData.ClientId);
+        if (ownerData.Equals(playerData)) return;
+        
+        Debug.Log("UpdateCachedDataOwner 2");
+        
+        score = playerData.InGameData.score;
+        health = playerData.InGameData.health;
+        upgrades = playerData.InGameData.GetUpgrades();
+        
+        onOwnerDataChanged?.Invoke(ownerData, playerData);
+        ownerData = playerData;
     }
 }

@@ -6,26 +6,33 @@ using UnityEngine;
 public class GameData : NetworkBehaviour
 {
     
-    public NetworkVariable<PlayerGameData> playerGameData = new();
+    private NetworkVariable<PlayerGameData> playerGameData = new();
+    public PlayerGameData PlayerGameData => playerGameData.Value;
+    public void SetPlayerGameData(PlayerGameData playerGameData)
+    {
+        this.playerGameData.Value = playerGameData;
+        this.playerGameData.SetDirty(true);
+    }
     public PlayerGameData playerGameDataPreview;
     
     private void Start()
     {
-        if (IsServer)
+        playerGameData.OnValueChanged += (_, newData) =>
         {
-            NetcodeLogger.Instance.LogRpc("Server spawned", NetcodeLogger.ColorType.Red, new []{NetcodeLogger.AddedEffects.Bold});
-            playerGameData.Value = new PlayerGameData(PlayerGameData.BasePlayerDatas());
-            foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
-                playerGameData.Value = playerGameData.Value.AddOrUpdateData(new PlayerData(client));
+            PlayerData myPlayerData = newData.GetDataOrDefault(NetworkManager.Singleton.LocalClientId);
+            CachedOwnerClientData.UpdateCachedDataOwner(myPlayerData);
+        };
         
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
-            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-        }
+        if (!IsServer) return;
+        NetcodeLogger.Instance.LogRpc("Server spawned", NetcodeLogger.LogType.Data, new []{NetcodeLogger.AddedEffects.Bold});
+        playerGameData.Value = new PlayerGameData(PlayerGameData.BasePlayerDatas());
+        foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+            playerGameData.Value = playerGameData.Value.AddOrUpdateData(new PlayerData(client));
         
-        
-        GameManager.Instance.upgradesManager.OnUpgradeChosenOwner += _ => CachedOwnerClientData.UpdateCachedUpgrades();
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
     }
-    
+
     private void Update()
     {
         playerGameDataPreview = playerGameData.Value;
@@ -79,8 +86,8 @@ public class GameData : NetworkBehaviour
     {
         PlayerData data = playerGameData.Value.GetDataOrDefault(clientId);
         data = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayerState.Playing) };
-        playerGameData.Value = playerGameData.Value.UpdateData(data);
+        SetPlayerGameData(playerGameData.Value.UpdateData(data));
         
-        NetcodeLogger.Instance.LogRpc(clientId + " is now " + state, NetcodeLogger.ColorType.Blue, new []{NetcodeLogger.AddedEffects.Bold});
+        NetcodeLogger.Instance.LogRpc(clientId + " is now " + state, NetcodeLogger.LogType.Data, new []{NetcodeLogger.AddedEffects.Bold});
     }
 }

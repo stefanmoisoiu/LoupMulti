@@ -11,6 +11,8 @@ TagManager:
   - Scoreboard
   - UpgradesList
   - GameStateBar
+  - HealthText
+  - HotPotatoText
   layers:
   - Default
   - TransparentFX
@@ -19,7 +21,7 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
+  - HiddenFromCam
   - 
   - 
   - 

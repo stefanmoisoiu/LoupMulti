@@ -21,14 +21,14 @@ public class PUpgradesChoice : PNetworkBehaviour
     {
         GameManager.OnCreated -= OnGameManagerCreated;
         if (GameManager.Instance == null) return;
-        GameManager.Instance.upgradesManager.OnUpgradeChoices -= DisplayUpgrades;
-        GameManager.Instance.gameLoop.OnRoundStateChanged -= TryHideUpgrades;
+        GameManager.Instance.UpgradesManager.OnUpgradeChoices -= DisplayUpgrades;
+        GameManager.Instance.GameLoop.OnRoundStateChanged -= TryHideUpgrades;
     }
 
     private void OnGameManagerCreated(GameManager instance)
     {
-        instance.upgradesManager.OnUpgradeChoices += DisplayUpgrades;
-        instance.gameLoop.OnRoundStateChanged += TryHideUpgrades;
+        instance.UpgradesManager.OnUpgradeChoices += DisplayUpgrades;
+        instance.GameLoop.OnRoundStateChanged += TryHideUpgrades;
     }
     private void TryHideUpgrades(GameLoop.RoundState state, float serverTime)
     {
@@ -40,7 +40,7 @@ public class PUpgradesChoice : PNetworkBehaviour
     {
         ScriptableUpgrade[] upgrades = new ScriptableUpgrade[upgradesIndex.Length];
         for (int i = 0; i < upgradesIndex.Length; i++)
-            upgrades[i] = GameManager.Instance.upgradesManager.GetUpgrade(upgradesIndex[i]);
+            upgrades[i] = GameManager.Instance.UpgradesManager.GetUpgrade(upgradesIndex[i]);
         DisplayUpgrades(upgrades);
     }
     
@@ -91,6 +91,6 @@ public class PUpgradesChoice : PNetworkBehaviour
     private void UpgradeChosen(ushort index)
     {
         HideUpgrades();
-        GameManager.Instance.upgradesManager.ChooseUpgradeClient(index);
+        GameManager.Instance.UpgradesManager.ChooseUpgradeClient(index);
     }
 }
