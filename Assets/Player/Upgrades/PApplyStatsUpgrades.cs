@@ -6,31 +6,26 @@ public class PApplyStatsUpgrades : PNetworkBehaviour
     [SerializeField] private PJump jump;
     [SerializeField] private PStamina stamina;
     
+    private ScriptableUpgrade[] cachedUpgrades;
     
     protected override void StartOnlineOwner()
     {
-        GameManager.OnCreated += GameManagerEnabled;
+        UpgradesManager.OnUpgradeChosenOwner += UpgradeAdded;
+        PlayerDataManager.OnEntryUpdatedOwner += UpdateCachedUpgrades;
     }
-
-    private void GameManagerEnabled(GameManager manager)
-    {
-        manager.UpgradesManager.OnUpgradeChosenOwner += UpgradeAdded;
-    }
+    private void UpdateCachedUpgrades(PlayerData data) => cachedUpgrades = data.InGameData.GetUpgrades();
 
     protected override void DisableOnlineOwner()
     {
         if (GameManager.Instance == null) return;
-        GameManager.Instance.UpgradesManager.OnUpgradeChosenOwner -= UpgradeAdded;
+        UpgradesManager.OnUpgradeChosenOwner -= UpgradeAdded;
+        PlayerDataManager.OnEntryUpdatedOwner -= UpdateCachedUpgrades;
     }
 
     protected override void UpdateOnlineOwner()
     {
-        ScriptableUpgrade[] ownedUpgrades = CachedOwnerClientData.upgrades;
-        
-        if (ownedUpgrades == null) return;
-        if (ownedUpgrades.Length == 0) return;
-        
-        foreach (ScriptableUpgrade upgrade in ownedUpgrades) upgrade.Update();
+        if (cachedUpgrades == null) return;
+        if (cachedUpgrades.Length == 0) return;
     }
 
     private void UpgradeAdded(ushort upgradeIndex)

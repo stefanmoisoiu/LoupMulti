@@ -2,122 +2,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using Sirenix.OdinInspector;
-    using Unity.Collections;
     using Unity.Netcode;
     using UnityEngine;
-
-    [Serializable]
-    public struct PlayerGameData : INetworkSerializable
-    {
-        public PlayerData[] playerDatas;
-
-        public static PlayerData[] BasePlayerDatas()
-        {
-            PlayerData[] res = new PlayerData[NetcodeManager.MaxPlayers];
-            for (int i = 0; i < NetcodeManager.MaxPlayers; i++) res[i] = new PlayerData(null);
-            return res;
-        }
-        public PlayerGameData(PlayerData[] playerDatas)
-        {
-            this.playerDatas = playerDatas;
-        }
-        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-        {
-            playerDatas ??= BasePlayerDatas();
-            if (serializer.IsReader) playerDatas = BasePlayerDatas();
-            for (int i = 0; i < NetcodeManager.MaxPlayers; i++) serializer.SerializeValue(ref playerDatas[i]);
-        }
-
-        public PlayerGameData AddOrUpdateData(PlayerData data)
-        {
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (playerDatas[i].ClientId != data.ClientId) continue;
-                playerDatas[i] = data;
-                return this;
-            }
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (playerDatas[i].ClientId != ulong.MaxValue) continue;
-                playerDatas[i] = data;
-                return this;
-            }
-            Debug.LogError("Add PlayerData failed for clientId: " + data.ClientId);
-            return this;
-        }
-
-        public PlayerGameData RemoveData(PlayerData data)
-        {
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (playerDatas[i].ClientId != data.ClientId) continue;
-                playerDatas[i] = new PlayerData();
-                return this;
-            }
-            Debug.LogError("Remove PlayerData failed for clientId: " + data.ClientId);
-            return this;
-        }
-        public PlayerGameData RemoveData(ulong clientId)
-        {
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (playerDatas[i].ClientId != clientId) continue;
-                playerDatas[i] = new PlayerData();
-                return this;
-            }
-            Debug.LogError("Remove PlayerData failed for clientId: " + clientId);
-            return this;
-        }
-
-        public PlayerData GetDataOrDefault(ulong clientId)
-        {
-            if (playerDatas == null) return new();
-            if (playerDatas.Length == 0) return new();
-            if (clientId == ulong.MaxValue) return new();
-            
-            foreach (PlayerData data in playerDatas)
-            {
-                if (data.ClientId != clientId) continue;
-                return data;
-            }
-            return new();
-        }
-        
-        public PlayerGameData UpdateData(PlayerData data)
-        {
-            for (int i = 0; i < playerDatas.Length; i++)
-            {
-                if (playerDatas[i].ClientId != data.ClientId) continue;
-                playerDatas[i] = data;
-                return this;
-            }
-            Debug.LogError("Update PlayerData failed for clientId: " + data.ClientId);
-            return this;
-        }
-        
-        public PlayerData[] GetDatas()
-        {
-            List<PlayerData> res = new();
-            foreach (PlayerData data in playerDatas)
-            {
-                if (data.ClientId == ulong.MaxValue) continue;
-                res.Add(data);
-            }
-            return res.ToArray();
-        }
-        
-        public bool HasPlayerData(ulong clientId)
-        {
-            return playerDatas.Any(data => data.ClientId == clientId);
-        }
-        
-        public PlayerData GetRandomPlayerData()
-        {
-            var validPlayers = playerDatas.Where(data => data.ClientId != ulong.MaxValue).ToList();
-            return validPlayers[UnityEngine.Random.Range(0, validPlayers.Count)];
-        }
-    }
-
+    
     [Serializable]
     public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
     {
@@ -132,38 +19,34 @@
             OuterData = new PlayerOuterData(client);
             InGameData = new PlayerInGameData(UpgradesIndexArray:PlayerInGameData.DefaultUpgradesIndexArray());
         }
-        
         public PlayerData(PlayerData copy)
         {
             ClientId = copy.ClientId;
             OuterData = new PlayerOuterData(copy.OuterData);
             InGameData = new PlayerInGameData(copy.InGameData.score, copy.InGameData.health, copy.InGameData.upgradesIndexArray);
         }
-        
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref ClientId);
             serializer.SerializeValue(ref OuterData);
             serializer.SerializeValue(ref InGameData);
         }
-
-        public RpcParams ToRpcParams() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
-        
+        public RpcParams SendRpcTo() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
         public override string ToString()
         {
-            return $"ClientId: {ClientId}\nOuterData: {OuterData}\nInGameData: {InGameData}";
+            return $"ClientId: {ClientId}\n" +
+                   $"OuterData:\n{OuterData}\n \n" +
+                   $"InGameData:\n{InGameData}";
         }
 
         public bool Equals(PlayerData other)
         {
             return ClientId == other.ClientId && OuterData.Equals(other.OuterData) && InGameData.Equals(other.InGameData);
         }
-
         public override bool Equals(object obj)
         {
             return obj is PlayerData other && Equals(other);
         }
-
         public override int GetHashCode()
         {
             return HashCode.Combine(ClientId, OuterData, InGameData);
@@ -173,9 +56,9 @@
     [Serializable]
     public struct PlayerOuterData : INetworkSerializable, IEquatable<PlayerOuterData>
     {
-        public PlayerState CurrentPlayerState;
+        public PlayingState playingState;
         
-        public enum PlayerState
+        public enum PlayingState
         {
             NotAssigned,
             Disconnected,
@@ -186,53 +69,51 @@
 
         public PlayerOuterData(NetworkClient client = null)
         {
-            CurrentPlayerState = PlayerState.NotAssigned;
+            playingState = PlayingState.NotAssigned;
         }
-
         public PlayerOuterData(PlayerOuterData copy)
         {
-            CurrentPlayerState = copy.CurrentPlayerState;
-        }
-        
-        public PlayerOuterData SetState(PlayerState state)
-        {
-            CurrentPlayerState = state;
-            return this;
+            playingState = copy.playingState;
         }
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref CurrentPlayerState);
+            serializer.SerializeValue(ref playingState);
         }
         
         public override string ToString()
         {
-            return $"CurrentPlayerState: {CurrentPlayerState}";
+            return $"Playing State: {playingState}";
+        }
+        
+        public PlayerOuterData SetState(PlayingState newState)
+        {
+            playingState = newState;
+            return this;
         }
 
         public bool Equals(PlayerOuterData other)
         {
-            return CurrentPlayerState == other.CurrentPlayerState;
+            return playingState == other.playingState;
         }
-
         public override bool Equals(object obj)
         {
             return obj is PlayerOuterData other && Equals(other);
         }
-
         public override int GetHashCode()
         {
-            return (int)CurrentPlayerState;
+            return (int)playingState;
         }
     }
 
     [Serializable]
     public struct PlayerInGameData : INetworkSerializable, IEquatable<PlayerInGameData>
     {
+        public const ushort MaxHealth = 100;
         public ushort health;
         public ushort score;
-        public ushort[] upgradesIndexArray;
-        [ShowInInspector] [ShowIf("@debugUpgrades")] public string upgradesString => string.Join(", ", GetUpgrades().Select(u => u.UpgradeName));
+        public ushort[] upgradesIndexArray; 
+        [ShowInInspector] public string upgradesString => string.Join(", ", GetUpgrades().Select(u => u.UpgradeName));
 
         public override string ToString()
         {
@@ -267,6 +148,11 @@
         }
         public PlayerInGameData RemoveScore(ushort amount)
         {
+            if (score - amount < 0)
+            {
+                score = 0;
+                return this;
+            }
             score -= amount;
             return this;
         }
@@ -278,6 +164,11 @@
         
         public PlayerInGameData AddHealth(ushort amount)
         {
+            if (health + amount > MaxHealth)
+            {
+                health = MaxHealth;
+                return this;
+            }
             health += amount;
             return this;
         }
@@ -293,9 +184,10 @@
         }
         public PlayerInGameData ResetHealth()
         {
-            health = 100;
+            health = MaxHealth;
             return this;
         }
+        public bool IsAlive() => health > 0;
         
         public PlayerInGameData AddUpgrade(ushort upgradeIndex)
         {
@@ -328,24 +220,16 @@
             for (int i = 0; i < UpgradesManager.MaxUpgrades; i++) res[i] = ushort.MaxValue;
             return res;
         }
-        public NativeArray<ushort> DefaultUpgradesIndexArrayNative()
-        {
-            NativeArray<ushort> res = new NativeArray<ushort>(UpgradesManager.MaxUpgrades, Allocator.Temp);
-            for (int i = 0; i < UpgradesManager.MaxUpgrades; i++) res[i] = ushort.MaxValue;
-            return res;
-        }
-
+        
         public bool Equals(PlayerInGameData other)
         {
             return health == other.health && score == other.score &&
                    Equals(upgradesIndexArray, other.upgradesIndexArray);
         }
-
         public override bool Equals(object obj)
         {
             return obj is PlayerInGameData other && Equals(other);
         }
-
         public override int GetHashCode()
         {
             return HashCode.Combine(health, score, upgradesIndexArray);

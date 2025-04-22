@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class ConnectToUGS : MonoBehaviour
 {
     public UnityEvent uOnConnected;
-    public Action OnConnected;
+    public static event Action OnConnected;
     private void Start()
     {
         Connect();

@@ -9,8 +9,8 @@ public class GameTickManager : NetworkBehaviour
     public static ushort CurrentTick { get; private set; }
     private Coroutine _coroutine;
     
-    public static Action OnTickServer;
-    public static Action OnTickClient;
+    public static event Action OnTickServer;
+    public static event Action OnTickClient;
     
     public void StartTickLoop()
     {

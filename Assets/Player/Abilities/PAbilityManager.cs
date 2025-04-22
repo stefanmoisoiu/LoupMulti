@@ -9,24 +9,23 @@ public class PAbilityManager : PNetworkBehaviour
 
     protected override void StartOnlineOwner()
     {
-        if(GameManager.Instance != null)
-        {
-            UpdateAllAbilityStates();
-            GameManager.Instance.UpgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
-        }
-        else
-        {
-            GameManager.OnCreated += gm =>
-            {
-                gm.UpgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
-                UpdateAllAbilityStates();
-            };
-        }
+        UpgradesManager.OnUpgradeChosenOwner += UpgradeAddedEnableAbility;
+    }
+
+    protected override void DisableAnyOwner()
+    {
+        UpgradesManager.OnUpgradeChosenOwner -= UpgradeAddedEnableAbility;
     }
 
     private void UpdateAllAbilityStates()
     {
-        ScriptableUpgrade[] ownedUpgrades = GameManager.Instance.GameData.PlayerGameData.GetDataOrDefault(OwnerClientId).InGameData.GetUpgrades();
+        Debug.LogWarning("Get owned upgrades pas cached!!");
+        if (GameManager.Instance != null) return;
+        Debug.LogError(GameManager.Instance.GameData);
+        Debug.LogError(GameManager.Instance.GameData.PlayerDataManager);
+        if (!GameManager.Instance.GameData.PlayerDataManager.TryGetValue(NetworkManager.LocalClientId,
+                out PlayerData pd)) return;
+        ScriptableUpgrade[] ownedUpgrades = pd.InGameData.GetUpgrades();
         foreach (ScriptableUpgrade upgrade in GameManager.Instance.UpgradesManager.Upgrades)
         {
             if (upgrade.Type != ScriptableUpgrade.UpgradeType.Active) continue;

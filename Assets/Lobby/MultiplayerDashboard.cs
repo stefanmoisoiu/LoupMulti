@@ -38,7 +38,7 @@ public class MultiplayerDashboard : NetworkBehaviour
     [SerializeField] private CanvasGroup createGamePanel;
     [SerializeField] private CanvasGroup lobbyInfoPanel;
 
-    public static Action StartEnterGame, SuccessEnterGame, FailedEnterGame;
+    public static event Action StartEnterGame, SuccessEnterGame, FailedEnterGame;
     private void Start()
     {
         joinCodeInput.characterLimit = _maxCodeSize;
@@ -166,16 +166,17 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void ChangePlayerState()
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
-        PlayerOuterData.PlayerState state = GameManager.Instance.GameData.PlayerGameData.GetDataOrDefault(clientID).OuterData.CurrentPlayerState;
-        if (state == PlayerOuterData.PlayerState.SpectatingGame)
+        GameData gameData = GameManager.Instance.GameData;
+        if (!gameData.PlayerDataManager.TryGetValue(clientID, out PlayerData data)) return;
+        if (data.OuterData.playingState == PlayerOuterData.PlayingState.SpectatingGame)
         {
-            GameManager.Instance.GameData.SetStatePlaying(clientID);
+            gameData.PlayerDataManager[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.Playing) };
             changeStateText.text = "Spectate";
             
         }
         else
         {
-            GameManager.Instance.GameData.SetStateSpectate(clientID);
+            gameData.PlayerDataManager[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.SpectatingGame) };
             changeStateText.text = "Be Player";
         }
     }

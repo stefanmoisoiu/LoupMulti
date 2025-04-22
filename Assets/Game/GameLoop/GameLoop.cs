@@ -9,23 +9,25 @@ public class GameLoop : NetworkBehaviour
     public HotPotatoManager HotPotatoManager => hotPotatoManager;
     [SerializeField] private GameTickManager gameTickManager;
     public GameTickManager GameTickManager => gameTickManager;
+    [SerializeField] private PlayerDeath playerDeath;
+    public PlayerDeath PlayerDeath => playerDeath;
     
     
     public const int RoundCount = 2;
     public const int TimeToUpgrade = 10;
     public const int Countdown = 5;
-    public const int GameLength = 30;
+    public const int GameLength = 60;
     
     
     public NetworkVariable<RoundState> roundState = new(RoundState.None);
     private Coroutine _gameLoopCoroutine;
 
-    public Action<RoundState, float> OnRoundStateChanged;
+    public static event Action<RoundState, float> OnRoundStateChanged;
     [Rpc(SendTo.Everyone)]
     private void OnRoundStateChangedClientRpc(RoundState state, float serverTime)
         => OnRoundStateChanged?.Invoke(state, serverTime);
 
-    public Action OnGameEndedServer;
+    public static event Action OnGameEndedServer;
 
 
     private void Awake()
@@ -70,9 +72,9 @@ public class GameLoop : NetworkBehaviour
         
         OnRoundStateChangedClientRpc(RoundState.ChoosingUpgrade, NetworkManager.ServerTime.TimeAsFloat);
 
-        GameManager.Instance.UpgradesManager.ChooseUpgradesForPlayingPlayersServer();
+        GameManager.Instance.UpgradesManager.ChooseUpgradesForPlayersServer();
         yield return new WaitForSeconds(TimeToUpgrade);
-        GameManager.Instance.UpgradesManager.UpgradeTimeFinishedServer();
+        GameManager.Instance.UpgradesManager.ApplyUpgrades();
     }
     private IEnumerator PlayCountdown(GameManager manager)
     {
@@ -89,9 +91,7 @@ public class GameLoop : NetworkBehaviour
         roundState.Value = RoundState.InRound;
         OnRoundStateChangedClientRpc(RoundState.InRound, NetworkManager.ServerTime.TimeAsFloat);
         
-        Debug.LogError("Hot Potato temporaire !!!!!!! joueur choisi aléatoirement");
-        ulong randomClientId = manager.GameData.PlayerGameData.GetRandomPlayerData().ClientId;
-        hotPotatoManager.ActivateHotPotato(randomClientId);
+        hotPotatoManager.ActivateRandomHotPotato();
         yield return new WaitForSeconds(GameLength);
         hotPotatoManager.DeactivateHotPotato();
     }

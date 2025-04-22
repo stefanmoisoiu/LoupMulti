@@ -15,8 +15,8 @@ public class MapManager : NetworkBehaviour
     
     public string CurrentMap { get; private set; }
     
-    public Action<string> OnMapLoadedServer;
-    public Action<string> OnMapLoadedAll;
+    public static event Action<string> OnMapLoadedServer;
+    public static event Action<string> OnMapLoadedAll;
     [Rpc(SendTo.Everyone)] private void OnMapLoadedClientRpc(string map) => OnMapLoadedAll?.Invoke(map);
     
     public void LoadRandomGameMap()

@@ -13,26 +13,19 @@ public class PUpgradesChoice : PNetworkBehaviour
     protected override void StartOnlineOwner()
     {
         _upgradesList = GameObject.FindGameObjectWithTag(UpgradesListLayoutTag).transform;
-        if (GameManager.Instance == null) GameManager.OnCreated += OnGameManagerCreated;
-        else OnGameManagerCreated(GameManager.Instance);
+        UpgradesManager.OnUpgradeChoicesAvailable += DisplayUpgrades;
+        GameLoop.OnRoundStateChanged += TryHideUpgrades;
     }
 
     protected override void DisableOnlineOwner()
     {
-        GameManager.OnCreated -= OnGameManagerCreated;
         if (GameManager.Instance == null) return;
-        GameManager.Instance.UpgradesManager.OnUpgradeChoices -= DisplayUpgrades;
-        GameManager.Instance.GameLoop.OnRoundStateChanged -= TryHideUpgrades;
-    }
-
-    private void OnGameManagerCreated(GameManager instance)
-    {
-        instance.UpgradesManager.OnUpgradeChoices += DisplayUpgrades;
-        instance.GameLoop.OnRoundStateChanged += TryHideUpgrades;
+        UpgradesManager.OnUpgradeChoicesAvailable -= DisplayUpgrades;
+        GameLoop.OnRoundStateChanged -= TryHideUpgrades;
     }
     private void TryHideUpgrades(GameLoop.RoundState state, float serverTime)
     {
-        if (state != GameLoop.RoundState.ChoosingUpgrade) return;
+        if (state == GameLoop.RoundState.ChoosingUpgrade) return; // if still upgrading, return :)
             HideUpgrades();
     }
     

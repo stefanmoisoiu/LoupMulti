@@ -6330,18 +6330,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   healthTextTag: HealthText
+  healthTextLerpDurationPerHealth: 0.15
   healthTextLerpCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
+      inSlope: 2.8816466
+      outSlope: 2.8816466
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.045833334
+    - serializedVersion: 3
+      time: 0.38333336
+      value: 0.78398114
+      inSlope: 0.84726083
+      outSlope: 0.84726083
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.30208334
+      outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
       value: 1

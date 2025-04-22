@@ -9,34 +9,38 @@ public class PHealthUI : PNetworkBehaviour
     private TMP_Text healthText;
 
     private Coroutine healthTextLerpCoroutine;
+    [SerializeField] private float healthTextLerpDurationPerHealth = 0.1f;
     [SerializeField] private AnimationCurve healthTextLerpCurve;
-    
+
+    private ushort previousHealth;
 
     protected override void StartAnyOwner()
     {
         healthText = GameObject.FindGameObjectWithTag(healthTextTag).GetComponent<TMP_Text>();
-        CachedOwnerClientData.onOwnerDataChanged += UpdateHealth;
+        Debug.LogWarning("Cached upgrade pas fait");
+        PlayerDataManager.OnEntryUpdatedOwner += UpdateHealth;
+        previousHealth = PlayerInGameData.MaxHealth;
+        healthText.text = previousHealth.ToString();
     }
 
     protected override void DisableAnyOwner()
     {
-        CachedOwnerClientData.onOwnerDataChanged -= UpdateHealth;
+        PlayerDataManager.OnEntryUpdatedOwner -= UpdateHealth;
         if (healthTextLerpCoroutine != null) StopCoroutine(healthTextLerpCoroutine);
     }
 
-    private void UpdateHealth(PlayerData previousPlayerData, PlayerData newPlayerData)
+    private void UpdateHealth(PlayerData newPlayerData)
     {
         if (newPlayerData.ClientId == ulong.MaxValue) return;
-        if (healthTextLerpCoroutine != null) StopCoroutine(healthTextLerpCoroutine);
-        healthTextLerpCoroutine = StartCoroutine(UpdateHealthText(previousPlayerData.InGameData.health,
-            newPlayerData.InGameData.health));
+        healthTextLerpCoroutine = StartCoroutine(UpdateHealthText(previousHealth, newPlayerData.InGameData.health));
+        previousHealth = newPlayerData.InGameData.health;
     }
     
-    private IEnumerator UpdateHealthText(ushort previousHealth, ushort newHealth)
+    private IEnumerator UpdateHealthText(ushort health, ushort newHealth)
     {
         float time = 0;
-        float duration = 1f;
-        float startValue = previousHealth;
+        float duration = healthTextLerpDurationPerHealth * Mathf.Abs(newHealth - health);
+        float startValue = health;
         float endValue = newHealth;
         while (time < duration)
         {

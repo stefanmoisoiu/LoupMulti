@@ -1,5 +1,65 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &562629876093420184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8519151174577496356}
+  - component: {fileID: 7555581640142737055}
+  - component: {fileID: 1510370224068740443}
+  m_Layer: 0
+  m_Name: Game Data
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8519151174577496356
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562629876093420184}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3452261869769108649}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7555581640142737055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562629876093420184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcf058f789034617952c55b7c9ff303e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  playerDataManager: {fileID: 1510370224068740443}
+--- !u!114 &1510370224068740443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 562629876093420184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1555c28f9db4a1aae7b813dde2afd7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &3379183740241247975
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,7 +71,6 @@ GameObject:
   - component: {fileID: 3452261869769108649}
   - component: {fileID: 4033694297705636425}
   - component: {fileID: 5434820202124141069}
-  - component: {fileID: 1153693554774647391}
   - component: {fileID: 4823457383044820859}
   - component: {fileID: 7399916474714617596}
   - component: {fileID: 6805961600794992388}
@@ -36,6 +95,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6005005049068488212}
+  - {fileID: 8519151174577496356}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4033694297705636425
@@ -76,30 +136,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  gameData: {fileID: 1153693554774647391}
+  gameData: {fileID: 7555581640142737055}
   upgradesManager: {fileID: 6805961600794992388}
   mapManager: {fileID: 4823457383044820859}
   gameLoop: {fileID: 2652290516336462276}
   gameState:
     m_InternalValue: 0
---- !u!114 &1153693554774647391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3379183740241247975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcf058f789034617952c55b7c9ff303e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  playerGameData:
-    m_InternalValue:
-      playerDatas: []
-  playerGameDataPreview:
-    playerDatas: []
 --- !u!114 &4823457383044820859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +201,7 @@ GameObject:
   - component: {fileID: 2652290516336462276}
   - component: {fileID: 4628776859169173046}
   - component: {fileID: 788421721322286113}
+  - component: {fileID: 416525028797340264}
   m_Layer: 0
   m_Name: GameLoop
   m_TagString: Untagged
@@ -196,6 +239,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   hotPotatoManager: {fileID: 788421721322286113}
   gameTickManager: {fileID: 4628776859169173046}
+  playerDeath: {fileID: 416525028797340264}
   roundState:
     m_InternalValue: 0
 --- !u!114 &4628776859169173046
@@ -226,5 +270,18 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   target:
     m_InternalValue: 18446744073709551615
-  healthLossPerSec: 5
-  healthLossTickDelay: 10
+  healthLossPerSec: 3
+  healthLossTickDelay: 20
+--- !u!114 &416525028797340264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8265304381197042471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5070cdd03d9413382024c4be8afbed4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
