@@ -22,8 +22,8 @@ public class PAbilityManager : PNetworkBehaviour
         Debug.LogWarning("Get owned upgrades pas cached!!");
         if (GameManager.Instance != null) return;
         Debug.LogError(GameManager.Instance.GameData);
-        Debug.LogError(GameManager.Instance.GameData.PlayerDataManager);
-        if (!GameManager.Instance.GameData.PlayerDataManager.TryGetValue(NetworkManager.LocalClientId,
+        Debug.LogError(PlayerDataManager.Instance);
+        if (!PlayerDataManager.Instance.TryGetValue(NetworkManager.LocalClientId,
                 out PlayerData pd)) return;
         ScriptableUpgrade[] ownedUpgrades = pd.InGameData.GetUpgrades();
         foreach (ScriptableUpgrade upgrade in GameManager.Instance.UpgradesManager.Upgrades)

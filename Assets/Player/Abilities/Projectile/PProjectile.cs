@@ -25,16 +25,16 @@ public class PProjectile : PNetworkAbility
     public override void EnableAbility()
     {
         base.EnableAbility();
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartPreviewThrowProjectile);
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, ThrowProjectileClient);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartPreviewThrowProjectile);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, ThrowProjectileClient);
         
     }
 
     public override void DisableAbility()
     {
         base.DisableAbility();
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartPreviewThrowProjectile);
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, ThrowProjectileClient);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartPreviewThrowProjectile);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, ThrowProjectileClient);
     }
     
     private void StartPreviewThrowProjectile()

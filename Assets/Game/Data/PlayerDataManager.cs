@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PlayerDataManager : NetworkBehaviour
 {
+    public static PlayerDataManager Instance { get; private set; }
+    
     private readonly Dictionary<ulong, PlayerData> _data = new Dictionary<ulong, PlayerData>();
 
     /// <summary>Événement d'ajout d'une entrée (clé, valeur).</summary>
@@ -19,6 +21,11 @@ public class PlayerDataManager : NetworkBehaviour
     public static event Action<PlayerData> OnEntryRemovedClient;
     
     public static event Action<PlayerData> OnEntryUpdatedOwner;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     // --- API Serveur ---
     
@@ -104,7 +111,6 @@ public class PlayerDataManager : NetworkBehaviour
     {
         return _data.TryGetValue(clientId, out pd);
     }
-    
     public PlayerData this[ulong clientId]
     {
         get

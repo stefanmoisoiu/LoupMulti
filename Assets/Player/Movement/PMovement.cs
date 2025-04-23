@@ -50,7 +50,7 @@ public class PMovement : PNetworkBehaviour
 
     private void Move()
     {
-        Vector3 dir = orientation.forward * InputManager.instance.MoveInput.y + orientation.right * InputManager.instance.MoveInput.x;
+        Vector3 dir = orientation.forward * InputManager.Move.y + orientation.right * InputManager.Move.x;
         
         float accel = GetAcceleration();
         Vector3 force = dir * accel;

@@ -53,7 +53,7 @@ public class PCamera : PNetworkBehaviour
 
     private void GetLookTarget()
     {
-        LookDelta = InputManager.instance.LookInput * sensMult;
+        LookDelta = InputManager.Look * sensMult;
         LookTarget += LookDelta;
         LookTarget = new(LookTarget.x,Mathf.Clamp(LookTarget.y, -MaxTilt, MaxTilt));
     }

@@ -18,4 +18,11 @@ public class PlayerDeath : NetworkBehaviour
         if (previousPlayerData.InGameData.IsAlive() && !newPlayerData.InGameData.IsAlive())
             OnPlayerDiedServer?.Invoke(newPlayerData.ClientId);
     }
+
+    public PlayerData[] GetAlivePlayingPlayers()
+    {
+        PlayerData[] players = PlayerDataManager.Instance.GetValues();
+        return Array.FindAll(players, player => player.OuterData.playingState == PlayerOuterData.PlayingState.Playing
+                                                && player.InGameData.IsAlive());
+    }
 }

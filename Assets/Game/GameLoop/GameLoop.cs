@@ -16,7 +16,6 @@ public class GameLoop : NetworkBehaviour
     public const int RoundCount = 2;
     public const int TimeToUpgrade = 10;
     public const int Countdown = 5;
-    public const int GameLength = 60;
     
     
     public NetworkVariable<RoundState> roundState = new(RoundState.None);
@@ -87,12 +86,18 @@ public class GameLoop : NetworkBehaviour
     }
     private IEnumerator PlayRound(GameManager manager)
     {
-        NetcodeLogger.Instance.LogRpc($"Playing round for {GameLength} seconds", NetcodeLogger.LogType.GameLoop);
+        NetcodeLogger.Instance.LogRpc($"Playing round until 1 player is left", NetcodeLogger.LogType.GameLoop);
         roundState.Value = RoundState.InRound;
         OnRoundStateChangedClientRpc(RoundState.InRound, NetworkManager.ServerTime.TimeAsFloat);
         
         hotPotatoManager.ActivateRandomHotPotato();
-        yield return new WaitForSeconds(GameLength);
+        
+        bool gameOver = false;
+        void OnePlayerLeft(ulong clientId) {if (playerDeath.GetAlivePlayingPlayers().Length <= 1) gameOver = true;}
+        
+        PlayerDeath.OnPlayerDiedServer += OnePlayerLeft;
+        yield return new WaitUntil(() => gameOver);
+        PlayerDeath.OnPlayerDiedServer -= OnePlayerLeft;
         hotPotatoManager.DeactivateHotPotato();
     }
 

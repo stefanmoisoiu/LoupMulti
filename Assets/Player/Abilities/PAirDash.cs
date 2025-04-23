@@ -23,13 +23,13 @@ public class PAirDash : PNetworkAbility
     public override void EnableAbility()
     {
         base.EnableAbility();
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, TryStartDash);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, TryStartDash);
     }
 
     public override void DisableAbility()
     {
         base.DisableAbility();
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, TryStartDash);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, TryStartDash);
     }
 
     private void TryStartDash()

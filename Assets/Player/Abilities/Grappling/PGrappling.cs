@@ -45,7 +45,7 @@ public class PGrappling : PNetworkAbility
         base.EnableAbility();
         Debug.Log("Grappling enabled");
         // InputManager.instance.OnJump += TryJumpGrapple;
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedGrapple);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedGrapple);
     }
 
     public override void DisableAbility()
@@ -53,7 +53,7 @@ public class PGrappling : PNetworkAbility
         base.DisableAbility();
         Debug.Log("Grappling disabled");
         // InputManager.instance.OnJump -= TryJumpGrapple;
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedGrapple);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedGrapple);
     }
 
     protected override void UpdateAnyOwner()

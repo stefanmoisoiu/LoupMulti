@@ -24,16 +24,16 @@ public class PScoreboard : PNetworkBehaviour
         _spectatorText = _scoreboard.GetChild(1).GetComponent<TMP_Text>();
         _spectatorList = _scoreboard.GetChild(2).GetComponent<TMP_Text>();
         
-        InputManager.instance.OnScoreboard += ShowScoreboard;
-        InputManager.instance.OnStopScoreboard += HideScoreboard;
+        InputManager.OnScoreboardOpened += ShowScoreboard;
+        InputManager.OnScoreboardClosed += HideScoreboard;
         
         HideScoreboard();
     }
 
     protected override void DisableOnlineOwner()
     {
-        InputManager.instance.OnScoreboard -= ShowScoreboard;
-        InputManager.instance.OnStopScoreboard -= HideScoreboard;
+        InputManager.OnScoreboardOpened -= ShowScoreboard;
+        InputManager.OnScoreboardClosed -= HideScoreboard;
         
         HideScoreboard();
     }

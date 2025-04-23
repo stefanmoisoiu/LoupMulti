@@ -24,11 +24,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     ""name"": ""Controls"",
     ""maps"": [
         {
-            ""name"": ""Base Movement"",
+            ""name"": ""Gameplay"",
             ""id"": ""3f4a61f9-af7d-4416-a071-db727698c46b"",
             ""actions"": [
                 {
-                    ""name"": ""Horizontal"",
+                    ""name"": ""Move"",
                     ""type"": ""PassThrough"",
                     ""id"": ""661b4861-851f-4d92-bfed-3414334165f0"",
                     ""expectedControlType"": ""Vector2"",
@@ -99,7 +99,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Horizontal"",
+                    ""action"": ""Move"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -110,7 +110,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Horizontal"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -121,7 +121,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Horizontal"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -132,7 +132,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Horizontal"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -143,7 +143,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Horizontal"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -154,7 +154,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Horizontal"",
+                    ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -290,15 +290,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     ],
     ""controlSchemes"": []
 }");
-        // Base Movement
-        m_BaseMovement = asset.FindActionMap("Base Movement", throwIfNotFound: true);
-        m_BaseMovement_Horizontal = m_BaseMovement.FindAction("Horizontal", throwIfNotFound: true);
-        m_BaseMovement_Jump = m_BaseMovement.FindAction("Jump", throwIfNotFound: true);
-        m_BaseMovement_Look = m_BaseMovement.FindAction("Look", throwIfNotFound: true);
-        m_BaseMovement_Run = m_BaseMovement.FindAction("Run", throwIfNotFound: true);
-        m_BaseMovement_Action1 = m_BaseMovement.FindAction("Action1", throwIfNotFound: true);
-        m_BaseMovement_Action2 = m_BaseMovement.FindAction("Action2", throwIfNotFound: true);
-        m_BaseMovement_Action3 = m_BaseMovement.FindAction("Action3", throwIfNotFound: true);
+        // Gameplay
+        m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
+        m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
+        m_Gameplay_Jump = m_Gameplay.FindAction("Jump", throwIfNotFound: true);
+        m_Gameplay_Look = m_Gameplay.FindAction("Look", throwIfNotFound: true);
+        m_Gameplay_Run = m_Gameplay.FindAction("Run", throwIfNotFound: true);
+        m_Gameplay_Action1 = m_Gameplay.FindAction("Action1", throwIfNotFound: true);
+        m_Gameplay_Action2 = m_Gameplay.FindAction("Action2", throwIfNotFound: true);
+        m_Gameplay_Action3 = m_Gameplay.FindAction("Action3", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Scoreboard = m_UI.FindAction("Scoreboard", throwIfNotFound: true);
@@ -306,7 +306,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
 
     ~@Controls()
     {
-        UnityEngine.Debug.Assert(!m_BaseMovement.enabled, "This will cause a leak and performance issues, Controls.BaseMovement.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Gameplay.enabled, "This will cause a leak and performance issues, Controls.Gameplay.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, Controls.UI.Disable() has not been called.");
     }
 
@@ -366,39 +366,39 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Base Movement
-    private readonly InputActionMap m_BaseMovement;
-    private List<IBaseMovementActions> m_BaseMovementActionsCallbackInterfaces = new List<IBaseMovementActions>();
-    private readonly InputAction m_BaseMovement_Horizontal;
-    private readonly InputAction m_BaseMovement_Jump;
-    private readonly InputAction m_BaseMovement_Look;
-    private readonly InputAction m_BaseMovement_Run;
-    private readonly InputAction m_BaseMovement_Action1;
-    private readonly InputAction m_BaseMovement_Action2;
-    private readonly InputAction m_BaseMovement_Action3;
-    public struct BaseMovementActions
+    // Gameplay
+    private readonly InputActionMap m_Gameplay;
+    private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
+    private readonly InputAction m_Gameplay_Move;
+    private readonly InputAction m_Gameplay_Jump;
+    private readonly InputAction m_Gameplay_Look;
+    private readonly InputAction m_Gameplay_Run;
+    private readonly InputAction m_Gameplay_Action1;
+    private readonly InputAction m_Gameplay_Action2;
+    private readonly InputAction m_Gameplay_Action3;
+    public struct GameplayActions
     {
         private @Controls m_Wrapper;
-        public BaseMovementActions(@Controls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Horizontal => m_Wrapper.m_BaseMovement_Horizontal;
-        public InputAction @Jump => m_Wrapper.m_BaseMovement_Jump;
-        public InputAction @Look => m_Wrapper.m_BaseMovement_Look;
-        public InputAction @Run => m_Wrapper.m_BaseMovement_Run;
-        public InputAction @Action1 => m_Wrapper.m_BaseMovement_Action1;
-        public InputAction @Action2 => m_Wrapper.m_BaseMovement_Action2;
-        public InputAction @Action3 => m_Wrapper.m_BaseMovement_Action3;
-        public InputActionMap Get() { return m_Wrapper.m_BaseMovement; }
+        public GameplayActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_Gameplay_Move;
+        public InputAction @Jump => m_Wrapper.m_Gameplay_Jump;
+        public InputAction @Look => m_Wrapper.m_Gameplay_Look;
+        public InputAction @Run => m_Wrapper.m_Gameplay_Run;
+        public InputAction @Action1 => m_Wrapper.m_Gameplay_Action1;
+        public InputAction @Action2 => m_Wrapper.m_Gameplay_Action2;
+        public InputAction @Action3 => m_Wrapper.m_Gameplay_Action3;
+        public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(BaseMovementActions set) { return set.Get(); }
-        public void AddCallbacks(IBaseMovementActions instance)
+        public static implicit operator InputActionMap(GameplayActions set) { return set.Get(); }
+        public void AddCallbacks(IGameplayActions instance)
         {
-            if (instance == null || m_Wrapper.m_BaseMovementActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_BaseMovementActionsCallbackInterfaces.Add(instance);
-            @Horizontal.started += instance.OnHorizontal;
-            @Horizontal.performed += instance.OnHorizontal;
-            @Horizontal.canceled += instance.OnHorizontal;
+            if (instance == null || m_Wrapper.m_GameplayActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GameplayActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
@@ -419,11 +419,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Action3.canceled += instance.OnAction3;
         }
 
-        private void UnregisterCallbacks(IBaseMovementActions instance)
+        private void UnregisterCallbacks(IGameplayActions instance)
         {
-            @Horizontal.started -= instance.OnHorizontal;
-            @Horizontal.performed -= instance.OnHorizontal;
-            @Horizontal.canceled -= instance.OnHorizontal;
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
@@ -444,21 +444,21 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Action3.canceled -= instance.OnAction3;
         }
 
-        public void RemoveCallbacks(IBaseMovementActions instance)
+        public void RemoveCallbacks(IGameplayActions instance)
         {
-            if (m_Wrapper.m_BaseMovementActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_GameplayActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IBaseMovementActions instance)
+        public void SetCallbacks(IGameplayActions instance)
         {
-            foreach (var item in m_Wrapper.m_BaseMovementActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_GameplayActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_BaseMovementActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_GameplayActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public BaseMovementActions @BaseMovement => new BaseMovementActions(this);
+    public GameplayActions @Gameplay => new GameplayActions(this);
 
     // UI
     private readonly InputActionMap m_UI;
@@ -505,9 +505,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         }
     }
     public UIActions @UI => new UIActions(this);
-    public interface IBaseMovementActions
+    public interface IGameplayActions
     {
-        void OnHorizontal(InputAction.CallbackContext context);
+        void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);

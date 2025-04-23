@@ -47,15 +47,15 @@ public class PStyle : PNetworkAbility
     public override void EnableAbility()
     {
         base.EnableAbility();
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartNoLook);
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, StopNoLook);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartNoLook);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, StopNoLook);
     }
 
     public override void DisableAbility()
     {
         base.DisableAbility();
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartNoLook);
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, StopNoLook);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, StartNoLook);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Stop, StopNoLook);
     }
 
     protected override void StartAnyOwner()

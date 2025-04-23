@@ -45,23 +45,22 @@ public class HotPotatoManager : NetworkBehaviour
     {
         if (GameTickManager.CurrentTick % healthLossTickDelay != 0) return;
         if (target.Value == ulong.MaxValue) return;
-        GameData gameData = GameManager.Instance.GameData;
-        if (!gameData.PlayerDataManager.TryGetValue(target.Value, out PlayerData data)) return;
+        if (!PlayerDataManager.Instance.TryGetValue(target.Value, out PlayerData data)) return;
         ushort damage = (ushort)(healthLossPerSec * healthLossTickDelay /
                                  GameTickManager.TICKRATE);
-        gameData.PlayerDataManager[target.Value] = new(data) {InGameData = data.InGameData.RemoveHealth(damage)};
+        PlayerDataManager.Instance[target.Value] = new(data) {InGameData = data.InGameData.RemoveHealth(damage)};
     }
     
     private ulong GetRandomAliveClientId()
     {
-        ulong[] keys = GameManager.Instance.GameData.PlayerDataManager.GetKeys();
+        ulong[] keys = PlayerDataManager.Instance.GetKeys();
         ushort randomIndex;
         if (keys.Length == 0) return ulong.MaxValue;
         do
         {
             randomIndex = (ushort)UnityEngine.Random.Range(0, keys.Length);
         }
-        while (!GameManager.Instance.GameData.PlayerDataManager[randomIndex].InGameData.IsAlive());
+        while (!PlayerDataManager.Instance[randomIndex].InGameData.IsAlive());
         return keys[randomIndex];
     }
 }

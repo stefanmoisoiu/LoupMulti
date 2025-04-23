@@ -32,13 +32,13 @@ public class PWallBounce : PNetworkAbility
     public override void EnableAbility()
     {
         base.EnableAbility();
-        InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedWallBounce);
+        //InputManager.instance.AddAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedWallBounce);
     }
 
     public override void DisableAbility()
     {
         base.DisableAbility();
-        InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedWallBounce);
+        //InputManager.instance.RemoveAbilityInputListener(AbilityInput, InputManager.ActionType.Start, PressedWallBounce);
     }
 
     protected override void UpdateAnyOwner()

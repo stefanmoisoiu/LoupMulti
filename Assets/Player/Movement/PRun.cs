@@ -21,14 +21,14 @@ public class PRun : PNetworkBehaviour
 
     protected override void StartAnyOwner()
     {
-        InputManager.instance.OnRun += StartRun;
-        InputManager.instance.OnStopRun += StopRun;
+        InputManager.OnRunStarted += StartRun;
+        InputManager.OnRunCanceled += StopRun;
     }
 
     protected override void DisableAnyOwner()
     {
-        InputManager.instance.OnRun -= StartRun;
-        InputManager.instance.OnStopRun -= StopRun;
+        InputManager.OnRunStarted -= StartRun;
+        InputManager.OnRunCanceled -= StopRun;
     }
     
     protected override void UpdateAnyOwner()
@@ -38,12 +38,12 @@ public class PRun : PNetworkBehaviour
         stamina.DecreaseStamina(loseRate * Time.deltaTime);
         if (stamina.Stamina <= 0 ||
             !grounded.FullyGrounded() ||
-            InputManager.instance.MoveInput.magnitude < runInputThreshold) StopRun();
+            InputManager.Move.magnitude < runInputThreshold) StopRun();
     }
 
     private void StartRun()
     {
-        if (InputManager.instance.MoveInput.magnitude < runInputThreshold) return;
+        if (InputManager.Move.magnitude < runInputThreshold) return;
         Running = true;
         OnRun?.Invoke();
     }

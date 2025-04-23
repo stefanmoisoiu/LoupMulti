@@ -35,7 +35,7 @@ public class PGameStateUI : PNetworkBehaviour
                 break;
             case GameLoop.RoundState.InRound:
                 text = "Playing Round";
-                timer = GameLoop.GameLength;
+                timer = 0;
                 break;
             case GameLoop.RoundState.ChoosingUpgrade:
                 text = "Upgrading";

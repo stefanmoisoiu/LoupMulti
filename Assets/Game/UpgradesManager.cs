@@ -35,8 +35,7 @@ public class UpgradesManager : NetworkBehaviour
     public void ApplyUpgrades()
     {
         // If player did not choose, we give them the first upgrade
-        GameData gameData = GameManager.Instance.GameData;
-        foreach (ulong clientId in gameData.PlayerDataManager.GetKeys())
+        foreach (ulong clientId in PlayerDataManager.Instance.GetKeys())
         {
             if (!PlayerUpgradeChoice.TryGetValue(clientId, out var upgradeChoiceIndex)) // premier choix = 0, etc
                 PlayerUpgradeChoice.Add(clientId, 0);
@@ -47,8 +46,8 @@ public class UpgradesManager : NetworkBehaviour
             NetcodeLogger.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", NetcodeLogger.LogType.Upgrades);
             NetcodeLogger.Instance.LogRpc($"and chose {GetUpgrade(upgradeChoiceIndex).UpgradeName}", NetcodeLogger.LogType.Upgrades);
 
-            PlayerData data = gameData.PlayerDataManager[clientId];
-            gameData.PlayerDataManager[clientId] = new(data) {InGameData = data.InGameData.AddUpgrade(chosenUpgrade)};
+            PlayerData data = PlayerDataManager.Instance[clientId];
+            PlayerDataManager.Instance[clientId] = new(data) {InGameData = data.InGameData.AddUpgrade(chosenUpgrade)};
             
             OnUpgradeChosenClientRpc(upgradeChoiceIndex, data.SendRpcTo());
         }

@@ -22344,6 +22344,11 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 1851821080
       objectReference: {fileID: 0}
+    - target: {fileID: 1494894538968643548, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: sceneChanger
+      value: 
+      objectReference: {fileID: 5582340781911857720}
     - target: {fileID: 2659286138327765486, guid: aa105dfa884894640ab95ea07d821173,
         type: 3}
       propertyPath: m_Pivot.x
@@ -22444,6 +22449,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3029125484331979738, guid: aa105dfa884894640ab95ea07d821173,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5074846341780381653, guid: aa105dfa884894640ab95ea07d821173,
         type: 3}
       propertyPath: m_Camera
@@ -22464,6 +22474,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa105dfa884894640ab95ea07d821173, type: 3}
+--- !u!114 &5582340781911857720 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3468995436550622257, guid: aa105dfa884894640ab95ea07d821173,
+    type: 3}
+  m_PrefabInstance: {fileID: 5582340781911857719}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5421af4292aa4563a2a54278aad19420, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7628356177004499989
 PrefabInstance:
   m_ObjectHideFlags: 0

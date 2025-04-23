@@ -23,7 +23,7 @@ public class PCamRunFOV : MonoBehaviour
 
     private void Update()
     {
-        _fov = Mathf.Lerp(_fov, _targetFov * InputManager.instance.MoveInput.magnitude, fovLerpSpeed * Time.deltaTime);
+        _fov = Mathf.Lerp(_fov, _targetFov * InputManager.Move.magnitude, fovLerpSpeed * Time.deltaTime);
         _effect.AddedFov = _fov;
     }
 }

@@ -11,8 +11,6 @@ public class MultiplayerDashboard : NetworkBehaviour
     [SerializeField] private string multiplayerLobbySceneName = "MultiLobby";
     [SerializeField] private string soloLobbySceneName = "SoloLobby";
     
-    [SerializeField] private SceneChange sceneChange;
-    
     [SerializeField] private TMP_InputField joinCodeInput;
     private int _maxCodeSize = 6;
     
@@ -76,8 +74,8 @@ public class MultiplayerDashboard : NetworkBehaviour
         try
         {
             await NetcodeManager.Instance.CreateGame();
+            NetcodeSceneChanger.Instance.NetworkChangeScene(multiplayerLobbySceneName);
             CopyToClipboardJoinCode();
-            sceneChange.NetworkChangeScene(multiplayerLobbySceneName);
             SuccessEnterGame?.Invoke();
         }
         catch (Exception e)
@@ -117,7 +115,7 @@ public class MultiplayerDashboard : NetworkBehaviour
         Debug.Log("Leave Game button pressed");
         
         NetcodeManager.Instance.LeaveGame();
-        sceneChange.ChangeScene(soloLobbySceneName);
+        NetcodeSceneChanger.Instance.LocalChangeScene(soloLobbySceneName);
     }
     public void StartGame()
     {
@@ -166,17 +164,16 @@ public class MultiplayerDashboard : NetworkBehaviour
     public void ChangePlayerState()
     {
         ulong clientID = NetworkManager.Singleton.LocalClientId;
-        GameData gameData = GameManager.Instance.GameData;
-        if (!gameData.PlayerDataManager.TryGetValue(clientID, out PlayerData data)) return;
+        if (!PlayerDataManager.Instance.TryGetValue(clientID, out PlayerData data)) return;
         if (data.OuterData.playingState == PlayerOuterData.PlayingState.SpectatingGame)
         {
-            gameData.PlayerDataManager[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.Playing) };
+            PlayerDataManager.Instance[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.Playing) };
             changeStateText.text = "Spectate";
             
         }
         else
         {
-            gameData.PlayerDataManager[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.SpectatingGame) };
+            PlayerDataManager.Instance[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.SpectatingGame) };
             changeStateText.text = "Be Player";
         }
     }

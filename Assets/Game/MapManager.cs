@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Smooth;
@@ -25,23 +26,18 @@ public class MapManager : NetworkBehaviour
         LoadMap(map);
     }
     private string GetRandomMap(string[] mapPool) => gameMaps[Random.Range(0, mapPool.Length)];
-    public void LoadMap(string map)
+    public void LoadMap(string map) => StartCoroutine(LoadMapCoroutine(map));
+
+    private IEnumerator LoadMapCoroutine(string map)
     {
-        if (CurrentMap == map) return;
+        if (CurrentMap == map) yield break;
         
         CurrentMap = map;
-        
         NetcodeLogger.Instance.LogRpc("Loading map: " + map, NetcodeLogger.LogType.Map);
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += MapLoaded;
         
-        NetworkManager.Singleton.SceneManager.LoadScene(map, LoadSceneMode.Single);
-    }
-
-    private void MapLoaded(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
-    {
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= MapLoaded;
+        NetcodeSceneChanger.Instance.NetworkChangeScene(map);
         
-        NetcodeLogger.Instance.LogRpc("Map loaded", NetcodeLogger.LogType.Map);
+        NetcodeLogger.Instance.LogRpc("Map loaded: " + map, NetcodeLogger.LogType.Map);
         OnMapLoadedServer?.Invoke(CurrentMap);
         OnMapLoadedClientRpc(CurrentMap);
     }

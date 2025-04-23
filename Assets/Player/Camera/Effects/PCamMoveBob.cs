@@ -41,7 +41,7 @@ public class PCamMoveBob : MonoBehaviour
     {
         if (CanBob())
         {
-            _advancement += Time.deltaTime * movement.GetMaxSpeed() * frequency * InputManager.instance.MoveInput.magnitude;
+            _advancement += Time.deltaTime * movement.GetMaxSpeed() * frequency * InputManager.Move.magnitude;
             if (_advancement > 1) _advancement--;
             
             return bobCurve.Evaluate(_advancement) * amplitude;
@@ -57,7 +57,7 @@ public class PCamMoveBob : MonoBehaviour
     {
         if (CanBob() && movement.GetMaxSpeed() > movement.MaxRunSpeed - .5f)
         {
-            _hAdvancement += Time.deltaTime * hRunBobFrequency * movement.GetMaxSpeed() * InputManager.instance.MoveInput.magnitude;
+            _hAdvancement += Time.deltaTime * hRunBobFrequency * movement.GetMaxSpeed() * InputManager.Move.magnitude;
             if (_hAdvancement > 1) _hAdvancement--;
             
             return hRunBobCurve.Evaluate(_hAdvancement) * hRunBobAmplitude;
@@ -70,5 +70,5 @@ public class PCamMoveBob : MonoBehaviour
     }
 
     private bool CanBob() =>
-        grounded.FullyGrounded() && InputManager.instance.MoveInput.magnitude > 0;
+        grounded.FullyGrounded() && InputManager.Move.magnitude > 0;
 }

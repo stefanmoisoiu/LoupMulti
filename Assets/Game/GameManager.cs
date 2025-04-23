@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -67,25 +68,28 @@ public class GameManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void StartGameServerRpc()
     {
+        StartCoroutine(StartGameCoroutine());
+    }
+
+    private IEnumerator StartGameCoroutine()
+    {
         NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.LogType.GameLoop);
         
         gameData.SetNotAssignedPlayersToPlayingState();
         
+        // Load map et attendre
+        bool mapLoaded = false;
         mapManager.LoadRandomGameMap();
-        MapManager.OnMapLoadedServer += StartGameMapLoadedServer;
-        
-        // When map is loaded call StartGameMapLoadedServer
-    }
-    private void StartGameMapLoadedServer(string mapName)
-    {
-        MapManager.OnMapLoadedServer -= StartGameMapLoadedServer;
+        void OnMapLoaded(string mapName) => mapLoaded = true;
+        MapManager.OnMapLoadedServer += OnMapLoaded;
+        yield return new WaitUntil(() => mapLoaded);
+        MapManager.OnMapLoadedServer -= OnMapLoaded;
         
         OnGameStateChangedClientRpc(GameState.InGame, NetworkManager.ServerTime.TimeAsFloat);
         OnGameStartedServer?.Invoke();
         
         gameLoop.StartGameLoop(this);
     }
-
     public enum GameState
     {
         Lobby,

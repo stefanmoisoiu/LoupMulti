@@ -18,7 +18,7 @@ public class NetcodeManager : MonoBehaviour
     public static bool LoadingGame { get; private set; }
     
     public static event Action OnEnterGame, OnCreateGame, OnJoinGame, OnLeaveGame;
-    private void Awake()
+    private void Start()
     {
         if (Instance == null)
         {

@@ -1,173 +1,150 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class InputManager : MonoBehaviour
 {
-    public static InputManager instance { get; private set; }
+    public static InputManager Instance { get; private set; }
     private Controls _controls;
-    
-    public Vector2 MoveInput { get; private set; }
-    public Vector2 LookInput { get; private set; }
-    
-    public bool Jumping { get; private set; }
-    public Action OnJump { get; set; }
-    public Action OnStopJump { get; set; }
-    
-    public bool Running { get; private set; }
-    public Action OnRun { get; set; }
-    public Action OnStopRun { get; set; }
-    
-    public bool Action1Pressed { get; set; }
-    public Action OnAction1 { get; set; }
-    public Action OnStopAction1 { get; set; }
-    
-    public bool Action2Pressed { get; set; }
-    public Action OnAction2 { get; set; }
-    public Action OnStopAction2 { get; set; }
-    
-    public bool Action3Pressed { get; set; }
-    public Action OnAction3 { get; set; }
-    public Action OnStopAction3 { get; set; }
-    
-    public bool ScoreboardPressed { get; set; }
-    public Action OnScoreboard { get; set; }
-    public Action OnStopScoreboard { get; set; }
-    
-    public enum AbilityInput
-    {
-        Action1,
-        Action2,
-        Action3,
-        None
-    }
 
-    public enum ActionType
-    {
-        Start,
-        Stop
-    }
+    // Booléens accessibles
+    public static Vector2 Move   { get; private set; }
+    public static Vector2 Look   { get; private set; }
+    public static bool    Jump   { get; private set; }
+    public static bool    Run    { get; private set; }
+    public static bool    Action1{ get; private set; }
+    public static bool    Action2{ get; private set; }
+    public static bool    Action3{ get; private set; }
+    public static bool    Score  { get; private set; }
 
-    private void OnEnable()
+    // Événements pour début / fin
+    public static event Action OnJumpStarted;
+    public static event Action OnJumpCanceled;
+    public static event Action OnRunStarted;
+    public static event Action OnRunCanceled;
+    public static event Action OnAction1Started;
+    public static event Action OnAction1Canceled;
+    public static event Action OnAction2Started;
+    public static event Action OnAction2Canceled;
+    public static event Action OnAction3Started;
+    public static event Action OnAction3Canceled;
+    public static event Action OnScoreboardOpened;
+    public static event Action OnScoreboardClosed;
+
+    private void Awake()
     {
-        if (instance == null)
+        // Singleton
+        if (Instance == null)
         {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
-            CreateControls();
         }
         else
         {
             Destroy(gameObject);
+            return;
         }
+        
+        _controls = new Controls();
+
+        // Mouvements
+        _controls.Gameplay.Move.performed  += ctx => Move = ctx.ReadValue<Vector2>();
+        _controls.Gameplay.Look.performed  += ctx => Look = ctx.ReadValue<Vector2>();
+
+        // Jump
+        _controls.Gameplay.Jump.performed += ctx =>
+        {
+            Jump = true;
+            OnJumpStarted?.Invoke();
+        };
+        _controls.Gameplay.Jump.canceled += ctx =>
+        {
+            Jump = false;
+            OnJumpCanceled?.Invoke();
+        };
+
+        // Run
+        _controls.Gameplay.Run.performed += ctx =>
+        {
+            Run = true;
+            OnRunStarted?.Invoke();
+        };
+        _controls.Gameplay.Run.canceled += ctx =>
+        {
+            Run = false;
+            OnRunCanceled?.Invoke();
+        };
+
+        // Action1
+        _controls.Gameplay.Action1.performed += ctx =>
+        {
+            Action1 = true;
+            OnAction1Started?.Invoke();
+        };
+        _controls.Gameplay.Action1.canceled += ctx =>
+        {
+            Action1 = false;
+            OnAction1Canceled?.Invoke();
+        };
+
+        // Action2
+        _controls.Gameplay.Action2.performed += ctx =>
+        {
+            Action2 = true;
+            OnAction2Started?.Invoke();
+        };
+        _controls.Gameplay.Action2.canceled += ctx =>
+        {
+            Action2 = false;
+            OnAction2Canceled?.Invoke();
+        };
+
+        // Action3
+        _controls.Gameplay.Action3.performed += ctx =>
+        {
+            Action3 = true;
+            OnAction3Started?.Invoke();
+        };
+        _controls.Gameplay.Action3.canceled += ctx =>
+        {
+            Action3 = false;
+            OnAction3Canceled?.Invoke();
+        };
+
+        // Scoreboard (UI)
+        _controls.UI.Scoreboard.performed += ctx =>
+        {
+            Score = true;
+            OnScoreboardOpened?.Invoke();
+        };
+        _controls.UI.Scoreboard.canceled += ctx =>
+        {
+            Score = false;
+            OnScoreboardClosed?.Invoke();
+        };
+
+        _controls.Enable();
     }
 
-    private void CreateControls()
+    private void OnEnable()  => _controls?.Enable();
+    private void OnDisable() => _controls?.Disable();
+
+    /// <summary>
+    /// Bascule sur la map de gameplay, désactive la map UI.
+    /// </summary>
+    public void EnableGameplay()
     {
-        _controls = new Controls();
-        _controls.Enable();
-        
-        _controls.BaseMovement.Horizontal.performed += ctx => MoveInput = ctx.ReadValue<Vector2>();
-        _controls.BaseMovement.Look.performed += ctx => LookInput = ctx.ReadValue<Vector2>();
-        
-        
-        _controls.BaseMovement.Jump.performed += ctx => { OnJump?.Invoke(); Jumping = true; };
-        _controls.BaseMovement.Jump.canceled += ctx => { OnStopJump?.Invoke(); Jumping = false; };
-        
-        _controls.BaseMovement.Run.performed += ctx => { OnRun?.Invoke(); Running = true; };
-        _controls.BaseMovement.Run.canceled += ctx => { OnStopRun?.Invoke(); Running = false; };
-        
-        
-        _controls.BaseMovement.Action1.performed += ctx => { OnAction1?.Invoke(); Action1Pressed = true; };
-        _controls.BaseMovement.Action1.canceled += ctx => { OnStopAction1?.Invoke(); Action1Pressed = false; };
-        
-        _controls.BaseMovement.Action2.performed += ctx => { OnAction2?.Invoke(); Action2Pressed = true; };
-        _controls.BaseMovement.Action2.canceled += ctx => { OnStopAction2?.Invoke(); Action2Pressed = false; };
-        
-        _controls.BaseMovement.Action3.performed += ctx => { OnAction3?.Invoke(); Action3Pressed = true; };
-        _controls.BaseMovement.Action3.canceled += ctx => { OnStopAction3?.Invoke(); Action3Pressed = false; };
-        
-        _controls.UI.Scoreboard.performed += ctx => { OnScoreboard?.Invoke(); ScoreboardPressed = true; };
-        _controls.UI.Scoreboard.canceled += ctx => { OnStopScoreboard?.Invoke(); ScoreboardPressed = false; };
+        _controls.UI.Disable();
+        _controls.Gameplay.Enable();
     }
-    
-    public void AddAbilityInputListener(AbilityInput abilityInput, ActionType type, Action action)
+
+    /// <summary>
+    /// Bascule sur la map UI (ex: menu), désactive la map gameplay.
+    /// </summary>
+    public void EnableUI()
     {
-        switch (abilityInput)
-        {
-            case AbilityInput.Action1:
-                switch (type)
-                {
-                    case ActionType.Start:
-                        OnAction1 += action;
-                        break;
-                    case ActionType.Stop:
-                        OnStopAction1 += action;
-                        break;
-                }
-                break;
-            case AbilityInput.Action2:
-                switch (type)
-                {
-                    case ActionType.Start:
-                        OnAction2 += action;
-                        break;
-                    case ActionType.Stop:
-                        OnStopAction2 += action;
-                        break;
-                }
-                break;
-            case AbilityInput.Action3:
-                switch (type)
-                {
-                    case ActionType.Start:
-                        OnAction3 += action;
-                        break;
-                    case ActionType.Stop:
-                        OnStopAction3 += action;
-                        break;
-                }
-                break;
-        }
-    }
-    public void RemoveAbilityInputListener(AbilityInput abilityInput, ActionType type, Action action)
-    {
-        switch (abilityInput)
-        {
-            case AbilityInput.Action1:
-                switch (type)
-                {
-                    case ActionType.Start:
-                        OnAction1 -= action;
-                        break;
-                    case ActionType.Stop:
-                        OnStopAction1 -= action;
-                        break;
-                }
-                break;
-            case AbilityInput.Action2:
-                switch (type)
-                {
-                    case ActionType.Start:
-                        OnAction2 -= action;
-                        break;
-                    case ActionType.Stop:
-                        OnStopAction2 -= action;
-                        break;
-                }
-                break;
-            case AbilityInput.Action3:
-                switch (type)
-                {
-                    case ActionType.Start:
-                        OnAction3 -= action;
-                        break;
-                    case ActionType.Stop:
-                        OnStopAction3 -= action;
-                        break;
-                }
-                break;
-        }
+        _controls.Gameplay.Disable();
+        Look = Vector2.zero;
+        Move = Vector2.zero;
+        _controls.UI.Enable();
     }
 }
