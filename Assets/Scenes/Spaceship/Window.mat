@@ -30,7 +30,6 @@ Material:
   - _MK_ARTISTIC_SKETCH
   - _MK_BLEND_PREMULTIPLY
   - _MK_ENVIRONMENT_REFLECTIONS_AMBIENT
-  - _MK_IRIDESCENCE_DEFAULT
   - _MK_LIGHT_BANDED
   - _MK_NORMAL_MAP
   - _MK_RECEIVE_SHADOWS
@@ -229,7 +228,7 @@ Material:
     - _IndirectFade: 1
     - _Initialized: 0
     - _InputTab: 1
-    - _Iridescence: 1
+    - _Iridescence: 0
     - _IridescenceSize: 1.05
     - _IridescenceSmoothness: 0.5
     - _IridescenceThresholdOffset: 0
