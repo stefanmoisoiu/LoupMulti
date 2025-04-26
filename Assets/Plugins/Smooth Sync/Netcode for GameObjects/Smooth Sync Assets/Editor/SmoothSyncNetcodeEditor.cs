@@ -1,12 +1,10 @@
-﻿using UnityEngine;
-using UnityEngine.Networking;
-using System.Collections;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEngine;
 
-namespace Smooth
+namespace Plugins.Smooth_Sync.Netcode_for_GameObjects.Smooth_Sync_Assets.Editor
 {
     [CustomEditor(typeof(SmoothSyncNetcode))]
-    public class SmoothSyncNetcodeEditor : Editor
+    public class SmoothSyncNetcodeEditor : UnityEditor.Editor
     {
         bool showExtrapolation = false;
         bool showThresholds = false;

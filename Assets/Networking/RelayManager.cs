@@ -3,33 +3,36 @@ using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
 
-public static class RelayManager
+namespace Networking
 {
-    public static async Task<Allocation> CreateRelay(int maxConnectionsExcludingOwner = 3)
+    public static class RelayManager
     {
-        try
+        public static async Task<Allocation> CreateRelay(int maxConnectionsExcludingOwner = 3)
         {
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxConnectionsExcludingOwner);
-            return allocation;
+            try
+            {
+                Allocation allocation = await RelayService.Instance.CreateAllocationAsync(maxConnectionsExcludingOwner);
+                return allocation;
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogError(e);
+                throw e;
+            }
         }
-        catch (RelayServiceException e)
-        {
-            Debug.LogError(e);
-            throw e;
-        }
-    }
 
-    public static async Task<JoinAllocation> JoinRelayByCode(string joinCode)
-    {
-        try
+        public static async Task<JoinAllocation> JoinRelayByCode(string joinCode)
         {
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
-            return joinAllocation;
-        }
-        catch (RelayServiceException e)
-        {
-            Debug.LogError(e);
-            throw e;
+            try
+            {
+                JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+                return joinAllocation;
+            }
+            catch (RelayServiceException e)
+            {
+                Debug.LogError(e);
+                throw e;
+            }
         }
     }
 }

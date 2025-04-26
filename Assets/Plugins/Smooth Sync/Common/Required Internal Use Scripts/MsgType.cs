@@ -1,4 +1,4 @@
-namespace Smooth
+namespace Plugins.Smooth_Sync.Common.Required_Internal_Use_Scripts
 {
     public class MsgType
     {

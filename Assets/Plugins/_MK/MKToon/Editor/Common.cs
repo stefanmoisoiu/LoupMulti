@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor
 {
     internal enum RenderPipeline
     {

@@ -1,8 +1,11 @@
-﻿public enum Ability
+﻿namespace Game.Stats
 {
-    AirDash,
-    Projectile,
-    Style,
-    WallBounce,
-    Grappling,
+    public enum Ability
+    {
+        AirDash,
+        Projectile,
+        Style,
+        WallBounce,
+        Grappling,
+    }
 }

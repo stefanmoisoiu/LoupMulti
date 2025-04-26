@@ -7,18 +7,14 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using System.Collections.Generic;
-using UnityEngine;
+using Plugins._MK.MKToon.Editor.Base;
+using Plugins._MK.MKToon.Scripts;
 using UnityEditor;
-using System.Linq;
-using System;
-using UnityEditor.Utils;
-using UnityEditorInternal;
-using EditorHelper = MK.Toon.Editor.EditorHelper;
+using UnityEngine;
 
-namespace MK.Toon.Editor.URP
+namespace Plugins._MK.MKToon.Editor.URP.Particles
 {
-    internal sealed class ParticlesSimpleEditor : MK.Toon.Editor.SimpleEditorBase
+    internal sealed class ParticlesSimpleEditor : SimpleEditorBase
     {
         public ParticlesSimpleEditor() : base(RenderPipeline.Universal) {}
 

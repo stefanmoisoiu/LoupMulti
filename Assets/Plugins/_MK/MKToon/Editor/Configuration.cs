@@ -6,21 +6,20 @@
 // Copyright © 2020 All rights reserved.            //
 //////////////////////////////////////////////////////
 
-using UnityEngine;
-using UnityEditor;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 #if UNITY_EDITOR
 
 #if MK_URP
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #endif
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Plugins._MK.MKToon.Scripts.URP;
+using UnityEditor;
+using UnityEngine;
 
-using Configuration = MK.Toon.Editor.InstallWizard.Configuration;
-namespace MK.Toon.Editor.InstallWizard
+namespace Plugins._MK.MKToon.Editor
 {
     //[CreateAssetMenu(fileName = "Configuration", menuName = "MK/Install Wizard/Create Configuration Asset")]
     public sealed class Configuration : ScriptableObject
@@ -571,7 +570,7 @@ namespace MK.Toon.Editor.InstallWizard
                 
                 foreach(ScriptableRendererFeature srf in defaultScriptableRendererFeatures)
                 {
-                    if(srf.GetType() == typeof(MK.Toon.URP.MKToonPerObjectOutlines))
+                    if(srf.GetType() == typeof(MKToonPerObjectOutlines))
                     {
                         MKToonPerObjectOutlinesRendererFeatureFound = true;
                         break;

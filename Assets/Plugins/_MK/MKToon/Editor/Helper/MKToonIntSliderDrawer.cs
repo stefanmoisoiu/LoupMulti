@@ -7,13 +7,13 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System;
+using UnityEditor;
+using UnityEngine;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Helper
 {
-    internal class MKToonIntSliderDrawer : MK.Toon.Editor.MaterialPropertyDrawer
+    internal class MKToonIntSliderDrawer : MaterialPropertyDrawer
     {
         public MKToonIntSliderDrawer(GUIContent ui) : base(ui) {}
         public MKToonIntSliderDrawer() : base(GUIContent.none) {}

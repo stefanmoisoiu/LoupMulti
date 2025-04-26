@@ -6,7 +6,7 @@
 // Copyright © 2020 All rights reserved.            //
 //////////////////////////////////////////////////////
 
-namespace MK.Toon
+namespace Plugins._MK.MKToon.Scripts
 {
     /////////////////////////////////////////////////////////////////////////////////////////////
     // Keywords                                                                                //

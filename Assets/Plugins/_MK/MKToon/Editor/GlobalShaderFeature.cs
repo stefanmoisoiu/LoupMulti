@@ -7,11 +7,10 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using UnityEditor;
-using System;
 using System.Collections.Generic;
+using UnityEditor;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor
 {
     public enum MGlobalShaderFeatureOutlineFadingMode
     {

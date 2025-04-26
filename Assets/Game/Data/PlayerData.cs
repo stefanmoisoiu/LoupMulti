@@ -1,10 +1,15 @@
-﻿    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Sirenix.OdinInspector;
-    using Unity.Netcode;
-    using UnityEngine;
-    
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Base_Scripts;
+using Game.Manager;
+using Game.Upgrades;
+using Sirenix.OdinInspector;
+using Unity.Netcode;
+using UnityEngine;
+
+namespace Game.Data
+{
     [Serializable]
     public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
     {
@@ -235,3 +240,4 @@
             return HashCode.Combine(health, score, upgradesIndexArray);
         }
     }
+}

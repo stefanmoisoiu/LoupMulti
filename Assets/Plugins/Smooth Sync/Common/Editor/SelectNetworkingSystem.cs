@@ -1,10 +1,8 @@
 ﻿#if UNITY_EDITOR
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Smooth
+namespace Plugins.Smooth_Sync.Common.Editor
 {
     public class SelectNetworkingSystem : EditorWindow
     {

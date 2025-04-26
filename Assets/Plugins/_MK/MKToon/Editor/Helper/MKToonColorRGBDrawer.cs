@@ -7,13 +7,13 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System;
+using UnityEditor;
+using UnityEngine;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Helper
 {
-    internal class MKToonColorRGBDrawer : MK.Toon.Editor.MaterialPropertyDrawer
+    internal class MKToonColorRGBDrawer : MaterialPropertyDrawer
     {
         public MKToonColorRGBDrawer(GUIContent ui) : base(ui) {}
         public MKToonColorRGBDrawer() : base(GUIContent.none) {}

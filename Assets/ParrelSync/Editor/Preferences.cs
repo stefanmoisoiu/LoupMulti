@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace ParrelSync
+namespace ParrelSync.Editor
 {
     /// <summary>
     /// To add value caching for <see cref="EditorPrefs"/> functions

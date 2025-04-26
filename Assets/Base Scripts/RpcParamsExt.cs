@@ -1,34 +1,37 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
 
-public class RpcParamsExt : MonoBehaviour
+namespace Base_Scripts
 {
-    public static RpcParamsExt Instance { get; private set; }
-
-    private void Start()
+    public class RpcParamsExt : MonoBehaviour
     {
-        Instance = this;
+        public static RpcParamsExt Instance { get; private set; }
+
+        private void Start()
+        {
+            Instance = this;
+        }
+
+        public RpcParams SendToClientIDs(ulong[] clientIDs, NetworkManager manager) => new RpcParams
+        {
+            Send = new RpcSendParams
+            {
+                Target = manager.RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
+            }
+        };
+        public RpcParams SenderClientID(ulong clientID) => new RpcParams
+        {
+            Receive = new()
+            {
+                SenderClientId = clientID
+            }
+        };
+        public RpcParams SendToAllClients(NetworkManager manager) => new RpcParams
+        {
+            Send = new RpcSendParams
+            {
+                Target = manager.RpcTarget.Everyone
+            }
+        };
     }
-
-    public RpcParams SendToClientIDs(ulong[] clientIDs, NetworkManager manager) => new RpcParams
-    {
-        Send = new RpcSendParams
-        {
-            Target = manager.RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
-        }
-    };
-    public RpcParams SenderClientID(ulong clientID) => new RpcParams
-    {
-        Receive = new()
-        {
-            SenderClientId = clientID
-        }
-    };
-    public RpcParams SendToAllClients(NetworkManager manager) => new RpcParams
-    {
-        Send = new RpcSendParams
-        {
-            Target = manager.RpcTarget.Everyone
-        }
-    };
 }

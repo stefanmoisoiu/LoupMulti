@@ -1,5 +1,6 @@
 ﻿using UnityEditor;
-namespace ParrelSync
+
+namespace ParrelSync.Editor.AssetModBlock
 {
     [InitializeOnLoad]
     public class EditorQuit

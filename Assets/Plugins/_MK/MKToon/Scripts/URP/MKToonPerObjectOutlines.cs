@@ -1,9 +1,8 @@
 #if MK_URP
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-namespace MK.Toon.URP
+namespace Plugins._MK.MKToon.Scripts.URP
 {
     public class MKToonPerObjectOutlines : ScriptableRendererFeature
     {

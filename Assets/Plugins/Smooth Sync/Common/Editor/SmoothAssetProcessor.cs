@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
 
-namespace Smooth
+namespace Plugins.Smooth_Sync.Common.Editor
 {
     class SmoothAssetProcessor : AssetPostprocessor
     {

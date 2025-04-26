@@ -1,9 +1,7 @@
-using System.IO;
 using System.Runtime.InteropServices;
 //using System.Runtime.Remoting.Messaging; 
-using System.Runtime.Serialization.Formatters.Binary;
 
-namespace System
+namespace Plugins.Smooth_Sync.Common.Required_Internal_Use_Scripts
 {
     /// <summary>
     /// Helper class for Half conversions and some low level operations.

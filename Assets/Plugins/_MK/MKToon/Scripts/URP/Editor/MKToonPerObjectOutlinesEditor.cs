@@ -1,13 +1,12 @@
 #if UNITY_EDITOR
 #if MK_URP
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+using Plugins._MK.MKToon.Editor;
 using UnityEditor;
+using UnityEngine;
 
-namespace MK.Toon.URP.Editor
+namespace Plugins._MK.MKToon.Scripts.URP.Editor
 {
-    [CustomEditor(typeof(MK.Toon.URP.MKToonPerObjectOutlines))]
+    [CustomEditor(typeof(MKToonPerObjectOutlines))]
     public class MKToonPerObjectOutlinesEditor : UnityEditor.Editor
     {
         private GUIContent _layerMaskUI = new GUIContent
@@ -20,9 +19,9 @@ namespace MK.Toon.URP.Editor
 
         private void UpdateInstallWizard()
         {
-            MK.Toon.Editor.InstallWizard.InstallWizard installWizard = MK.Toon.Editor.InstallWizard.InstallWizard.instance;
+            InstallWizard installWizard = InstallWizard.instance;
             if(installWizard != null)
-                MK.Toon.Editor.InstallWizard.InstallWizard.instance.Repaint();
+                InstallWizard.instance.Repaint();
         }
 
         private void OnEnable()

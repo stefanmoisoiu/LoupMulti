@@ -1,13 +1,13 @@
-namespace ParrelSync
-{
-    using UnityEditor;
-    using UnityEngine;
-    using System;
-    using System.Text;
-    using System.Security.Cryptography;
-    using System.IO;
-    using System.Linq;
+using System;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using UnityEditor;
+using UnityEngine;
 
+namespace ParrelSync.Editor
+{
     [InitializeOnLoad]
     public class ValidateCopiedFoldersIntegrity
     {

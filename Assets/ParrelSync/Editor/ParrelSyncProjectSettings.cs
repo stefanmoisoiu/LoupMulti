@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ParrelSync
+namespace ParrelSync.Editor
 {
     // With ScriptableObject derived classes, .cs and .asset filenames MUST be identical
     public class ParrelSyncProjectSettings : ScriptableObject

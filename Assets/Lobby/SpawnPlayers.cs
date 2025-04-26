@@ -1,45 +1,44 @@
+using Base_Scripts;
+using Game.Manager;
 using Unity.Netcode;
 using UnityEngine;
 
-public class SpawnPlayers : NetworkBehaviour
+namespace Lobby
 {
-    [SerializeField] private GameObject playerObject;
-    public override void OnNetworkSpawn()
+    public class SpawnPlayers : NetworkBehaviour
     {
-        base.OnNetworkSpawn();
-        NetworkObject.DestroyWithScene = false;
-        if (IsHost) TrySpawnSelfPlayer();
-        if (IsServer) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
-    }
-
-    private void OnDisable()
-    {
-        if (NetworkManager.Singleton != null && IsServer) NetworkManager.Singleton.OnClientConnectedCallback -= TrySpawn;
-    }
-    private void TrySpawnSelfPlayer()
-    {
-        TrySpawn(OwnerClientId);
-    }
-    private void TrySpawn(ulong clientID)
-    {
-        if (NetworkManager.ConnectedClients[clientID].PlayerObject != null)
+        [SerializeField] private GameObject playerObject;
+        public override void OnNetworkSpawn()
         {
-            Debug.LogError("Player object already exists for client " + clientID);
-            return;
+            base.OnNetworkSpawn();
+            NetworkObject.DestroyWithScene = false;
+            if (IsHost) TrySpawnSelfPlayer();
+            if (IsServer) NetworkManager.Singleton.OnClientConnectedCallback += TrySpawn;
         }
-        Debug.Log("<color=#FF00FF>Spawning player for client " + clientID);
-        
-        GameObject player;
-        if (GameManager.Instance != null && GameManager.Instance.gameState.Value != GameManager.GameState.Lobby)
+
+        private void OnDisable()
         {
-            Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(MapSpawnPositions.instance.GetRandomSpawnIndex());
-            player = Instantiate(playerObject, spawnPoint.position, spawnPoint.rotation);
+            if (NetworkManager.Singleton != null && IsServer) NetworkManager.Singleton.OnClientConnectedCallback -= TrySpawn;
+        }
+        private void TrySpawnSelfPlayer()
+        {
+            TrySpawn(OwnerClientId);
+        }
+        private void TrySpawn(ulong clientID)
+        {
+            if (NetworkManager.ConnectedClients[clientID].PlayerObject != null)
+            {
+                Debug.LogError("Player object already exists for client " + clientID);
+                return;
+            }
+            if (GameManager.Instance != null && GameManager.Instance.gameState.Value == GameManager.GameState.InGame)
+            {
+                NetcodeLogger.Instance.LogRpc("Player " + clientID + " joined IN game, not spawning player.", NetcodeLogger.LogType.Netcode);
+                return;
+            }
+            Debug.Log("<color=#FF00FF>Spawning player for client " + clientID);
+            GameObject player = Instantiate(playerObject, transform.position, Quaternion.identity);
             player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID);
         }
-        else
-        {
-            player = Instantiate(playerObject, transform.position, Quaternion.identity);
-        }
-        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientID);
     }
 }

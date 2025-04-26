@@ -1,11 +1,11 @@
 using System;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.IO;
-using Unity.Netcode;
-using Unity.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Plugins.Smooth_Sync.Common.Required_Internal_Use_Scripts;
+using Unity.Collections;
+using Unity.Netcode;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 #if UNITY_WSA && !UNITY_5_3 && !UNITY_5_4
 using UnityEngine.XR.WSA;
 #endif
@@ -14,7 +14,7 @@ using UnityEngine.XR.WSA;
 // With Love,
 // Noble Whale Studios
 
-namespace Smooth
+namespace Plugins.Smooth_Sync.Netcode_for_GameObjects.Smooth_Sync_Assets
 {
     /// <summary>Sync a Transform or Rigidbody over the network. Uses interpolation and extrapolation.</summary>
     /// <remarks>

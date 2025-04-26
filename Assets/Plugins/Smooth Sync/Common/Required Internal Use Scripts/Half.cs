@@ -1,8 +1,8 @@
+using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
 
-namespace System
+namespace Plugins.Smooth_Sync.Common.Required_Internal_Use_Scripts
 {
     // Smooth Sync overview:
     // We use this to compress the floats so they take up less bytes over the network.

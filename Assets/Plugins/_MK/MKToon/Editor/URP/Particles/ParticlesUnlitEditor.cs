@@ -7,18 +7,11 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using System.Linq;
-using System;
-using UnityEditor.Utils;
-using UnityEditorInternal;
-using EditorHelper = MK.Toon.Editor.EditorHelper;
+using Plugins._MK.MKToon.Editor.Base;
 
-namespace MK.Toon.Editor.URP
+namespace Plugins._MK.MKToon.Editor.URP.Particles
 {
-    internal sealed class ParticlesUnlitEditor : MK.Toon.Editor.UnlitEditorBase
+    internal sealed class ParticlesUnlitEditor : UnlitEditorBase
     {
         public ParticlesUnlitEditor() : base(RenderPipeline.Universal) {}
         /////////////////////////////////////////////////////////////////////////////////////////////

@@ -6,13 +6,10 @@
 // Copyright © 2020 All rights reserved.            //
 //////////////////////////////////////////////////////
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using UnityEngine;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Helper
 {
     public static partial class EditorHelper
     {

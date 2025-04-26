@@ -1,9 +1,9 @@
-namespace SmoothPro.NetcodeNetworking
-{
-    using System.Collections;
-    using Unity.Netcode;
-    using UnityEngine;
+using System.Collections;
+using Unity.Netcode;
+using UnityEngine;
 
+namespace Plugins.Smooth_Sync.Netcode_for_GameObjects.Smooth_Sync_Example_Scene
+{
     public class NetCodeHUD : MonoBehaviour
     {
 

@@ -1,7 +1,6 @@
 ﻿using System.IO;
-using UnityEngine;
 
-namespace ParrelSync
+namespace ParrelSync.Editor
 {
     public class FileUtilities
     {

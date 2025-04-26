@@ -2,53 +2,56 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class NetcodeLogger : NetworkBehaviour
+namespace Base_Scripts
 {
-    public static NetcodeLogger Instance;
-    
-    private Dictionary<LogType, string> _logColors = new()
+    public class NetcodeLogger : NetworkBehaviour
     {
-        {LogType.Netcode, "#00FF00"},
-        {LogType.Data, "#0000FF"},
-        {LogType.Upgrades, "#FF00FF"},
-        {LogType.GameLoop, "#FFFF00"},
-        {LogType.TickLoop, "#FF0000"},
-        {LogType.Map, "#00FFFF"},
-    };
+        public static NetcodeLogger Instance;
     
-    private void Awake()
-    {
-        Instance = this;
-    }
+        private Dictionary<LogType, string> _logColors = new()
+        {
+            {LogType.Netcode, "#00FF00"},
+            {LogType.Data, "#0000FF"},
+            {LogType.Upgrades, "#FF00FF"},
+            {LogType.GameLoop, "#FFFF00"},
+            {LogType.TickLoop, "#FF0000"},
+            {LogType.Map, "#00FFFF"},
+        };
     
-    [Rpc(SendTo.Everyone)]
-    public void LogRpc(string message, LogType type, AddedEffects[] effects = null)
-    {
-        string color = _logColors[type];
-        string effect = "";
-        if (effects != null)
-            foreach (AddedEffects addedEffect in effects)
-                switch (addedEffect)
-                {
-                    case AddedEffects.Bold: effect += "<b>"; break;
-                    case AddedEffects.Italic: effect += "<i>"; break;
-                }
+        private void Awake()
+        {
+            Instance = this;
+        }
+    
+        [Rpc(SendTo.Everyone)]
+        public void LogRpc(string message, LogType type, AddedEffects[] effects = null)
+        {
+            string color = _logColors[type];
+            string effect = "";
+            if (effects != null)
+                foreach (AddedEffects addedEffect in effects)
+                    switch (addedEffect)
+                    {
+                        case AddedEffects.Bold: effect += "<b>"; break;
+                        case AddedEffects.Italic: effect += "<i>"; break;
+                    }
         
-        Debug.Log($"<{color}>{effect}{message}");
-    }
+            Debug.Log($"<{color}>{effect}{message}");
+        }
 
-    public enum AddedEffects
-    {
-        Bold,
-        Italic,
-    }
-    public enum LogType
-    {
-        Netcode,
-        Data,
-        Upgrades,
-        GameLoop,
-        TickLoop,
-        Map
+        public enum AddedEffects
+        {
+            Bold,
+            Italic,
+        }
+        public enum LogType
+        {
+            Netcode,
+            Data,
+            Upgrades,
+            GameLoop,
+            TickLoop,
+            Map
+        }
     }
 }

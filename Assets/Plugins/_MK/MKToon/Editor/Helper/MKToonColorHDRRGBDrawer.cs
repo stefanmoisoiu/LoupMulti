@@ -7,12 +7,12 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Helper
 {
-    internal class MKToonColorHDRRGBDrawer : MK.Toon.Editor.MaterialPropertyDrawer
+    internal class MKToonColorHDRRGBDrawer : MaterialPropertyDrawer
     {
         public MKToonColorHDRRGBDrawer(GUIContent ui) : base(ui) {}
         public MKToonColorHDRRGBDrawer() : base(GUIContent.none) {}

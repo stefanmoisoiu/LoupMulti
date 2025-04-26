@@ -1,31 +1,33 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class SpawnOnStart : NetworkBehaviour
+namespace Networking
 {
-    [SerializeField] private GameObject prefabToSpawn;
-    [SerializeField] private SpawnOwner spawnOwner;
-    public enum SpawnOwner
+    public class SpawnOnStart : NetworkBehaviour
     {
-        Server,
-        Client
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-        if (!IsServer) return;
-        prefabToSpawn = Instantiate(prefabToSpawn,transform.position,transform.rotation);
-        NetworkObject networkObject = prefabToSpawn.GetComponent<NetworkObject>();
-            
-        if (spawnOwner == SpawnOwner.Server)
+        [SerializeField] private GameObject prefabToSpawn;
+        [SerializeField] private SpawnOwner spawnOwner;
+        public enum SpawnOwner
         {
-            networkObject.Spawn();
+            Server,
+            Client
         }
-        else
+
+        public override void OnNetworkSpawn()
         {
-            networkObject.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
+            base.OnNetworkSpawn();
+            if (!IsServer) return;
+            prefabToSpawn = Instantiate(prefabToSpawn,transform.position,transform.rotation);
+            NetworkObject networkObject = prefabToSpawn.GetComponent<NetworkObject>();
+            
+            if (spawnOwner == SpawnOwner.Server)
+            {
+                networkObject.Spawn();
+            }
+            else
+            {
+                networkObject.SpawnWithOwnership(NetworkManager.Singleton.LocalClientId);
+            }
         }
     }
 }

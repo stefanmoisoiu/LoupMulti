@@ -1,8 +1,8 @@
-﻿namespace ParrelSync.NonCore
-{
-    using UnityEditor;
-    using UnityEngine;
+﻿using UnityEditor;
+using UnityEngine;
 
+namespace ParrelSync.Editor.NonCore
+{
     /// <summary>
     /// A simple script to display feedback/star dialog after certain time of project being opened/re-compiled.
     /// Will only pop-up once unless "Remind me next time" are chosen.
@@ -30,8 +30,8 @@
         //[MenuItem("ParrelSync/(Debug)Show AskFeedbackDialog ")]
         private static void ShowDialog()
         {
-            int option = EditorUtility.DisplayDialogComplex("Do you like " + ParrelSync.ClonesManager.ProjectName + "?",
-                   "Do you like " + ParrelSync.ClonesManager.ProjectName + "?\n" +
+            int option = EditorUtility.DisplayDialogComplex("Do you like " + ClonesManager.ProjectName + "?",
+                   "Do you like " + ClonesManager.ProjectName + "?\n" +
                    "If so, please don't hesitate to star it on GitHub and contribute to the project!",
                    "Star on GitHub",
                    "Close",

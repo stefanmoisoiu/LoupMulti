@@ -6,14 +6,11 @@
 // Copyright © 2020 All rights reserved.            //
 //////////////////////////////////////////////////////
 
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-
 #if UNITY_EDITOR
-using Configuration = MK.Toon.Editor.InstallWizard.Configuration;
-namespace MK.Toon.Editor.InstallWizard
+using UnityEditor;
+using UnityEngine;
+
+namespace Plugins._MK.MKToon.Editor
 {
     public sealed class InstallWizard : EditorWindow
     {

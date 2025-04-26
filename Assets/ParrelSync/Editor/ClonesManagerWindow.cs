@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using System.IO;
 using UnityEditor;
-using System.IO;
+using UnityEngine;
 
-namespace ParrelSync
+namespace ParrelSync.Editor
 {
     /// <summary>
     ///Clones manager Unity editor window

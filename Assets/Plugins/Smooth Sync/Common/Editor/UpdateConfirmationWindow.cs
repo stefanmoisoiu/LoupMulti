@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Smooth
+namespace Plugins.Smooth_Sync.Common.Editor
 {
     public class UpdateConfirmationWindow : EditorWindow
     {

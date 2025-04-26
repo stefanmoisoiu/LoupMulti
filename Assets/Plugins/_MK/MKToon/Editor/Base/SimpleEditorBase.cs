@@ -7,16 +7,13 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using System.Collections.Generic;
-using UnityEngine;
+using Plugins._MK.MKToon.Scripts;
 using UnityEditor;
-using System.Linq;
-using System;
-using UnityEditor.Utils;
-using UnityEditorInternal;
-using EditorHelper = MK.Toon.Editor.EditorHelper;
+using UnityEngine;
+using EditorHelper = Plugins._MK.MKToon.Editor.Helper.EditorHelper;
+using Light = Plugins._MK.MKToon.Scripts.Light;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Base
 {
     /// <summary>
     /// Base class for simple lit editors

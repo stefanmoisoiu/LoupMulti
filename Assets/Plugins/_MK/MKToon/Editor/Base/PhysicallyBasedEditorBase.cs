@@ -7,17 +7,13 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using System.Collections.Generic;
-using UnityEngine;
+using Plugins._MK.MKToon.Scripts;
 using UnityEditor;
-using System.Linq;
-using System;
-using UnityEditor.Utils;
-using UnityEditorInternal;
-using EditorHelper = MK.Toon.Editor.EditorHelper;
-using MK.Toon;
+using UnityEngine;
+using EditorHelper = Plugins._MK.MKToon.Editor.Helper.EditorHelper;
+using Light = Plugins._MK.MKToon.Scripts.Light;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Base
 {
     /// <summary>
     /// Base class for pbs editors
@@ -293,12 +289,12 @@ namespace MK.Toon.Editor
 
         protected virtual void DrawPBSProperties(MaterialEditor materialEditor)
         {
-            if(_workflow.floatValue == (int)MK.Toon.Workflow.Specular)
+            if(_workflow.floatValue == (int)Workflow.Specular)
             {
                 materialEditor.TexturePropertySingleLine(UI.specularMap, _specularMap, _specularMap.textureValue == null ? _specularColor : null);
                 materialEditor.ShaderProperty(_smoothness, UI.smoothness, 2);
             }
-            else if(_workflow.floatValue == (int)MK.Toon.Workflow.Roughness)
+            else if(_workflow.floatValue == (int)Workflow.Roughness)
             {
                 materialEditor.TexturePropertySingleLine(UI.metallicMap, _metallicMap, _metallicMap.textureValue == null ? _metallic : null);
                 materialEditor.TexturePropertySingleLine(UI.roughnessMap, _roughnessMap, _roughnessMap.textureValue == null ? _roughness : null);
@@ -513,8 +509,8 @@ namespace MK.Toon.Editor
         private void ManageKeywordsWorkflow(Material material)
         {
             //Workflow
-            EditorHelper.SetKeyword(Properties.workflow.GetValue(material) == MK.Toon.Workflow.Specular, Keywords.workflow[0], material);
-            EditorHelper.SetKeyword(Properties.workflow.GetValue(material) == MK.Toon.Workflow.Roughness, Keywords.workflow[1], material);
+            EditorHelper.SetKeyword(Properties.workflow.GetValue(material) == Workflow.Specular, Keywords.workflow[0], material);
+            EditorHelper.SetKeyword(Properties.workflow.GetValue(material) == Workflow.Roughness, Keywords.workflow[1], material);
             //No Keyword set == Unlit
         }
 
@@ -558,8 +554,8 @@ namespace MK.Toon.Editor
         private void ManageKeywordsDetailBlend(Material material)
         {
             //detail albedo blend
-            EditorHelper.SetKeyword(Properties.detailBlend.GetValue(material) == MK.Toon.DetailBlend.Mix, Keywords.detailBlend[1], material);
-            EditorHelper.SetKeyword(Properties.detailBlend.GetValue(material) == MK.Toon.DetailBlend.Add, Keywords.detailBlend[2], material);
+            EditorHelper.SetKeyword(Properties.detailBlend.GetValue(material) == DetailBlend.Mix, Keywords.detailBlend[1], material);
+            EditorHelper.SetKeyword(Properties.detailBlend.GetValue(material) == DetailBlend.Add, Keywords.detailBlend[2], material);
             //no detail map set = No blending / No Detail required
         }
 

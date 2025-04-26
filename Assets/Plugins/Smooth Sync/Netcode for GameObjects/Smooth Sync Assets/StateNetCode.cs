@@ -1,10 +1,8 @@
-using UnityEngine;
-using System.Collections;
-using System;
-using System.IO;
+using Plugins.Smooth_Sync.Common.Required_Internal_Use_Scripts;
 using Unity.Netcode;
+using UnityEngine;
 
-namespace Smooth
+namespace Plugins.Smooth_Sync.Netcode_for_GameObjects.Smooth_Sync_Assets
 {
     /// <summary>The StateNetcode of an object: timestamp, position, rotation, scale, velocity, angular velocity.</summary>
     public class StateNetcode

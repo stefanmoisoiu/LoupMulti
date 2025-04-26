@@ -1,7 +1,4 @@
-using UnityEngine;
-using System.Collections;
-
-namespace Smooth
+namespace Plugins.Smooth_Sync.Common.Required_Internal_Use_Scripts
 { 
     public enum SyncMode
     {

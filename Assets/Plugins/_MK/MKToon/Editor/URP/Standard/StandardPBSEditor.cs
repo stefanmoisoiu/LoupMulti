@@ -7,18 +7,14 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using System.Collections.Generic;
-using UnityEngine;
+using Plugins._MK.MKToon.Editor.Base;
+using Plugins._MK.MKToon.Scripts;
 using UnityEditor;
-using System.Linq;
-using System;
-using UnityEditor.Utils;
-using UnityEditorInternal;
-using EditorHelper = MK.Toon.Editor.EditorHelper;
+using UnityEngine;
 
-namespace MK.Toon.Editor.URP
+namespace Plugins._MK.MKToon.Editor.URP.Standard
 {
-    internal class StandardPBSEditor : MK.Toon.Editor.PhysicallyBasedEditorBase 
+    internal class StandardPBSEditor : PhysicallyBasedEditorBase 
     {   
         public StandardPBSEditor() : base(RenderPipeline.Universal) {}
 

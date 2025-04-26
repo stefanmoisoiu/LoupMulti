@@ -1,11 +1,14 @@
 ﻿using Unity.Netcode;
 
-public static class NetworkManagerExtension
+namespace Networking
 {
-        public static int GetCurrentPlayerCount(this NetworkManager networkManager)
+        public static class NetworkManagerExtension
         {
-                return GetCurrentPlayerCountServerRpc();
+                public static int GetCurrentPlayerCount(this NetworkManager networkManager)
+                {
+                        return GetCurrentPlayerCountServerRpc();
+                }
+                [Rpc(SendTo.Server)]
+                private static int GetCurrentPlayerCountServerRpc() => NetworkManager.Singleton.ConnectedClients.Count;
         }
-        [Rpc(SendTo.Server)]
-        private static int GetCurrentPlayerCountServerRpc() => NetworkManager.Singleton.ConnectedClients.Count;
 }

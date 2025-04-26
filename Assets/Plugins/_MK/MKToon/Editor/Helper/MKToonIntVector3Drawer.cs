@@ -7,13 +7,13 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using UnityEngine;
-using UnityEditor;
 using System;
+using UnityEditor;
+using UnityEngine;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Helper
 {
-    internal class MKToonVector3Drawer : MK.Toon.Editor.MaterialPropertyDrawer
+    internal class MKToonVector3Drawer : MaterialPropertyDrawer
     {
         public MKToonVector3Drawer(GUIContent ui) : base(ui) {}
         public MKToonVector3Drawer() : base(GUIContent.none) {}

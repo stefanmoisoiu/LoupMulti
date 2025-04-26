@@ -1,4 +1,4 @@
-﻿namespace ParrelSync
+﻿namespace ParrelSync.Editor
 {
     public class ExternalLinks 
     {

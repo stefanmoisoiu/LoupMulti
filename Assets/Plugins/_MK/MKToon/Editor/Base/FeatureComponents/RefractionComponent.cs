@@ -7,16 +7,12 @@
 //////////////////////////////////////////////////////
 
 #if UNITY_EDITOR
-using System.Collections.Generic;
-using UnityEngine;
+using Plugins._MK.MKToon.Scripts;
 using UnityEditor;
-using System.Linq;
-using System;
-using UnityEditor.Utils;
-using UnityEditorInternal;
-using EditorHelper = MK.Toon.Editor.EditorHelper;
+using UnityEngine;
+using EditorHelper = Plugins._MK.MKToon.Editor.Helper.EditorHelper;
 
-namespace MK.Toon.Editor
+namespace Plugins._MK.MKToon.Editor.Base.FeatureComponents
 {
     internal sealed class RefractionComponent : ShaderGUI
     {

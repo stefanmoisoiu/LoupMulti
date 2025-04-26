@@ -1,6 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
-namespace ParrelSync
+
+namespace ParrelSync.Editor.AssetModBlock
 {
     /// <summary>
     /// For preventing assets being modified from the clone instance.
