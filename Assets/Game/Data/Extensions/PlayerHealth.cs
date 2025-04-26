@@ -12,12 +12,12 @@ namespace Game.Data.Extensions
 
         private void Start()
         {
-            if (IsServer) PlayerDataManager.OnEntryUpdatedServer += DetectPlayerDeath;
+            if (IsServer) DataManager.OnEntryUpdatedServer += DetectPlayerDeath;
         }
 
         private void DetectPlayerDeath(PlayerData previousPlayerData, PlayerData newPlayerData)
         {
-            if (previousPlayerData.InGameData.IsAlive() && !newPlayerData.InGameData.IsAlive())
+            if (previousPlayerData.inGameData.IsAlive() && !newPlayerData.inGameData.IsAlive())
                 OnPlayerDiedServer?.Invoke(newPlayerData.ClientId);
             if (AlivePlayingPlayers().Length == 1)
                 OnOnePlayerLeftServer?.Invoke();
@@ -25,9 +25,9 @@ namespace Game.Data.Extensions
 
         public static PlayerData[] AlivePlayingPlayers()
         {
-            PlayerData[] players = PlayerDataManager.Instance.GetValues();
-            return Array.FindAll(players, player => player.OuterData.playingState == PlayerOuterData.PlayingState.Playing
-                                                    && player.InGameData.IsAlive());
+            PlayerData[] players = DataManager.Instance.GetValues();
+            return Array.FindAll(players, player => player.outerData.playingState == OuterData.PlayingState.Playing
+                                                    && player.inGameData.IsAlive());
         }
     
         public static int AlivePlayerCount() => AlivePlayingPlayers().Length;
@@ -42,10 +42,10 @@ namespace Game.Data.Extensions
     
         public static void ResetPlayersHealth()
         {
-            foreach (PlayerData player in PlayerDataManager.Instance.GetValues())
+            foreach (PlayerData player in DataManager.Instance.GetValues())
             {
-                if (player.OuterData.playingState != PlayerOuterData.PlayingState.Playing) continue;
-                PlayerDataManager.Instance[player.ClientId] = new(player) {InGameData = player.InGameData.ResetHealth()};
+                if (player.outerData.playingState != OuterData.PlayingState.Playing) continue;
+                DataManager.Instance[player.ClientId] = new(player) {inGameData = player.inGameData.ResetHealth()};
             }
         }
     }

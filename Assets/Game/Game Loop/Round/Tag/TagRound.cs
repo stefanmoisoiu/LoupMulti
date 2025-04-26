@@ -17,7 +17,7 @@ namespace Game.Game_Loop.Round.Tag
     
         public override IEnumerator Execute(GameManager gameManager, GameLoopEvents gameLoopEvents)
         {
-            gameLoopEvents.RoundStateChanged(GameRoundState.Tag, NetworkManager.ServerTime.TimeAsFloat);
+            gameLoopEvents.RoundStateChanged(GameRoundState.Tag_OBSOLETE, NetworkManager.ServerTime.TimeAsFloat);
         
             if (PlayerHealth.AlivePlayerCount() < 2)
             {

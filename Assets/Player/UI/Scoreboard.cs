@@ -49,6 +49,7 @@ namespace Player.UI
         }
         private void HideScoreboard()
         {
+            if (_scoreboard == null) return;
             _scoreboardCanvasGroup.alpha = 0;
         }
         private void UpdateScoreboard(List<PlayerData> newPlayerData)
@@ -56,7 +57,7 @@ namespace Player.UI
             int spectatingPlayers = 0;
             for (int i = 0; i < newPlayerData.Count; i++)
             {
-                if (newPlayerData[i].OuterData.playingState == PlayerOuterData.PlayingState.SpectatingGame || newPlayerData[i].OuterData.playingState == PlayerOuterData.PlayingState.SpectatingUntilNextRound)
+                if (newPlayerData[i].outerData.playingState == OuterData.PlayingState.SpectatingGame || newPlayerData[i].outerData.playingState == OuterData.PlayingState.SpectatingUntilNextRound)
                 {
                     spectatingPlayers++;
                 }
@@ -87,7 +88,7 @@ namespace Player.UI
             int a = 0;
             for (int i = 0; i < newPlayerData.Count; i++)
             {
-                if (newPlayerData[i].OuterData.playingState == PlayerOuterData.PlayingState.SpectatingGame || newPlayerData[i].OuterData.playingState == PlayerOuterData.PlayingState.SpectatingUntilNextRound)
+                if (newPlayerData[i].outerData.playingState == OuterData.PlayingState.SpectatingGame || newPlayerData[i].outerData.playingState == OuterData.PlayingState.SpectatingUntilNextRound)
                 {
                     _spectatorList.text += $"{newPlayerData[i].ClientId}  ";
                 }
@@ -103,7 +104,7 @@ namespace Player.UI
         {
             Transform scoreTransform = score.transform;
             scoreTransform.GetChild(0).GetComponent<TMP_Text>().text = $"{data.ClientId}";
-            scoreTransform.GetChild(1).GetComponent<TMP_Text>().text = $"{data.InGameData.score}";
+            //scoreTransform.GetChild(1).GetComponent<TMP_Text>().text = $"{data.InGameData.score}";
         }
     }
 }

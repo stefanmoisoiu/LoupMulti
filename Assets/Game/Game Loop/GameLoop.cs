@@ -2,6 +2,7 @@
 using Base_Scripts;
 using Game.Data.Extensions;
 using Game.Game_Loop.Round;
+using Game.Game_Loop.Round.Collect;
 using Game.Game_Loop.Round.Tag;
 using Game.Game_Loop.Round.Upgrade;
 using Game.Manager;
@@ -14,13 +15,14 @@ namespace Game.Game_Loop
     {
         [SerializeField] private GameTickManager gameTickManager;
         public GameTickManager GameTickManager => gameTickManager;
-        [SerializeField] private PlayerHealth playerHealth;
-        public PlayerHealth PlayerHealth => playerHealth;
         [SerializeField] private GameLoopEvents gameLoopEvents;
         public GameLoopEvents GameLoopEvents => gameLoopEvents;
 
-        [SerializeField] private TagRound tagRound;
-        public TagRound TagRound => tagRound;
+        //[SerializeField] private TagRound tagRound;
+        //public TagRound TagRound => tagRound;
+        [SerializeField] private CollectRound collectRound;
+        public CollectRound CollectRound => collectRound;
+        
         [SerializeField] private UpgradeRound upgradeRound;
         public UpgradeRound UpgradeRound => upgradeRound;
         [SerializeField] private CountdownRound countdownRound;
@@ -50,7 +52,7 @@ namespace Game.Game_Loop
                 manager.MapManager.SetPlayerSpawnPositions();
                 yield return upgradeRound.Execute(manager, gameLoopEvents);
                 yield return countdownRound.Execute(manager, gameLoopEvents);
-                yield return tagRound.Execute(manager, gameLoopEvents);
+                yield return collectRound.Execute(manager, gameLoopEvents);
                 round++;
             }
         

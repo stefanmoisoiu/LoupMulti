@@ -16,11 +16,11 @@ namespace Game.Game_Loop.Round.Tag.Hot_Potato
         {
             if (!IsServer) return;
             if (GameTickManager.CurrentTick % healthLossTickDelay != 0) return;
-            if (!targetPlayer.InGameData.IsAlive()) return;
+            if (!targetPlayer.inGameData.IsAlive()) return;
             if (targetPlayer.ClientId == ulong.MaxValue) return;
         
             ushort damage = CalculateDamage();
-            PlayerDataManager.Instance[targetPlayer.ClientId] = new(targetPlayer) {InGameData = targetPlayer.InGameData.RemoveHealth(damage)};
+            Data.DataManager.Instance[targetPlayer.ClientId] = new(targetPlayer) {inGameData = targetPlayer.inGameData.RemoveHealth(damage)};
         }
     }
 }

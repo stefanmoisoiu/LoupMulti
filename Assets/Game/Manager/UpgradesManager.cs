@@ -40,7 +40,7 @@ namespace Game.Manager
         public void ApplyUpgrades()
         {
             // If player did not choose, we give them the first upgrade
-            foreach (ulong clientId in PlayerDataManager.Instance.GetKeys())
+            foreach (ulong clientId in Data.DataManager.Instance.GetKeys())
             {
                 if (!PlayerUpgradeChoice.TryGetValue(clientId, out var upgradeChoiceIndex)) // premier choix = 0, etc
                     PlayerUpgradeChoice.Add(clientId, 0);
@@ -51,8 +51,8 @@ namespace Game.Manager
                 NetcodeLogger.Instance.LogRpc($"Player {clientId} had these choices: {string.Join(", ", availableChoices)}", NetcodeLogger.LogType.Upgrades);
                 NetcodeLogger.Instance.LogRpc($"and chose {GetUpgrade(upgradeChoiceIndex).UpgradeName}", NetcodeLogger.LogType.Upgrades);
 
-                PlayerData data = PlayerDataManager.Instance[clientId];
-                PlayerDataManager.Instance[clientId] = new(data) {InGameData = data.InGameData.AddUpgrade(chosenUpgrade)};
+                PlayerData data = Data.DataManager.Instance[clientId];
+                Data.DataManager.Instance[clientId] = new(data) {inGameData = data.inGameData.AddUpgrade(chosenUpgrade)};
             
                 OnUpgradeChosenClientRpc(upgradeChoiceIndex, data.SendRpcTo());
             }
@@ -62,17 +62,17 @@ namespace Game.Manager
 
         public void ChooseUpgradesForPlayersServer()
         {
-            foreach (PlayerData data in GameManager.Instance.GameData.PlayerDataManager.GetValues())
+            foreach (PlayerData data in Data.DataManager.Instance.GetValues())
             {
-                PlayerOuterData.PlayingState state = data.OuterData.playingState;
-                if (state != PlayerOuterData.PlayingState.Playing) continue;
+                OuterData.PlayingState state = data.outerData.playingState;
+                if (state != OuterData.PlayingState.Playing) continue;
                 PlayerAvailableUpgrades[data.ClientId] = DrawUpgrades(UpgradeChoices, data);
                 OnUpgradeChoicesAvailableClientRpc(PlayerAvailableUpgrades[data.ClientId], data.SendRpcTo());
             }
         }
         public ushort[] DrawUpgrades(int amount, PlayerData data)
         {
-            var owned = new HashSet<ushort>(data.InGameData.upgradesIndexArray);
+            var owned = new HashSet<ushort>(data.inGameData.upgradesIndexArray);
             List<ushort> availableUpgrades = Enumerable.Range(0, upgrades.Length)
                 .Select(i => (ushort)i)
                 .Where(i => !owned.Contains(i))

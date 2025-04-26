@@ -106,7 +106,7 @@ namespace Game.Data
                 EditorGUILayout.HelpBox("Start play mode to see runtime info.", MessageType.Info);
                 return;
             }
-            var manager = FindFirstObjectByType<PlayerDataManager>();
+            var manager = FindFirstObjectByType<DataManager>();
             if (manager == null)
             {
                 EditorGUILayout.HelpBox("Aucun PlayerDataManager trouvé dans la scène.", MessageType.Warning);
@@ -129,13 +129,13 @@ namespace Game.Data
         private void DisplayPlayerEntry(ulong clientId, PlayerData data)
         {
             Color bg = Color.gray;
-            switch (data.OuterData.playingState)
+            switch (data.outerData.playingState)
             {
-                case PlayerOuterData.PlayingState.Playing:
+                case OuterData.PlayingState.Playing:
                     bg = new Color(0.2f, 0.6f, 0.2f); break;
-                case PlayerOuterData.PlayingState.SpectatingGame:
+                case OuterData.PlayingState.SpectatingGame:
                     bg = new Color(0.2f, 0.4f, 0.8f); break;
-                case PlayerOuterData.PlayingState.Disconnected:
+                case OuterData.PlayingState.Disconnected:
                     bg = new Color(0.6f, 0.2f, 0.2f); break;
             }
             var prevBg = GUI.backgroundColor;
@@ -145,10 +145,10 @@ namespace Game.Data
 
             EditorGUILayout.LabelField($"Client ID: {clientId}", headerStyle);
             EditorGUILayout.Space(2);
-            EditorGUILayout.LabelField($"<b>État :</b> {data.OuterData.playingState}", labelStyle);
-            EditorGUILayout.LabelField($"<b>Vie :</b> {data.InGameData.health}", labelStyle);
-            EditorGUILayout.LabelField($"<b>Score :</b> {data.InGameData.score}", labelStyle);
-            var ups = data.InGameData.GetUpgrades();
+            EditorGUILayout.LabelField($"<b>État :</b> {data.outerData.playingState}", labelStyle);
+            EditorGUILayout.LabelField($"<b>Vie :</b> {data.inGameData.health}", labelStyle);
+            EditorGUILayout.LabelField($"<b>Ressources :</b>\n{data.inGameData.resources.ToString()}", labelStyle);
+            var ups = data.inGameData.GetUpgrades();
             var names = ups.Length > 0 ? string.Join(", ", ups.Select(u => u.UpgradeName)) : "<i>Aucun</i>";
             EditorGUILayout.LabelField($"<b>Upgrades :</b> {names}", labelStyle);
 

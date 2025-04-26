@@ -51,7 +51,7 @@ namespace Game.Manager
         public void SetPlayerSpawnPositions()
         {
             NetworkClient[] clients = NetworkManager.ConnectedClients.Values.ToArray();
-            Transform[] spawnPoints = MapSpawnPositions.instance.GetSpawnPoints(PlayerDataManager.Instance.PlayingPlayersCount());
+            Transform[] spawnPoints = MapSpawnPositions.instance.GetSpawnPoints(Data.DataManager.Instance.PlayingPlayersCount());
             for(int i = 0; i < clients.Length; i++)
             {
                 Transform spawnPoint = spawnPoints[i];

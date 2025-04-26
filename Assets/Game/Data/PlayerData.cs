@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Base_Scripts;
+using Game.Game_Loop.Round.Collect.Resource;
 using Game.Manager;
 using Game.Upgrades;
 using Sirenix.OdinInspector;
@@ -15,38 +16,38 @@ namespace Game.Data
     {
         public ulong ClientId;
         
-        public PlayerOuterData OuterData;
-        public PlayerInGameData InGameData;
+        public OuterData outerData;
+        public InGameData inGameData;
         
         public PlayerData(NetworkClient client)
         {
             ClientId = client?.ClientId ?? ulong.MaxValue;
-            OuterData = new PlayerOuterData(client);
-            InGameData = new PlayerInGameData(UpgradesIndexArray:PlayerInGameData.DefaultUpgradesIndexArray());
+            outerData = new OuterData(client);
+            inGameData = new InGameData(upgradesIndexArray:InGameData.DefaultUpgradesIndexArray());
         }
         public PlayerData(PlayerData copy)
         {
             ClientId = copy.ClientId;
-            OuterData = new PlayerOuterData(copy.OuterData);
-            InGameData = new PlayerInGameData(copy.InGameData.score, copy.InGameData.health, copy.InGameData.upgradesIndexArray);
+            outerData = new OuterData(copy.outerData);
+            inGameData = new InGameData(copy.inGameData.health, copy.inGameData.upgradesIndexArray, copy.inGameData.resources);
         }
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref ClientId);
-            serializer.SerializeValue(ref OuterData);
-            serializer.SerializeValue(ref InGameData);
+            serializer.SerializeValue(ref outerData);
+            serializer.SerializeValue(ref inGameData);
         }
         public RpcParams SendRpcTo() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId}, NetworkManager.Singleton);
         public override string ToString()
         {
             return $"ClientId: {ClientId}\n" +
-                   $"OuterData:\n{OuterData}\n \n" +
-                   $"InGameData:\n{InGameData}";
+                   $"OuterData:\n{outerData}\n \n" +
+                   $"InGameData:\n{inGameData}";
         }
 
         public bool Equals(PlayerData other)
         {
-            return ClientId == other.ClientId && OuterData.Equals(other.OuterData) && InGameData.Equals(other.InGameData);
+            return ClientId == other.ClientId && outerData.Equals(other.outerData) && inGameData.Equals(other.inGameData);
         }
         public override bool Equals(object obj)
         {
@@ -54,12 +55,12 @@ namespace Game.Data
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(ClientId, OuterData, InGameData);
+            return HashCode.Combine(ClientId, outerData, inGameData);
         }
     }
     
     [Serializable]
-    public struct PlayerOuterData : INetworkSerializable, IEquatable<PlayerOuterData>
+    public struct OuterData : INetworkSerializable, IEquatable<OuterData>
     {
         public PlayingState playingState;
         
@@ -72,11 +73,11 @@ namespace Game.Data
             SpectatingUntilNextRound
         }
 
-        public PlayerOuterData(NetworkClient client = null)
+        public OuterData(NetworkClient client = null)
         {
             playingState = PlayingState.NotAssigned;
         }
-        public PlayerOuterData(PlayerOuterData copy)
+        public OuterData(OuterData copy)
         {
             playingState = copy.playingState;
         }
@@ -91,19 +92,19 @@ namespace Game.Data
             return $"Playing State: {playingState}";
         }
         
-        public PlayerOuterData SetState(PlayingState newState)
+        public OuterData SetState(PlayingState newState)
         {
             playingState = newState;
             return this;
         }
 
-        public bool Equals(PlayerOuterData other)
+        public bool Equals(OuterData other)
         {
             return playingState == other.playingState;
         }
         public override bool Equals(object obj)
         {
-            return obj is PlayerOuterData other && Equals(other);
+            return obj is OuterData other && Equals(other);
         }
         public override int GetHashCode()
         {
@@ -112,23 +113,23 @@ namespace Game.Data
     }
 
     [Serializable]
-    public struct PlayerInGameData : INetworkSerializable, IEquatable<PlayerInGameData>
+    public struct InGameData : INetworkSerializable, IEquatable<InGameData>
     {
         public const ushort MaxHealth = 100;
         public ushort health;
-        public ushort score;
         public ushort[] upgradesIndexArray; 
+        public ResourceData resources;
         [ShowInInspector] public string upgradesString => string.Join(", ", GetUpgrades().Select(u => u.UpgradeName));
 
         public override string ToString()
         {
             ScriptableUpgrade[] upgrades = GetUpgrades();
-            return $"Health: {health}\nScore: {score}\nUpgrades: {string.Join(", ", upgrades.Select(u => u))}";
+            return $"Health: {health}\nResources: {resources}\nUpgrades: {string.Join(", ", upgrades.Select(u => u))}";
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref score);
+            serializer.SerializeValue(ref resources);
             serializer.SerializeValue(ref health);
             
             upgradesIndexArray ??= new ushort[UpgradesManager.MaxUpgrades];
@@ -136,38 +137,23 @@ namespace Game.Data
                 serializer.SerializeValue(ref upgradesIndexArray[i]);
         }
         
-        public PlayerInGameData(ushort Score = 0, ushort Health = 100, ushort[] UpgradesIndexArray = null)
+        public InGameData(ushort health = MaxHealth, ushort[] upgradesIndexArray = null, ResourceData resources = new())
         {
-            score = Score;
-            health = 100;
+            this.health = health;
+            this.upgradesIndexArray = upgradesIndexArray;
+            this.resources = resources;
             
-            upgradesIndexArray = UpgradesIndexArray;
-            
-            if(UpgradesIndexArray == null) Debug.LogError("initialise upgradesIndexArray ca marche pas sinon");
+            if(upgradesIndexArray == null) Debug.LogError("initialise upgradesIndexArray ca marche pas sinon");
+        }
+
+        public InGameData(InGameData copy)
+        {
+            health = copy.health;
+            resources = new ResourceData(copy.resources);
+            upgradesIndexArray = copy.upgradesIndexArray?.ToArray();
         }
         
-        public PlayerInGameData AddScore(ushort amount)
-        {
-            score += amount;
-            return this;
-        }
-        public PlayerInGameData RemoveScore(ushort amount)
-        {
-            if (score - amount < 0)
-            {
-                score = 0;
-                return this;
-            }
-            score -= amount;
-            return this;
-        }
-        public PlayerInGameData ResetScore()
-        {
-            score = 0;
-            return this;
-        }
-        
-        public PlayerInGameData AddHealth(ushort amount)
+        public InGameData AddHealth(ushort amount)
         {
             if (health + amount > MaxHealth)
             {
@@ -177,7 +163,7 @@ namespace Game.Data
             health += amount;
             return this;
         }
-        public PlayerInGameData RemoveHealth(ushort amount)
+        public InGameData RemoveHealth(ushort amount)
         {
             if (health - amount < 0)
             {
@@ -187,14 +173,14 @@ namespace Game.Data
             health -= amount;
             return this;
         }
-        public PlayerInGameData ResetHealth()
+        public InGameData ResetHealth()
         {
             health = MaxHealth;
             return this;
         }
         public bool IsAlive() => health > 0;
         
-        public PlayerInGameData AddUpgrade(ushort upgradeIndex)
+        public InGameData AddUpgrade(ushort upgradeIndex)
         {
             upgradesIndexArray ??= DefaultUpgradesIndexArray();
             for (int i = 0; i < upgradesIndexArray.Length; i++)
@@ -226,18 +212,96 @@ namespace Game.Data
             return res;
         }
         
-        public bool Equals(PlayerInGameData other)
+        public bool Equals(InGameData other)
         {
-            return health == other.health && score == other.score &&
+            return health == other.health &&
+                   resources.Equals(other.resources) &&
                    Equals(upgradesIndexArray, other.upgradesIndexArray);
         }
         public override bool Equals(object obj)
         {
-            return obj is PlayerInGameData other && Equals(other);
+            return obj is InGameData other && Equals(other);
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(health, score, upgradesIndexArray);
+            return HashCode.Combine(health, resources, upgradesIndexArray);
+        }
+    }
+    
+    public struct ResourceData : INetworkSerializable, IEquatable<ResourceData>
+    {
+        public ushort commonAmount;
+        public ushort rareAmount;
+        
+        public ResourceData(ushort commonAmount = 0, ushort rareAmount = 0)
+        {
+            this.commonAmount = commonAmount;
+            this.rareAmount = rareAmount;
+        }
+        public ResourceData(ResourceData copy)
+        {
+            commonAmount = copy.commonAmount;
+            rareAmount = copy.rareAmount;
+        }
+
+        
+        public bool HasEnough(ResourceType type, ushort amount)
+        {
+            switch (type)
+            {
+                case ResourceType.Common:
+                    return commonAmount >= amount;
+                case ResourceType.Rare:
+                    return rareAmount >= amount;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+        public ResourceData AddResource(ResourceType type, ushort amount = 1)
+        {
+            switch (type)
+            {
+                case ResourceType.Common:
+                    commonAmount += amount;
+                    break;
+                case ResourceType.Rare:
+                    rareAmount += amount;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+            return this;
+        }
+        public ResourceData RemoveResource(ResourceType type, ushort amount = 1)
+        {
+            switch (type)
+            {
+                case ResourceType.Common:
+                    commonAmount -= amount;
+                    break;
+                case ResourceType.Rare:
+                    rareAmount -= amount;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+            return this;
+        }
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref commonAmount);
+            serializer.SerializeValue(ref rareAmount);
+        }
+
+        public bool Equals(ResourceData other)
+        {
+            return commonAmount == other.commonAmount && rareAmount == other.rareAmount;
+        }
+
+        public override string ToString()
+        {
+            return $"Common: {commonAmount}\nRare: {rareAmount}";
         }
     }
 }

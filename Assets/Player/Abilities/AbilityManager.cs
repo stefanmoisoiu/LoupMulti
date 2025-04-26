@@ -28,11 +28,9 @@ namespace Player.Abilities
         {
             Debug.LogWarning("Get owned upgrades pas cached!!");
             if (GameManager.Instance != null) return;
-            Debug.LogError(GameManager.Instance.GameData);
-            Debug.LogError(PlayerDataManager.Instance);
-            if (!PlayerDataManager.Instance.TryGetValue(NetworkManager.LocalClientId,
+            if (!DataManager.Instance.TryGetValue(NetworkManager.LocalClientId,
                     out PlayerData pd)) return;
-            ScriptableUpgrade[] ownedUpgrades = pd.InGameData.GetUpgrades();
+            ScriptableUpgrade[] ownedUpgrades = pd.inGameData.GetUpgrades();
             foreach (ScriptableUpgrade upgrade in GameManager.Instance.UpgradesManager.Upgrades)
             {
                 if (upgrade.Type != ScriptableUpgrade.UpgradeType.Active) continue;

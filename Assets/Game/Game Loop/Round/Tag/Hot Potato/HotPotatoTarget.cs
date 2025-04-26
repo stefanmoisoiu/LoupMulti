@@ -9,7 +9,7 @@ namespace Game.Game_Loop.Round.Tag.Hot_Potato
         private NetworkVariable<ulong> target = new(ulong.MaxValue);
     
         public ulong TargetClientId => target.Value;
-        public PlayerData TargetPlayer => PlayerDataManager.Instance[target.Value];
+        public PlayerData TargetPlayer => Data.DataManager.Instance[target.Value];
     
         public static event Action<ulong> OnTargetChanged;
         public static event Action OnTargetReset;
@@ -29,14 +29,14 @@ namespace Game.Game_Loop.Round.Tag.Hot_Potato
     
         private ulong GetRandomAliveClientId()
         {
-            ulong[] keys = PlayerDataManager.Instance.GetKeys();
+            ulong[] keys = Data.DataManager.Instance.GetKeys();
             ushort randomIndex;
             if (keys.Length == 0) return ulong.MaxValue;
             do
             {
                 randomIndex = (ushort)UnityEngine.Random.Range(0, keys.Length);
             }
-            while (!PlayerDataManager.Instance[randomIndex].InGameData.IsAlive());
+            while (!Data.DataManager.Instance[randomIndex].inGameData.IsAlive());
             return keys[randomIndex];
         }
     }

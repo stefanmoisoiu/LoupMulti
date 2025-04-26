@@ -43,9 +43,13 @@ namespace Game.Game_Loop
         {
             CurrentTick++;
             OnTickServer?.Invoke();
-            TickClientRpc();
+            TickClientRpc(CurrentTick);
         }
         [ClientRpc]
-        private void TickClientRpc() => OnTickClient?.Invoke();
+        private void TickClientRpc(ushort currentTick)
+        {
+            CurrentTick = currentTick;
+            OnTickClient?.Invoke();
+        }
     }
 }

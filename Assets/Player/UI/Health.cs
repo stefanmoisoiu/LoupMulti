@@ -22,22 +22,22 @@ namespace Player.UI
         {
             healthText = GameObject.FindGameObjectWithTag(healthTextTag).GetComponent<TMP_Text>();
             Debug.LogWarning("Cached upgrade pas fait");
-            PlayerDataManager.OnEntryUpdatedOwner += UpdateHealth;
-            previousHealth = PlayerInGameData.MaxHealth;
+            DataManager.OnEntryUpdatedOwner += UpdateHealth;
+            previousHealth = InGameData.MaxHealth;
             healthText.text = previousHealth.ToString();
         }
 
         protected override void DisableAnyOwner()
         {
-            PlayerDataManager.OnEntryUpdatedOwner -= UpdateHealth;
+            DataManager.OnEntryUpdatedOwner -= UpdateHealth;
             if (healthTextLerpCoroutine != null) StopCoroutine(healthTextLerpCoroutine);
         }
 
         private void UpdateHealth(PlayerData newPlayerData)
         {
             if (newPlayerData.ClientId == ulong.MaxValue) return;
-            healthTextLerpCoroutine = StartCoroutine(UpdateHealthText(previousHealth, newPlayerData.InGameData.health));
-            previousHealth = newPlayerData.InGameData.health;
+            healthTextLerpCoroutine = StartCoroutine(UpdateHealthText(previousHealth, newPlayerData.inGameData.health));
+            previousHealth = newPlayerData.inGameData.health;
         }
     
         private IEnumerator UpdateHealthText(ushort health, ushort newHealth)

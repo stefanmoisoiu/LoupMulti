@@ -174,16 +174,16 @@ namespace Lobby
         public void ChangePlayerState()
         {
             ulong clientID = NetworkManager.Singleton.LocalClientId;
-            if (!PlayerDataManager.Instance.TryGetValue(clientID, out PlayerData data)) return;
-            if (data.OuterData.playingState == PlayerOuterData.PlayingState.SpectatingGame)
+            if (!DataManager.Instance.TryGetValue(clientID, out PlayerData data)) return;
+            if (data.outerData.playingState == OuterData.PlayingState.SpectatingGame)
             {
-                PlayerDataManager.Instance[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.Playing) };
+                DataManager.Instance[clientID] = new(data) { outerData = data.outerData.SetState(OuterData.PlayingState.Playing) };
                 changeStateText.text = "Spectate";
             
             }
             else
             {
-                PlayerDataManager.Instance[clientID] = new(data) { OuterData = data.OuterData.SetState(PlayerOuterData.PlayingState.SpectatingGame) };
+                DataManager.Instance[clientID] = new(data) { outerData = data.outerData.SetState(OuterData.PlayingState.SpectatingGame) };
                 changeStateText.text = "Be Player";
             }
         }

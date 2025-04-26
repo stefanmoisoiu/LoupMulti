@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Base_Scripts;
 using Game.Data;
+using Game.Data.Extensions;
 using Game.Game_Loop;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,9 +15,6 @@ namespace Game.Manager
 
         public static GameManager Instance;
         public static event Action<GameManager> OnCreated;
-    
-        [SerializeField] private GameData gameData;
-        public GameData GameData => gameData;
         [SerializeField] private UpgradesManager upgradesManager;
         public UpgradesManager UpgradesManager => upgradesManager;
         [SerializeField] private MapManager mapManager;
@@ -80,7 +78,7 @@ namespace Game.Manager
         {
             NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.LogType.Netcode);
         
-            gameData.SetNotAssignedPlayersToPlayingState();
+            Data.DataManager.Instance.SetNotAssignedPlayersToPlayingState();
         
             // Load map et attendre
             bool mapLoaded = false;

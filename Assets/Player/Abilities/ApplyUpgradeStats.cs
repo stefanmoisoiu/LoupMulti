@@ -18,15 +18,15 @@ namespace Player.Upgrades
         protected override void StartOnlineOwner()
         {
             UpgradesManager.OnUpgradeChosenOwner += UpgradeAdded;
-            PlayerDataManager.OnEntryUpdatedOwner += UpdateCachedUpgrades;
+            DataManager.OnEntryUpdatedOwner += UpdateCachedUpgrades;
         }
-        private void UpdateCachedUpgrades(PlayerData data) => cachedUpgrades = data.InGameData.GetUpgrades();
+        private void UpdateCachedUpgrades(PlayerData data) => cachedUpgrades = data.inGameData.GetUpgrades();
 
         protected override void DisableOnlineOwner()
         {
             if (GameManager.Instance == null) return;
             UpgradesManager.OnUpgradeChosenOwner -= UpgradeAdded;
-            PlayerDataManager.OnEntryUpdatedOwner -= UpdateCachedUpgrades;
+            DataManager.OnEntryUpdatedOwner -= UpdateCachedUpgrades;
         }
 
         protected override void UpdateOnlineOwner()
