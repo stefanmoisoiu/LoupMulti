@@ -7,8 +7,8 @@ using Sirenix.OdinInspector;
     {
         public class ResourceStructure : NetworkBehaviour
         {
-            [SerializeField] private ResourceStructureInfo info;
-            public ResourceStructureInfo Info => info;
+            [SerializeField] private ResourceStructureData data;
+            public ResourceStructureData Data => data;
             
             [ShowInInspector] [ReadOnly] private int currentDurability;
 
@@ -18,7 +18,7 @@ using Sirenix.OdinInspector;
 
                 if (!IsServer) return;
                 
-                currentDurability = info.durability;
+                currentDurability = data.durability;
             }
 
             /// <summary>
@@ -40,7 +40,7 @@ using Sirenix.OdinInspector;
                 
                 if (currentDurability <= 0)
                 {
-                    Debug.Log($"Resource {Info.structureName} is already exploited");
+                    Debug.Log($"Resource {Data.structureName} is already exploited");
                     return;
                 }
                 
@@ -50,10 +50,10 @@ using Sirenix.OdinInspector;
 
                 ushort collectAmount = 1;
                 
-                DataManager.Instance.PlayerResources.CollectResource(origin, info.collectedResource, collectAmount);
+                DataManager.Instance.PlayerResources.CollectResource(origin, data.collectedResource, collectAmount);
             }
             
             
-            private bool GiveResource() => currentDurability % info.resourceAmount == 0;
+            private bool GiveResource() => currentDurability % data.resourceAmount == 0;
         }
     }

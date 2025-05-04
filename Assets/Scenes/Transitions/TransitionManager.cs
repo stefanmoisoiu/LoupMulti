@@ -6,7 +6,7 @@ namespace Scenes.Transitions
 {
     public class TransitionManager : MonoBehaviour
     {
-        private static readonly int Transition1 = Shader.PropertyToID(TransitionProperty);
+        private static readonly int TransitionID = Shader.PropertyToID(TransitionProperty);
         [SerializeField] private Material transitionMat;
         [SerializeField] private AnimationCurve transitionCurve;
         [SerializeField] private float transitionDuration = 1f;
@@ -24,11 +24,11 @@ namespace Scenes.Transitions
                 elapsedTime += Time.deltaTime;
                 float t = Mathf.Clamp01(elapsedTime / transitionDuration);
                 float value = Mathf.Lerp(startValue, endValue, transitionCurve.Evaluate(t));
-                transitionMat.SetFloat(Transition1, value);
+                transitionMat.SetFloat(TransitionID, value);
                 yield return null;
             }
 
-            transitionMat.SetFloat(Transition1, endValue);
+            transitionMat.SetFloat(TransitionID, endValue);
             onFinished?.Invoke();
         }
     }

@@ -20,7 +20,6 @@ namespace Player.Networking
             else
             {
                 NetcodeManager.OnEnterGame += TryDeletePlayer;
-                NetworkManager.Singleton.OnConnectionEvent += DelConnectionEvent;
             }
         }
 

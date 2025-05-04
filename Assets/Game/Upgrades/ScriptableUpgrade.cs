@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace Game.Upgrades
 {
+    [CreateAssetMenu(fileName = "Upgrade", menuName = "Game/Upgrade")]
     public abstract class ScriptableUpgrade : ScriptableObject
     {
         [TitleGroup("Base")]

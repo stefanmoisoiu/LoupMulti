@@ -15,8 +15,8 @@ namespace Game.Manager
         public const int MaxUpgrades = 20;
         public const ushort UpgradeChoices = 3;
     
-        [SerializeField] private ScriptableUpgrade[] upgrades;
-        public ScriptableUpgrade[] Upgrades => upgrades;
+        [SerializeField] private UpgradeList upgradeList;
+        public ScriptableUpgrade[] Upgrades => upgradeList.upgrades;
         public readonly Dictionary<ulong,ushort[]> PlayerAvailableUpgrades = new();
         public readonly Dictionary<ulong,ushort> PlayerUpgradeChoice = new();
     
@@ -28,12 +28,12 @@ namespace Game.Manager
 
         public ScriptableUpgrade GetUpgrade(ushort upgradeIndex)
         {
-            if (upgradeIndex >= upgrades.Length) return null;
-            return upgrades[upgradeIndex];
+            if (upgradeIndex >= Upgrades.Length) return null;
+            return Upgrades[upgradeIndex];
         }
         public ushort GetUpgrade(ScriptableUpgrade upgrade)
         {
-            return (ushort)Array.IndexOf(upgrades, upgrade);
+            return (ushort)Array.IndexOf(Upgrades, upgrade);
         }
     
         // server
@@ -73,7 +73,7 @@ namespace Game.Manager
         public ushort[] DrawUpgrades(int amount, PlayerData data)
         {
             var owned = new HashSet<ushort>(data.inGameData.upgradesIndexArray);
-            List<ushort> availableUpgrades = Enumerable.Range(0, upgrades.Length)
+            List<ushort> availableUpgrades = Enumerable.Range(0, Upgrades.Length)
                 .Select(i => (ushort)i)
                 .Where(i => !owned.Contains(i))
                 .ToList();

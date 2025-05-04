@@ -89,6 +89,51 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slot1"",
+                    ""type"": ""Button"",
+                    ""id"": ""029f6385-9d14-48bc-8df2-fc7055fd9475"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slot2"",
+                    ""type"": ""Button"",
+                    ""id"": ""63c4ea9a-060c-4ae0-8f33-2b6a869b8678"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slot3"",
+                    ""type"": ""Button"",
+                    ""id"": ""9b34813b-5d00-4c6d-bd3e-74a9395fa9df"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Primary"",
+                    ""type"": ""Button"",
+                    ""id"": ""268eae9e-0834-4b65-b04b-a00c1c356eee"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Secondary"",
+                    ""type"": ""Button"",
+                    ""id"": ""8ccda13e-aafb-4c3d-a78a-9b951094f561"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -256,6 +301,61 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Action3"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f883ca3b-5656-42b4-ae9b-abe5f4a1c800"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Slot1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0073b57a-63e6-4390-a087-d25559979528"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Slot2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""94008c9d-900f-48c9-93fd-0262289bc899"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Slot3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fdfe77b0-60ea-48da-a760-a23a68a63369"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Primary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""41e60e7e-69ae-4bf2-bb66-3d1cf92b9410"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Secondary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -299,6 +399,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Gameplay_Action1 = m_Gameplay.FindAction("Action1", throwIfNotFound: true);
         m_Gameplay_Action2 = m_Gameplay.FindAction("Action2", throwIfNotFound: true);
         m_Gameplay_Action3 = m_Gameplay.FindAction("Action3", throwIfNotFound: true);
+        m_Gameplay_Slot1 = m_Gameplay.FindAction("Slot1", throwIfNotFound: true);
+        m_Gameplay_Slot2 = m_Gameplay.FindAction("Slot2", throwIfNotFound: true);
+        m_Gameplay_Slot3 = m_Gameplay.FindAction("Slot3", throwIfNotFound: true);
+        m_Gameplay_Primary = m_Gameplay.FindAction("Primary", throwIfNotFound: true);
+        m_Gameplay_Secondary = m_Gameplay.FindAction("Secondary", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Scoreboard = m_UI.FindAction("Scoreboard", throwIfNotFound: true);
@@ -376,6 +481,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Action1;
     private readonly InputAction m_Gameplay_Action2;
     private readonly InputAction m_Gameplay_Action3;
+    private readonly InputAction m_Gameplay_Slot1;
+    private readonly InputAction m_Gameplay_Slot2;
+    private readonly InputAction m_Gameplay_Slot3;
+    private readonly InputAction m_Gameplay_Primary;
+    private readonly InputAction m_Gameplay_Secondary;
     public struct GameplayActions
     {
         private @Controls m_Wrapper;
@@ -387,6 +497,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Action1 => m_Wrapper.m_Gameplay_Action1;
         public InputAction @Action2 => m_Wrapper.m_Gameplay_Action2;
         public InputAction @Action3 => m_Wrapper.m_Gameplay_Action3;
+        public InputAction @Slot1 => m_Wrapper.m_Gameplay_Slot1;
+        public InputAction @Slot2 => m_Wrapper.m_Gameplay_Slot2;
+        public InputAction @Slot3 => m_Wrapper.m_Gameplay_Slot3;
+        public InputAction @Primary => m_Wrapper.m_Gameplay_Primary;
+        public InputAction @Secondary => m_Wrapper.m_Gameplay_Secondary;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -417,6 +532,21 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Action3.started += instance.OnAction3;
             @Action3.performed += instance.OnAction3;
             @Action3.canceled += instance.OnAction3;
+            @Slot1.started += instance.OnSlot1;
+            @Slot1.performed += instance.OnSlot1;
+            @Slot1.canceled += instance.OnSlot1;
+            @Slot2.started += instance.OnSlot2;
+            @Slot2.performed += instance.OnSlot2;
+            @Slot2.canceled += instance.OnSlot2;
+            @Slot3.started += instance.OnSlot3;
+            @Slot3.performed += instance.OnSlot3;
+            @Slot3.canceled += instance.OnSlot3;
+            @Primary.started += instance.OnPrimary;
+            @Primary.performed += instance.OnPrimary;
+            @Primary.canceled += instance.OnPrimary;
+            @Secondary.started += instance.OnSecondary;
+            @Secondary.performed += instance.OnSecondary;
+            @Secondary.canceled += instance.OnSecondary;
         }
 
         private void UnregisterCallbacks(IGameplayActions instance)
@@ -442,6 +572,21 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Action3.started -= instance.OnAction3;
             @Action3.performed -= instance.OnAction3;
             @Action3.canceled -= instance.OnAction3;
+            @Slot1.started -= instance.OnSlot1;
+            @Slot1.performed -= instance.OnSlot1;
+            @Slot1.canceled -= instance.OnSlot1;
+            @Slot2.started -= instance.OnSlot2;
+            @Slot2.performed -= instance.OnSlot2;
+            @Slot2.canceled -= instance.OnSlot2;
+            @Slot3.started -= instance.OnSlot3;
+            @Slot3.performed -= instance.OnSlot3;
+            @Slot3.canceled -= instance.OnSlot3;
+            @Primary.started -= instance.OnPrimary;
+            @Primary.performed -= instance.OnPrimary;
+            @Primary.canceled -= instance.OnPrimary;
+            @Secondary.started -= instance.OnSecondary;
+            @Secondary.performed -= instance.OnSecondary;
+            @Secondary.canceled -= instance.OnSecondary;
         }
 
         public void RemoveCallbacks(IGameplayActions instance)
@@ -514,6 +659,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnAction1(InputAction.CallbackContext context);
         void OnAction2(InputAction.CallbackContext context);
         void OnAction3(InputAction.CallbackContext context);
+        void OnSlot1(InputAction.CallbackContext context);
+        void OnSlot2(InputAction.CallbackContext context);
+        void OnSlot3(InputAction.CallbackContext context);
+        void OnPrimary(InputAction.CallbackContext context);
+        void OnSecondary(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
