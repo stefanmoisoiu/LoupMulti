@@ -38,16 +38,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Fisheye_Line_Amplitude: 2.69
+    - _Contrast: 1.15
+    - _Fisheye_Line_Amplitude: 2.75
     - _Line_Count: 3
-    - _Line_Size: 23.2
+    - _Line_Size: 50
     - _Line_Speed: 0.1
-    - _Small_Line_Count: 50.2
+    - _Small_Line_Count: 100
     - _Small_Line_Size: 5.1
-    - _Small_Line_Speed: 0.1
+    - _Small_Line_Speed: 1
     - _Speed: 0.5
     m_Colors:
-    - _Line_Color: {r: 0, g: 1, b: 0.114498354, a: 0.007843138}
+    - _Line_Color: {r: 1, g: 1, b: 1, a: 0.38431373}
     - _Small_Line_Color: {r: 0.24866499, g: 0.41509432, b: 0.24866499, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
