@@ -5,7 +5,7 @@ namespace Player.Model.Procedural_Anims
 {
     public class PShowModel : PNetworkBehaviour
     {
-        [SerializeField] private GameObject modelParent;
+        [SerializeField] private GameObject[] showHideModels;
         [SerializeField] private string showToCamLayerName;
         [SerializeField] private string hiddenFromCamLayerName;
     
@@ -13,16 +13,22 @@ namespace Player.Model.Procedural_Anims
 
         protected override void StartOnlineNotOwner()
         {
-            SetModelState(true);
+            foreach (var model in showHideModels)
+            {
+                SetModelState(true, model);
+            }
         }
 
         protected override void StartAnyOwner()
         {
-            SetModelState(alwaysShow);
+            foreach (var model in showHideModels)
+            {
+                SetModelState(alwaysShow, model);
+            }
+            
         }
-        private void SetModelState(bool show, GameObject child = null)
+        private void SetModelState(bool show, GameObject child)
         {
-            child ??= modelParent;
             child.layer = show ? LayerMask.NameToLayer(showToCamLayerName) : LayerMask.NameToLayer(hiddenFromCamLayerName);
             foreach (Transform childTransform in child.transform)
                 SetModelState(show, childTransform.gameObject);
