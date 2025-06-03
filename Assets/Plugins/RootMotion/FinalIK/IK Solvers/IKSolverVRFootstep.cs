@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 using UnityEngine.Events;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	public partial class IKSolverVR: IKSolver {
 
@@ -86,7 +86,7 @@ namespace RootMotion.FinalIK {
 
 				if (stepProgress >= 1f) onStep.Invoke ();
 
-				float stepProgressSmooth = RootMotion.Interp.Float(stepProgress, interpolation);
+				float stepProgressSmooth = Interp.Float(stepProgress, interpolation);
 
 				position = Vector3.Lerp(stepFrom, stepTo, stepProgressSmooth);
 				rotation = Quaternion.Lerp(stepFromRot, stepToRot, stepProgressSmooth);

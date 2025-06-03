@@ -1,12 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using UnityEditor;
+using UnityEngine;
 using UnityEngine.Playables;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-namespace RootMotion
+namespace Plugins.RootMotion.Baker.Scripts
 {
     /// <summary>
     /// Base class for animation bakers, handles timing, keyframing and saving AnimationClips.

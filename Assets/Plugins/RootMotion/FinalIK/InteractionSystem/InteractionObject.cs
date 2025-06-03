@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 using UnityEngine.Events;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.InteractionSystem {
 
 	/// <summary>
 	/// Object than the InteractionSystem can interact with.
@@ -96,7 +97,7 @@ namespace RootMotion.FinalIK {
 			[Tooltip("The messages sent on this event using GameObject.SendMessage().")]
 			public Message[] messages;
 
-			[TooltipAttribute("The UnityEvent to invoke on this event.")]
+			[Tooltip("The UnityEvent to invoke on this event.")]
 			/// <summary>
 			/// The UnityEvent to invoke on this event.
 			/// </summary>

@@ -1,14 +1,14 @@
-﻿using UnityEditor;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Custom inspector for VRIK.
 	 * */
 	[CustomEditor(typeof(VRIK))]
-	public class VRIKInspector : Editor {
+	public class VRIKInspector : UnityEditor.Editor {
 
 		private VRIK script { get { return target as VRIK; }}
 		private MonoScript monoScript;

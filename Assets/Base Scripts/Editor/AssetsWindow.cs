@@ -1,125 +1,131 @@
 ﻿#if UNITY_EDITOR
-using UnityEngine;
 using UnityEditor;
+using UnityEditor.Overlays;
 using UnityEditor.SceneManagement;
-
-using Base_Scripts.AssetsWindow;    // namespace de votre AssetsConfig
+using UnityEngine;
+using UnityEngine.UIElements;
+// namespace de votre AssetsConfig
 using System.Linq;
 
-[InitializeOnLoad]
-public static class AssetsWindow
+namespace Base_Scripts.Editor
 {
-    private static AssetsConfig config;
-    private static int selectedSceneIndex;
-    private static int selectedPrefabIndex;
-    private static string[] sceneNames = new string[0];
-    private static string[] prefabNames = new string[0];
-    private static bool isExpanded = true;    // foldout par défaut ouvert
-    private static Rect windowRect = new Rect(10, 10, 240, 120);
-    private const int windowId = 0xABCD;
-
-    static AssetsWindow()
+    [Overlay(typeof(SceneView), "Assets Window", defaultDockZone = DockZone.LeftColumn)]
+    public class AssetsWindowOverlay : Overlay
     {
-        LoadConfig();
-        SceneView.duringSceneGui += OnSceneGUI;
-    }
+        private AssetsConfig _config;
+        private string[] _sceneNames = new string[0];
+        private string[] _prefabNames = new string[0];
 
-    private static void LoadConfig()
-    {
-        var guids = AssetDatabase.FindAssets("t:AssetsConfig");
-        if (guids.Length > 0)
+        public override VisualElement CreatePanelContent()
         {
-            var path = AssetDatabase.GUIDToAssetPath(guids[0]);
-            config = AssetDatabase.LoadAssetAtPath<AssetsConfig>(path);
-            RefreshLists();
-        }
-    }
-
-    private static void RefreshLists()
-    {
-        if (config != null)
-        {
-            sceneNames = config.scenes?.Select(s => s != null ? s.name : "<Missing>").ToArray() ?? new string[0];
-            prefabNames = config.prefabs?.Select(p => p != null ? p.name : "<Missing>").ToArray() ?? new string[0];
-        }
-        selectedSceneIndex = Mathf.Clamp(selectedSceneIndex, 0, sceneNames.Length - 1);
-        selectedPrefabIndex = Mathf.Clamp(selectedPrefabIndex, 0, prefabNames.Length - 1);
-    }
-
-    private static void OnSceneGUI(SceneView sceneView)
-    {
-        if (config == null)
             LoadConfig();
 
-        Handles.BeginGUI();
-        windowRect = GUI.Window(windowId, windowRect, DrawWindow, "Assets Window");
-        Handles.EndGUI();
-    }
-
-    private static void DrawWindow(int id)
-    {
-        // Scenes dropdown
-        EditorGUILayout.LabelField("→ Choisir une scène", EditorStyles.boldLabel);
-        if (sceneNames.Length > 0)
-        {
-            int newSceneIndex = EditorGUILayout.Popup(selectedSceneIndex, sceneNames);
-            if (newSceneIndex != selectedSceneIndex)
+            var root = new VisualElement
             {
-                selectedSceneIndex = newSceneIndex;
-                OpenSceneAt(selectedSceneIndex);
-            }
-        }
-        else
-        {
-            EditorGUILayout.LabelField("Aucune scène configurée");
-        }
+                style =
+                {
+                    flexDirection = FlexDirection.Column,
+                    paddingLeft    = 4,
+                    paddingTop     = 4,
+                    paddingRight   = 4,
+                    paddingBottom  = 4,
+                    overflow       = Overflow.Hidden,
+                    justifyContent = Justify.SpaceBetween
+                }
+            };
 
-        EditorGUILayout.Space();
-
-        // Prefabs dropdown (ouverture immédiate)
-        EditorGUILayout.LabelField("→ Choisir un prefab", EditorStyles.boldLabel);
-        if (prefabNames.Length > 0)
-        {
-            int newPrefabIndex = EditorGUILayout.Popup(selectedPrefabIndex, prefabNames);
-            if (newPrefabIndex != selectedPrefabIndex)
+            // --- Scenes Section ---
+            root.Add(new Label("→ Choisir une scène")
             {
-                selectedPrefabIndex = newPrefabIndex;
-                OpenPrefabAt(selectedPrefabIndex);
+                style = { unityFontStyleAndWeight = FontStyle.Bold, marginBottom = 4 }
+            });
+
+            var scenesContainer = new ScrollView();
+            foreach (var (name, idx) in _sceneNames.Select((n, i) => (n, i)))
+            {
+                var btn = new Button(() => OpenSceneAt(idx))
+                {
+                    text = name,
+                    tooltip = $"Charger la scène « {name} »",
+                };
+                btn.style.marginBottom = 2;
+                scenesContainer.Add(btn);
             }
-        }
-        else
-        {
-            EditorGUILayout.LabelField("Aucun prefab configuré");
-        }
-        // Permet de déplacer la fenêtre en drag-and-drop sur la barre de titre
-        GUI.DragWindow(new Rect(0, 0, windowRect.width, 20));
-    }
+            root.Add(scenesContainer);
 
-    private static void OpenSceneAt(int index)
-    {
-        var sceneAsset = config.scenes[index];
-        if (sceneAsset == null)
-        {
-            Debug.LogError($"SceneAsset null à l'index {index}");
-            return;
-        }
-        string scenePath = AssetDatabase.GetAssetPath(sceneAsset);
-        if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
-        {
-            EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-        }
-    }
+            root.Add(new VisualElement { style = { height = 8 } });
 
-    private static void OpenPrefabAt(int index)
-    {
-        var go = config.prefabs[index];
-        if (go == null)
-        {
-            Debug.LogError($"GameObject prefab null à l'index {index}");
-            return;
+            // --- Prefabs Section ---
+            root.Add(new Label("→ Choisir un prefab")
+            {
+                style = { unityFontStyleAndWeight = FontStyle.Bold, marginBottom = 4 }
+            });
+
+            var prefabsContainer = new ScrollView();
+            foreach (var (name, idx) in _prefabNames.Select((n, i) => (n, i)))
+            {
+                var btn = new Button(() => OpenPrefabAt(idx))
+                {
+                    text = name,
+                    tooltip = $"Ouvrir le prefab « {name} »",
+                };
+                btn.style.marginBottom = 2;
+                prefabsContainer.Add(btn);
+            }
+            root.Add(prefabsContainer);
+
+            return root;
         }
-        string prefabPath = AssetDatabase.GetAssetPath(go);
-        PrefabStageUtility.OpenPrefab(prefabPath);
+
+        private void LoadConfig()
+        {
+            if (_config != null) return;
+
+            var guids = AssetDatabase.FindAssets("t:AssetsConfig");
+            if (guids.Length == 0) return;
+
+            var path = AssetDatabase.GUIDToAssetPath(guids[0]);
+            _config = AssetDatabase.LoadAssetAtPath<AssetsConfig>(path);
+            RefreshLists();
+        }
+
+        private void RefreshLists()
+        {
+            if (_config == null) return;
+
+            _sceneNames = _config.scenes?
+                .Select(s => s != null ? s.name : "<Missing>")
+                .ToArray() 
+                ?? new string[0];
+
+            _prefabNames = _config.prefabs?
+                .Select(p => p != null ? p.name : "<Missing>")
+                .ToArray() 
+                ?? new string[0];
+        }
+
+        private void OpenSceneAt(int index)
+        {
+            if (_config == null || index < 0 || index >= _config.scenes.Count) return;
+
+            var asset = _config.scenes[index];
+            if (asset == null) { Debug.LogError($"SceneAsset null à l'index {index}"); return; }
+
+            var path = AssetDatabase.GetAssetPath(asset);
+            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+        }
+
+        private void OpenPrefabAt(int index)
+        {
+            if (_config == null || index < 0 || index >= _config.prefabs.Count) return;
+
+            var asset = _config.prefabs[index];
+            if (asset == null) { Debug.LogError($"Prefab null à l'index {index}"); return; }
+
+            var path = AssetDatabase.GetAssetPath(asset);
+            PrefabStageUtility.OpenPrefab(path);
+        }
     }
 }
 #endif

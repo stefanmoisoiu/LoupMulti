@@ -1,0 +1,18 @@
+{
+    "name": "GameCommon",
+    "rootNamespace": "",
+    "references": [
+        "GUID:84be9861a32436e449956f204cedecb3",
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:d525ad6bd40672747bde77962f1c401e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

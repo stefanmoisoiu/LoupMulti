@@ -1,9 +1,6 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.IO;
-using System;
+﻿using UnityEditor;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Editor.Baker.Helpers
 {
     public class SaveClipFolderPanel : EditorWindow
     {

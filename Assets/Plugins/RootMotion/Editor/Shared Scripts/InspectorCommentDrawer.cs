@@ -1,7 +1,8 @@
-﻿using UnityEditor;
+﻿using Plugins.RootMotion.Shared_Scripts;
+using UnityEditor;
 using UnityEngine;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Editor.Shared_Scripts
 {
 
     // Custom drawer for the LargeHeader attribute

@@ -1,7 +1,10 @@
-using Game.Stats;
+using Base_Scripts;
+using Game.Common;
+using Game.Data;
 using Input;
 using Player.Abilities.Grappling;
 using Player.Networking;
+using Player.Stats;
 using UnityEngine;
 
 namespace Player.Movement
@@ -10,6 +13,7 @@ namespace Player.Movement
     {
         [SerializeField] private Transform orientation;
         [SerializeField] private Rigidbody rb;
+        
     
         [SerializeField] private float maxWalkSpeed = 10f;
         [SerializeField] private float maxRunSpeed = 20f;
@@ -23,14 +27,11 @@ namespace Player.Movement
         [SerializeField] private Grounded grounded;
         [SerializeField] private Grappling grappling;
     
-        public StatModifier<float> MaxSpeedModifier = new();
-        public StatModifier<float> AccelerationModifier = new();
-    
     
         public float GetMaxSpeed()
         {
             if (grappling.IsGrappling) return maxGrappleSpeed;
-            float maxSpeed = MaxSpeedModifier.Apply(maxWalkSpeed);
+            float maxSpeed = PlayerStats.MaxSpeed.Apply(maxWalkSpeed);
             if (run.Running) maxSpeed += maxRunSpeed - maxWalkSpeed;
             return maxSpeed;
         }
@@ -38,13 +39,15 @@ namespace Player.Movement
         private float GetAcceleration()
         {
             if (grappling.IsGrappling) return grappleAcceleration;
-            float a = AccelerationModifier.Apply(acceleration);
+            float a = PlayerStats.Acceleration.Apply(acceleration);
             if (!grounded.FullyGrounded()) a *= airAccelMultiplier;
             return a;
         }
 
         protected override void FixedUpdateAnyOwner()
         {
+            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+                OuterData.PlayingState.SpectatingGame) return;
             Move();
         }
 

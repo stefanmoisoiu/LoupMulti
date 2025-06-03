@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using RootMotion;
+﻿using System;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 	
 	/// <summary>
 	/// Hybrid %IK solver designed for mapping a character to a VR headset and 2 hand controllers 
@@ -187,7 +186,7 @@ namespace RootMotion.FinalIK {
 				rotation = lastBone.solverRotation;
 
 				if (rotationWeight > 0f) {
-					ApplyRotationOffset(RootMotion.QuaTools.FromToRotation(rotation, IKRotation), rotationWeight);
+					ApplyRotationOffset(QuaTools.FromToRotation(rotation, IKRotation), rotationWeight);
 				}
 
 				if (positionWeight > 0f) {

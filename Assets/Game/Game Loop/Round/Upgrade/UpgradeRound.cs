@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Game.Manager;
 using UnityEngine;
 
 namespace Game.Game_Loop.Round.Upgrade
@@ -10,11 +9,13 @@ namespace Game.Game_Loop.Round.Upgrade
     
         public override IEnumerator Execute(GameManager gameManager, GameLoopEvents gameLoopEvents)
         {
-            gameLoopEvents.RoundStateChanged(GameRoundState.ChoosingUpgrade, NetworkManager.ServerTime.TimeAsFloat);
+            gameLoopEvents.RoundStateChanged(GameRoundState.Upgrade, NetworkManager.ServerTime.TimeAsFloat);
         
-            gameManager.UpgradesManager.ChooseUpgradesForPlayersServer();
+            gameManager.ShopManager.SetOpened(true);
+            gameManager.PerkSelectionManager.ChoosePerksForPlayersServer();
             yield return new WaitForSeconds(UpgradeTime);
-            gameManager.UpgradesManager.ApplyUpgrades();
+            gameManager.PerkSelectionManager.GiveChosenPerksToPlayers();
+            gameManager.ShopManager.SetOpened(false);
         }
     }
 }

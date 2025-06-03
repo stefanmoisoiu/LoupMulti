@@ -1,15 +1,14 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Editor.Baker.Helpers;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.Playables;
-using System;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Editor.Baker
 {
-    public class BakerInspector : Editor
+    public class BakerInspector : UnityEditor.Editor
     {
 
-        protected void DrawKeyframeSettings(Baker script)
+        protected void DrawKeyframeSettings(RootMotion.Baker.Scripts.Baker script)
         {
             if (script.isBaking) return;
             EditorGUILayout.Space();
@@ -18,7 +17,7 @@ namespace RootMotion
             EditorGUILayout.PropertyField(serializedObject.FindProperty("keyReductionError"));
         }
 
-        protected void DrawModeSettings(Baker script)
+        protected void DrawModeSettings(RootMotion.Baker.Scripts.Baker script)
         {
             if (script.isBaking) return;
 
@@ -28,16 +27,16 @@ namespace RootMotion
 
             switch (script.mode)
             {
-                case Baker.Mode.AnimationClips:
+                case RootMotion.Baker.Scripts.Baker.Mode.AnimationClips:
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("animationClips"), true);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("appendName"));
                     break;
-                case Baker.Mode.AnimationStates:
+                case RootMotion.Baker.Scripts.Baker.Mode.AnimationStates:
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("loop"));
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("animationStates"), true);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("appendName"));
                     break;
-                case Baker.Mode.PlayableDirector:
+                case RootMotion.Baker.Scripts.Baker.Mode.PlayableDirector:
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("loop"));
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("saveName"));
                     break;
@@ -57,11 +56,11 @@ namespace RootMotion
             //EditorGUILayout.EndHorizontal();
         }
 
-        private void TryBake(Baker script)
+        private void TryBake(RootMotion.Baker.Scripts.Baker script)
         {
             switch (script.mode)
             {
-                case Baker.Mode.AnimationClips:
+                case RootMotion.Baker.Scripts.Baker.Mode.AnimationClips:
                     if (script.animator == null)
                     {
                         EditorGUILayout.LabelField("No Animator found on Baker GameObject", EditorStyles.helpBox);
@@ -91,7 +90,7 @@ namespace RootMotion
 
                     if (GUILayout.Button("Bake Animation Clips")) script.BakeClip();
                     return;
-                case Baker.Mode.AnimationStates:
+                case RootMotion.Baker.Scripts.Baker.Mode.AnimationStates:
                     if (script.animator == null)
                     {
                         EditorGUILayout.LabelField("No Animator found on Baker GameObject", EditorStyles.helpBox);
@@ -115,7 +114,7 @@ namespace RootMotion
 
                     if (GUILayout.Button("Bake Animation States")) script.BakeClip();
                     return;
-                case Baker.Mode.PlayableDirector:
+                case RootMotion.Baker.Scripts.Baker.Mode.PlayableDirector:
                     if (script.director == null)
                     {
                         EditorGUILayout.LabelField("No PlayableDirector found on Baker GameObject", EditorStyles.helpBox);
@@ -124,13 +123,13 @@ namespace RootMotion
 
                     if (GUILayout.Button("Bake Timeline")) script.BakeClip();
                     break;
-                case Baker.Mode.Realtime:
+                case RootMotion.Baker.Scripts.Baker.Mode.Realtime:
                     if (GUILayout.Button("Start Baking")) script.StartBaking();
                     return;
             }
         }
 
-        protected void DrawButtons(Baker script)
+        protected void DrawButtons(RootMotion.Baker.Scripts.Baker script)
         {
             if (!script.enabled) return;
 
@@ -160,7 +159,7 @@ namespace RootMotion
 
                 switch (script.mode)
                 {
-                    case Baker.Mode.Realtime:
+                    case RootMotion.Baker.Scripts.Baker.Mode.Realtime:
                         if (GUILayout.Button("Stop Baking")) script.StopBaking();
                         break;
                     default:

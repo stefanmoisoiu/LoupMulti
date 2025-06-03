@@ -1,7 +1,7 @@
-using UnityEngine;
-using System.Collections;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Components {
 
 	/// <summary>
 	/// Base abstract class for %IK solver components.

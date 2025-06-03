@@ -1,7 +1,7 @@
+using Plugins.RootMotion.FinalIK.IK_Solvers;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Grounder {
 
 	/// <summary>
 	/// Grounding for BipedIK characters.
@@ -28,7 +28,7 @@ namespace RootMotion.FinalIK {
 		/// The BipedIK componet.
 		/// </summary>
 		[Tooltip("The BipedIK componet.")]
-		public BipedIK ik;
+		public BipedIK.BipedIK ik;
 		/// <summary>
 		/// The amount of spine bending towards upward slopes.
 		/// </summary>

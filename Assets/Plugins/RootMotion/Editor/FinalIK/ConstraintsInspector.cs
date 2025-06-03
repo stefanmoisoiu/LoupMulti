@@ -1,8 +1,9 @@
-using UnityEngine;
+using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.Constraints;
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Custom inspector and scene view tools for Constraints

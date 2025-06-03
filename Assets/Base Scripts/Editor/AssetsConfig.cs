@@ -1,11 +1,11 @@
-﻿namespace Base_Scripts.AssetsWindow
+﻿using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
+namespace Base_Scripts.Editor
 {
 // AssetsConfig.cs
-    using UnityEngine;
-    using UnityEditor;
-    using System.Collections.Generic;
-
-    [CreateAssetMenu(fileName = "AssetsConfig", menuName = "Editor/Assets Config")]
+[CreateAssetMenu(fileName = "AssetsConfig", menuName = "Editor/Assets Config")]
     public class AssetsConfig : ScriptableObject
     {
         [Header("Liste des scènes à ouvrir")]

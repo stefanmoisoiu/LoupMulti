@@ -1,7 +1,10 @@
 using System;
-using Game.Stats;
+using Base_Scripts;
+using Game.Common;
+using Game.Data;
 using Input;
 using Player.Networking;
+using Player.Stats;
 using UnityEngine;
 
 namespace Player.Movement
@@ -9,6 +12,8 @@ namespace Player.Movement
     public class Jump : PNetworkBehaviour
     {
         [SerializeField] private Rigidbody rb;
+        
+        
         [SerializeField] private float jumpForce;
 
         [SerializeField] private float jumpCooldown = 0.2f;
@@ -31,9 +36,7 @@ namespace Player.Movement
         public Action OnJump;
 
         [SerializeField] private Grounded grounded;
-        [SerializeField] private Stamina stamina;
-    
-        public StatModifier<float> JumpHeightModifier = new ();
+        [SerializeField] private Stamina.Stamina stamina;
 
         protected override void StartAnyOwner()
         {
@@ -43,7 +46,7 @@ namespace Player.Movement
 
         protected override void DisableAnyOwner()
         {
-            InputManager.OnJumpCanceled -= StartPressJump;
+            InputManager.OnJumpStarted -= StartPressJump;
             grounded.OnGroundedChanged -= CheckCoyote;
         }
 
@@ -57,6 +60,8 @@ namespace Player.Movement
 
         protected override void UpdateAnyOwner()
         {
+            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+                OuterData.PlayingState.SpectatingGame) return;
             _jumpCoyote -= Time.deltaTime;
             _jumpBuffer -= Time.deltaTime;
         
@@ -71,6 +76,8 @@ namespace Player.Movement
 
         private void StartPressJump()
         {
+            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+                OuterData.PlayingState.SpectatingGame) return;
             if (!CanJump()) _jumpBuffer = jumpBufferTime;
             else StartJump();
         }
@@ -87,7 +94,7 @@ namespace Player.Movement
         
             rb.useGravity = true;
 
-            float finalJumpForce = JumpHeightModifier.Apply(jumpForce);
+            float finalJumpForce = PlayerStats.JumpHeight.Apply(jumpForce);
         
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, finalJumpForce, rb.linearVelocity.z);
         

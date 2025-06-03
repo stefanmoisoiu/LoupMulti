@@ -26,16 +26,17 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
-  - _MK_ARTISTIC_ANIMATION_STUTTER
   - _MK_ARTISTIC_SKETCH
   - _MK_ENVIRONMENT_REFLECTIONS_AMBIENT
   - _MK_IRIDESCENCE_DEFAULT
   - _MK_LIGHT_BANDED
   - _MK_NORMAL_MAP
   - _MK_RECEIVE_SHADOWS
+  - _MK_RIM_DEFAULT
   - _MK_SPECULAR_ISOTROPIC
-  - _MK_WRAPPED_DIFFUSE
   m_InvalidKeywords:
+  - _MK_ARTISTIC_ANIMATION_STUTTER
+  - _MK_WRAPPED_DIFFUSE
   - _RECEIVESHADOWS_ON
   - _WRAPPEDLIGHTING_ON
   m_LightmapFlags: 4
@@ -177,6 +178,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
+    - _AdditionalLightsFalloff: 1
+    - _AdditionalLightsThreshold: 0.5
     - _AdvancedTab: 0
     - _AlbedoMapIntensity: 1
     - _AlembicMotionVectors: 0
@@ -204,6 +207,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DetailUVSet: 0
     - _DiffuseSmoothness: 0
     - _DiffuseThresholdOffset: 0.25
     - _Dissolve: 0
@@ -242,8 +246,8 @@ Material:
     - _ReceiveShadows: 1
     - _RenderFace: 2
     - _RenderPriority: 0
-    - _Rim: 0
-    - _RimSize: 1
+    - _Rim: 1
+    - _RimSize: 0.5
     - _RimSmoothness: 0.5
     - _RimThresholdOffset: 0.25
     - _Saturation: 1
@@ -285,7 +289,7 @@ Material:
     - _GoochDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _IridescenceColor: {r: 1, g: 1, b: 1, a: 0.5}
     - _RimBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 0.009994892, b: 0, a: 0}
     - _RimDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}

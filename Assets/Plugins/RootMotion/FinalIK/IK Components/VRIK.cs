@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Components {
 	
 	/// <summary>
 	/// A full-body IK solver designed specifically for a VR HMD and hand controllers.

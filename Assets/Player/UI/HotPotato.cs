@@ -6,7 +6,7 @@ namespace Player.UI
 {
     public class HotPotato : PNetworkBehaviour
     {
-        [SerializeField] private string HotPoatatoTextTag = "HotPotatoText";
+        private const string HotPoatatoTextTag = "HotPotatoText";
         private CanvasGroup hotPotato;
         protected override void StartOnlineOwner()
         {
@@ -30,7 +30,7 @@ namespace Player.UI
             {
                 try
                 {
-                    hotPotato = GameObject.FindGameObjectWithTag(HotPoatatoTextTag).GetComponent<CanvasGroup>();
+                    hotPotato = PCanvas.CanvasObjects[HotPoatatoTextTag].GetComponent<CanvasGroup>();
                 }
                 catch
                 {

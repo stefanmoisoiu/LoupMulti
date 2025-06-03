@@ -1,8 +1,6 @@
 using UnityEngine;
-using System.Collections;
-using System;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// CCD (Cyclic Coordinate Descent) constrainable heuristic inverse kinematics algorithm.

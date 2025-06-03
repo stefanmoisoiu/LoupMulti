@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// Maps a bone or a collection of bones to a node based %IK solver

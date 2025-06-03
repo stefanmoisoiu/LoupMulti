@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Baker.Scripts;
 using UnityEditor;
+using UnityEngine;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Editor.Baker
 {
     [CustomEditor(typeof(GenericBaker))]
     public class GenericBakerInspector : BakerInspector
@@ -26,10 +26,10 @@ namespace RootMotion
         {
             serializedObject.Update();
 
-            DrawKeyframeSettings(script as Baker);
+            DrawKeyframeSettings(script as RootMotion.Baker.Scripts.Baker);
             DrawGenericKeyframeSettings(script);
-            DrawModeSettings(script as Baker);
-            DrawButtons(script as Baker);
+            DrawModeSettings(script as RootMotion.Baker.Scripts.Baker);
+            DrawButtons(script as RootMotion.Baker.Scripts.Baker);
 
             if (serializedObject.ApplyModifiedProperties())
             {

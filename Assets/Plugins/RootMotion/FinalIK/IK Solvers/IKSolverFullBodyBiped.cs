@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// Full body biped IK effector types.

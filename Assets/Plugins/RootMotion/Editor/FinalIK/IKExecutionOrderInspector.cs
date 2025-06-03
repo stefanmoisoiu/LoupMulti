@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	// Custom inspector for IKExecutionOrder
 	[CustomEditor(typeof(IKExecutionOrder))]
-	public class IKExecutionOrderInspector : Editor {
+	public class IKExecutionOrderInspector : UnityEditor.Editor {
 
 		private IKExecutionOrder script { get { return target as IKExecutionOrder; }}
 

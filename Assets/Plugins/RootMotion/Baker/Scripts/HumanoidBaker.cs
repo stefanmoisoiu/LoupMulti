@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Baker.Scripts.Helpers;
+using UnityEngine;
 using UnityEngine.Playables;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Baker.Scripts
 {
     /// <summary>
     /// Baker for Humanoid animation.

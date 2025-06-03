@@ -2,7 +2,6 @@
 using Base_Scripts;
 using Game.Data.Extensions;
 using Game.Game_Loop.Round.Tag.Hot_Potato;
-using Game.Manager;
 using UnityEngine;
 
 namespace Game.Game_Loop.Round.Tag
@@ -17,7 +16,7 @@ namespace Game.Game_Loop.Round.Tag
     
         public override IEnumerator Execute(GameManager gameManager, GameLoopEvents gameLoopEvents)
         {
-            gameLoopEvents.RoundStateChanged(GameRoundState.Tag_OBSOLETE, NetworkManager.ServerTime.TimeAsFloat);
+            // gameLoopEvents.RoundStateChanged(GameRoundState.Tag_OBSOLETE, NetworkManager.ServerTime.TimeAsFloat);
         
             if (PlayerHealth.AlivePlayerCount() < 2)
             {
@@ -28,11 +27,11 @@ namespace Game.Game_Loop.Round.Tag
         
             hotPotatoManager.Enable();
 
-            bool roundFinished = false;
-            void FinishRound() => roundFinished = true;
-            PlayerHealth.OnOnePlayerLeftServer += FinishRound;
-            while (!roundFinished) yield return null;
-            PlayerHealth.OnOnePlayerLeftServer -= FinishRound;
+            // bool roundFinished = false;
+            // void FinishRound() => roundFinished = true;
+            // PlayerHealth.OnOnePlayerLeftServer += FinishRound;
+            // while (!roundFinished) yield return null;
+            // PlayerHealth.OnOnePlayerLeftServer -= FinishRound;
         
             hotPotatoManager.Disable();
         

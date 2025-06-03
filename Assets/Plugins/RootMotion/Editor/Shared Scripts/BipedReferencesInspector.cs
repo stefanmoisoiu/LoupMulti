@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
+﻿using UnityEditor;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Editor.Shared_Scripts {
 
 	/*
 	 * Custom inspector for BipedReferences

@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+﻿using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.Tools;
 using UnityEditor;
-using System.Collections;
-using RootMotion;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/// <summary>
 	/// Custom inspector for the Aim Poser for visualizing pose range
 	/// </summary>
 	[CustomEditor(typeof(AimPoser))]
-	public class AimPoserInspector : Editor {
+	public class AimPoserInspector : UnityEditor.Editor {
 
 		[System.Serializable]
 		public struct ColorDirection {

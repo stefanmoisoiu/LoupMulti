@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using RootMotion.FinalIK;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Tools {
 	
 	/// <summary>
 	/// Prevents body parts from penetrating scene geometry by offsetting effectors away from the colliders.

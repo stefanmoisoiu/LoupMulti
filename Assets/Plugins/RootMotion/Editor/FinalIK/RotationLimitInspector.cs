@@ -1,14 +1,14 @@
+using Plugins.RootMotion.Editor.Shared_Scripts;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.Editor.FinalIK
 {
 
     /*
 	 * Base class for all RotationLimitInspector containing common helper methods and drawing instructions
 	 * */
-    public class RotationLimitInspector : Editor
+    public class RotationLimitInspector : UnityEditor.Editor
     {
 
         #region Public methods

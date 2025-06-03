@@ -1,8 +1,8 @@
+using Plugins.RootMotion.FinalIK.Rotation_Limits;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
-using System;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// Rotates a hierarchy of bones to make a Transform aim at a target.

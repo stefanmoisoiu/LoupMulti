@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using RootMotion.FinalIK;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.InteractionSystem {
 
 	/// <summary>
 	/// When a character with an InteractionSystem component enters the trigger collider of this game object, this component will register itself to the InteractionSystem. 

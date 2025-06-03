@@ -1,9 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.InteractionSystem {
 
 	/// <summary>
 	/// Handles FBBIK interactions for a character.

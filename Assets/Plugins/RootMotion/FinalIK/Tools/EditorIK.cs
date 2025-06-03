@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using UnityEngine;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.FinalIK.Tools
 {
     /// <summary>
     /// Updates any Final IK component in Editor mode

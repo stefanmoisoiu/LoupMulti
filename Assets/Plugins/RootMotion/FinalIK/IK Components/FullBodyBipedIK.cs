@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Components {
 
 	/// <summary>
 	/// Full Body %IK System designed specifically for bipeds

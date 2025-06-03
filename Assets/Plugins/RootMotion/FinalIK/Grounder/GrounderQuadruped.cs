@@ -1,7 +1,8 @@
+using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Grounder {
 	
 	/// <summary>
 	/// Grounding for LimbIK, CCD and/or FABRIK solvers.

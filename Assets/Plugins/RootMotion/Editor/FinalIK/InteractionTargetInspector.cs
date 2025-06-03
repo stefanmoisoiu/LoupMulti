@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+﻿using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.InteractionSystem;
 using UnityEditor;
-using System.Collections;
-using RootMotion.FinalIK;
+using UnityEngine;
 
-namespace RootMotion.Demos {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Custom inspector and scene view helpers for the InteractionTarget.
 	 * */
 	[CustomEditor(typeof(InteractionTarget))]
-	public class InteractionTargetInspector : Editor {
+	public class InteractionTargetInspector : UnityEditor.Editor {
 
 		private InteractionTarget script { get { return target as InteractionTarget; }}
 

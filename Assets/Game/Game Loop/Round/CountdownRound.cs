@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Game.Manager;
 using UnityEngine;
 
 namespace Game.Game_Loop.Round

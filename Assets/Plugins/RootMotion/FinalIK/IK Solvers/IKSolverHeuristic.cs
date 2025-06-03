@@ -1,8 +1,8 @@
+using Plugins.RootMotion.FinalIK.Rotation_Limits;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
-using System;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// Contains methods common for all heuristic solvers.

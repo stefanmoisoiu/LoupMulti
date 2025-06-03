@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// Head effector for FBBIK.
@@ -328,7 +329,7 @@ namespace RootMotion.FinalIK {
 			if (w <= 0f) return;
 
 			bool changed = false;
-			chestDirection = RootMotion.V3Tools.ClampDirection(chestDirection, ik.references.root.forward, 0.45f, 2, out changed);
+			chestDirection = V3Tools.ClampDirection(chestDirection, ik.references.root.forward, 0.45f, 2, out changed);
 
 			if (chestDirection == Vector3.zero) return;
 

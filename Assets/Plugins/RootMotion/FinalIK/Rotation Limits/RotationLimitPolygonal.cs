@@ -1,7 +1,7 @@
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Rotation_Limits {
 
 	/// <summary>
 	/// Using a spherical polygon to limit the range of rotation on universal and ball-and-socket joints. A reach cone is specified as a spherical polygon 

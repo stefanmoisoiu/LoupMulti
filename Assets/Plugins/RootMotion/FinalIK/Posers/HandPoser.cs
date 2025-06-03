@@ -1,7 +1,7 @@
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Posers {
 
 	/// <summary>
 	/// Posing the children of a Transform to match the children of another Transform

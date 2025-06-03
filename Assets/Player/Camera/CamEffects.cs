@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Networking;
+using Networking.Connection;
 using Player.Networking;
 using Unity.Cinemachine;
 using UnityEngine;

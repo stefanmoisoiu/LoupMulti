@@ -1,8 +1,7 @@
-using UnityEngine;
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Editor.Shared_Scripts {
 
 	/*
 	 * Inspector contains helper methods for creating undoable custom inspectors with enforced layout, tooltips and styling

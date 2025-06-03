@@ -1,8 +1,9 @@
 using System;
+using Game.Common;
 using Game.Data;
-using Game.Manager;
+using Game.Game_Loop;
 using Networking;
-using Scenes.Scene_Load;
+using Networking.Connection;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -85,7 +86,6 @@ namespace Lobby
             {
                 Debug.LogError(e);
                 FailedEnterGame?.Invoke();
-            
             }
             SetDashboardEnabled(true);
         }

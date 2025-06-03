@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.Collections;
+﻿using UnityEditor;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Editor.Shared_Scripts {
 
 	/*
 	 * Serialized content is used for caching serialized properties and their respective GUIContent and enforcing unified GUI layout.

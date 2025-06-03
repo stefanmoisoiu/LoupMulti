@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Shared_Scripts;
 using UnityEditor;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Editor.Shared_Scripts {
 
 	[CustomEditor(typeof(Comments))]
-	public class CommentsInspector : Editor {
+	public class CommentsInspector : UnityEditor.Editor {
 	
 		private Comments script { get { return target as Comments; }}
 		private GUIStyle style = new GUIStyle();

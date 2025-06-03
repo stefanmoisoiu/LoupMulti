@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	/// <summary>
 	/// This class contains tools for working with LayerMasks. 

@@ -1,10 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using RootMotion;
+﻿using System;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 	
 	/// <summary>
 	/// Hybrid %IK solver designed for mapping a character to a VR headset and 2 hand controllers 

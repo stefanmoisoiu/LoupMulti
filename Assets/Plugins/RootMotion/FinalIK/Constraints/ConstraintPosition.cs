@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Constraints {
 
 	/// <summary>
 	/// %Constraints to position in world space.

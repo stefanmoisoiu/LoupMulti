@@ -18,12 +18,12 @@ namespace Player.Abilities.Projectile
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
-            if (IsServer)
-            {
-                NetworkObject obj = Instantiate(projectilePrefab, Vector3.one * 999, Quaternion.identity).GetComponent<NetworkObject>();
-                obj.Spawn();
-                _pooledProjectile.Value = obj;
-            }
+            // if (IsServer)
+            // {
+            //     NetworkObject obj = Instantiate(projectilePrefab, Vector3.one * 999, Quaternion.identity).GetComponent<NetworkObject>();
+            //     obj.Spawn();
+            //     _pooledProjectile.Value = obj;
+            // }
         }
         public override void EnableAbility()
         {

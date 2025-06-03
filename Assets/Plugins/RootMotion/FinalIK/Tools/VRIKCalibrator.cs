@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.FinalIK.Tools
 {
 
     /// <summary>

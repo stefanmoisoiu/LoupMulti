@@ -1,9 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
-using RootMotion;
+﻿using System;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.FinalIK.IK_Solvers
 {
 
     /// <summary>
@@ -479,7 +478,7 @@ namespace RootMotion.FinalIK
                 value -= min;
 
                 float t = Mathf.Clamp(value / range, 0f, 1f);
-                float tEased = RootMotion.Interp.Float(t, InterpolationMode.InOutQuintic);
+                float tEased = Interp.Float(t, InterpolationMode.InOutQuintic);
                 return Mathf.Lerp(min, max, tEased);
             }
 

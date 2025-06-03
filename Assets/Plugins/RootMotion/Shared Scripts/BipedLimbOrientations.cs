@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	/// <summary>
 	/// Contains the information about which way the limbs should be bent.

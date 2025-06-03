@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEditor;
+﻿using UnityEditor;
+using UnityEngine;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Editor.Baker.Helpers
 {
     public static class AnimationUtilityExtended
     {

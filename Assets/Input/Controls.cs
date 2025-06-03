@@ -65,26 +65,35 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""Action1"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""1d13a573-e3f0-481c-9f2b-4e9872330e80"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Action2"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""dce3c089-8ac1-4677-beb2-a07fb11d6565"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Action3"",
-                    ""type"": ""Button"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""87eaa1e8-cdb3-4e87-a929-b262988f96be"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Drill"",
+                    ""type"": ""Button"",
+                    ""id"": ""1da2268d-e9db-4471-9019-cfb663e58adb"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -356,6 +365,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Secondary"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""accab9ee-77f9-4cb1-8010-13188e6afd88"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drill"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -399,6 +419,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Gameplay_Action1 = m_Gameplay.FindAction("Action1", throwIfNotFound: true);
         m_Gameplay_Action2 = m_Gameplay.FindAction("Action2", throwIfNotFound: true);
         m_Gameplay_Action3 = m_Gameplay.FindAction("Action3", throwIfNotFound: true);
+        m_Gameplay_Drill = m_Gameplay.FindAction("Drill", throwIfNotFound: true);
         m_Gameplay_Slot1 = m_Gameplay.FindAction("Slot1", throwIfNotFound: true);
         m_Gameplay_Slot2 = m_Gameplay.FindAction("Slot2", throwIfNotFound: true);
         m_Gameplay_Slot3 = m_Gameplay.FindAction("Slot3", throwIfNotFound: true);
@@ -481,6 +502,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Action1;
     private readonly InputAction m_Gameplay_Action2;
     private readonly InputAction m_Gameplay_Action3;
+    private readonly InputAction m_Gameplay_Drill;
     private readonly InputAction m_Gameplay_Slot1;
     private readonly InputAction m_Gameplay_Slot2;
     private readonly InputAction m_Gameplay_Slot3;
@@ -497,6 +519,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Action1 => m_Wrapper.m_Gameplay_Action1;
         public InputAction @Action2 => m_Wrapper.m_Gameplay_Action2;
         public InputAction @Action3 => m_Wrapper.m_Gameplay_Action3;
+        public InputAction @Drill => m_Wrapper.m_Gameplay_Drill;
         public InputAction @Slot1 => m_Wrapper.m_Gameplay_Slot1;
         public InputAction @Slot2 => m_Wrapper.m_Gameplay_Slot2;
         public InputAction @Slot3 => m_Wrapper.m_Gameplay_Slot3;
@@ -532,6 +555,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Action3.started += instance.OnAction3;
             @Action3.performed += instance.OnAction3;
             @Action3.canceled += instance.OnAction3;
+            @Drill.started += instance.OnDrill;
+            @Drill.performed += instance.OnDrill;
+            @Drill.canceled += instance.OnDrill;
             @Slot1.started += instance.OnSlot1;
             @Slot1.performed += instance.OnSlot1;
             @Slot1.canceled += instance.OnSlot1;
@@ -572,6 +598,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Action3.started -= instance.OnAction3;
             @Action3.performed -= instance.OnAction3;
             @Action3.canceled -= instance.OnAction3;
+            @Drill.started -= instance.OnDrill;
+            @Drill.performed -= instance.OnDrill;
+            @Drill.canceled -= instance.OnDrill;
             @Slot1.started -= instance.OnSlot1;
             @Slot1.performed -= instance.OnSlot1;
             @Slot1.canceled -= instance.OnSlot1;
@@ -659,6 +688,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnAction1(InputAction.CallbackContext context);
         void OnAction2(InputAction.CallbackContext context);
         void OnAction3(InputAction.CallbackContext context);
+        void OnDrill(InputAction.CallbackContext context);
         void OnSlot1(InputAction.CallbackContext context);
         void OnSlot2(InputAction.CallbackContext context);
         void OnSlot3(InputAction.CallbackContext context);

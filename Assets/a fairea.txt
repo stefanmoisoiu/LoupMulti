@@ -1,0 +1,25 @@
+modeliser le premier niveau
+
+
+
+tester le minage de ressources
+verifier que la phase de collecte dure qq secondes
+le game state UI affiche pas bien la phase de collecte
+
+
+ShopItem = Bien a acheter
+Tool = Objet dans la hotbar EQUIPABLE et UTILISABLE
+Perk = Amelioration obtenue
+
+
+Ce qui doit etre implemente dans la game loop :
+
+Phase 1: Collecte
+
+Collecte de ressources
+
+- Trouver une idee de comment tenir les outils parce que la c'est moche
+- pouvoir forer les ennemis
+
+
+Phase 2: Amelioration

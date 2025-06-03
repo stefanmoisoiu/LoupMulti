@@ -1,7 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Tools {
 
 	/// <summary>
 	/// Handles smooth aim target switching, weight blending, target interpolation and root rotation.

@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.FinalIK.Tools
 {
 
     /// <summary>

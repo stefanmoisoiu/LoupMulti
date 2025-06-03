@@ -17,6 +17,7 @@ namespace Input
         public static bool Primary { get; private set; }
         public static bool Secondary { get; private set; }
         
+        public static bool    Drill { get; private set; }
         public static bool    Slot1{ get; private set; }
         public static bool    Slot2{ get; private set; }
         public static bool    Slot3{ get; private set; }
@@ -39,6 +40,8 @@ namespace Input
         public static event Action<int> OnSlotUse;
         public static event Action<int> OnSlotCanceled;
         
+        public static event Action OnDrillUse;
+        public static event Action OnDrillCanceled;
         public static event Action OnSlot1Use;
         public static event Action OnSlot1Canceled;
         public static event Action OnSlot2Use;
@@ -107,6 +110,7 @@ namespace Input
             // Secondary
             _controls.Gameplay.Secondary.performed += ctx =>
             {
+                
                 Secondary = true;
                 OnSecondaryStarted?.Invoke();
             };
@@ -114,6 +118,18 @@ namespace Input
             {
                 Secondary = false;
                 OnSecondaryCanceled?.Invoke();
+            };
+            
+            // Drill
+            _controls.Gameplay.Drill.performed += ctx =>
+            {
+                Drill = true;
+                OnDrillUse?.Invoke();
+            };
+            _controls.Gameplay.Drill.canceled += ctx =>
+            {
+                Drill = false;
+                OnDrillCanceled?.Invoke();
             };
             
             // Slot 1, 2, 3

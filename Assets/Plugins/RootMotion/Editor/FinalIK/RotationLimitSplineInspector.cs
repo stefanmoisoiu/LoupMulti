@@ -1,9 +1,11 @@
+using System;
+using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.Rotation_Limits;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
-using System;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.Editor.FinalIK
 {
 
     /*

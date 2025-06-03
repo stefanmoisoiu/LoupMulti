@@ -1,4 +1,5 @@
 ﻿using Networking;
+using Networking.Connection;
 using Unity.Netcode;
 
 namespace Player.Networking
@@ -9,6 +10,7 @@ namespace Player.Networking
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            if (!enabled) return;
             if (!IsOwner)
             {
                 StartOnlineNotOwner();
@@ -20,6 +22,7 @@ namespace Player.Networking
         }
         private void Start()
         {
+            if (!enabled) return;
             if (IsSpawned || NetcodeManager.InGame) return;
             StartOffline();
             if (!_initializedAny) StartAnyOwner();
@@ -46,6 +49,7 @@ namespace Player.Networking
 
         private void Update()
         {
+            if (!enabled) return;
             if (NetcodeManager.InGame)
             {
                 if (IsOwner)

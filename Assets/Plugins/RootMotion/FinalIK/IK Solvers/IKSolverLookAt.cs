@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 	
 	/// <summary>
 	/// Rotates a hierarchy of bones to face a target.

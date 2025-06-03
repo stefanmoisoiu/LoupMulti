@@ -1,4 +1,5 @@
-﻿using Game.Data;
+﻿using Game.Common;
+using Game.Data;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -20,7 +21,7 @@ namespace Game.Game_Loop.Round.Tag.Hot_Potato
             if (targetPlayer.ClientId == ulong.MaxValue) return;
         
             ushort damage = CalculateDamage();
-            Data.DataManager.Instance[targetPlayer.ClientId] = new(targetPlayer) {inGameData = targetPlayer.inGameData.RemoveHealth(damage)};
+            DataManager.Instance[targetPlayer.ClientId] = new(targetPlayer) {inGameData = targetPlayer.inGameData.RemoveHealth(damage)};
         }
     }
 }

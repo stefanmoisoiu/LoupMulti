@@ -1,9 +1,8 @@
-using UnityEngine;
+using Plugins.RootMotion.Editor.Shared_Scripts;
 using UnityEditor;
-using System.Collections;
-using System;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Contains helper methods for managing IKSolver's fields.

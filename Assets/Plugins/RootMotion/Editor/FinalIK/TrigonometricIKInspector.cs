@@ -1,8 +1,8 @@
+using Plugins.RootMotion.FinalIK.IK_Components;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Custom inspector for TrigonometricIK.

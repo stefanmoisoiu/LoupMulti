@@ -12,13 +12,22 @@ namespace Base_Scripts
             Instance = this;
         }
 
-        public RpcParams SendToClientIDs(ulong[] clientIDs, NetworkManager manager) => new RpcParams
+        public RpcParams SendToClientIDs(ulong[] clientIDs) => new RpcParams
         {
             Send = new RpcSendParams
             {
-                Target = manager.RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
+                Target = NetworkManager.Singleton.RpcTarget.Group(clientIDs, RpcTargetUse.Temp)
             }
         };
+        
+        public RpcParams SendToAllExcept(ulong[] clientID) => new RpcParams
+        {
+            Send = new RpcSendParams
+            {
+                Target = NetworkManager.Singleton.RpcTarget.Not(clientID, RpcTargetUse.Temp)
+            }
+        };
+        
         public RpcParams SenderClientID(ulong clientID) => new RpcParams
         {
             Receive = new()
@@ -26,11 +35,11 @@ namespace Base_Scripts
                 SenderClientId = clientID
             }
         };
-        public RpcParams SendToAllClients(NetworkManager manager) => new RpcParams
+        public RpcParams SendToAllClients() => new RpcParams
         {
             Send = new RpcSendParams
             {
-                Target = manager.RpcTarget.Everyone
+                Target = NetworkManager.Singleton.RpcTarget.Everyone
             }
         };
     }

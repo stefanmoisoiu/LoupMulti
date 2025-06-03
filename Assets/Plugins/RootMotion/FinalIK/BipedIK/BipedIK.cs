@@ -1,7 +1,8 @@
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.BipedIK {
 
 	/// <summary>
 	/// %IK system for standard biped characters that is designed to replicate and enhance the behaviour of the Unity's built-in character %IK setup.

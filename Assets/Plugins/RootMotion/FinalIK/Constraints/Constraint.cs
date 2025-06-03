@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Constraints {
 
 	/// <summary>
 	/// The base abstract class for all Transform constraints.

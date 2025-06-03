@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	/// <summary>
 	/// Interpolation mode.

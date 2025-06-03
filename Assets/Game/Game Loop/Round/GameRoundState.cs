@@ -4,8 +4,8 @@
     {
         None,
         Countdown,
-        Tag_OBSOLETE,
         Collect,
-        ChoosingUpgrade,
+        End,
+        Upgrade,
     }
 }

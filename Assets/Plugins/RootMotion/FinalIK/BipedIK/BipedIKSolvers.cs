@@ -1,8 +1,8 @@
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
-using System;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.BipedIK {
 
 	/// <summary>
 	/// BipedIK solver collection.
@@ -40,7 +40,7 @@ namespace RootMotion.FinalIK {
 		/// <summary>
 		/// %Constraints for manipulating the character's pelvis.
 		/// </summary>
-		public Constraints pelvis = new Constraints();
+		public Constraints.Constraints pelvis = new Constraints.Constraints();
 
 		/// <summary>
 		/// Gets the array containing all the limbs.

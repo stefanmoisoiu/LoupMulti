@@ -1,7 +1,8 @@
+using Plugins.RootMotion.FinalIK.Rotation_Limits;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// The base abstract class for all %IK solvers

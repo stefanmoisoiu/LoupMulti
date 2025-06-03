@@ -1,8 +1,8 @@
+using Plugins.RootMotion.FinalIK.Rotation_Limits;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.Editor.FinalIK
 {
 
     /*

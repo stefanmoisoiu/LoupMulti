@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Tools {
 
 	/// <summary>
 	/// Class for creating procedural FBBIK hit reactions.

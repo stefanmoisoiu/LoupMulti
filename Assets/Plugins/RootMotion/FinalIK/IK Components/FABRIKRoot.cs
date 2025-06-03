@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Components {
 
 	/// <summary>
 	/// %IK system for multiple branched %FABRIK chains.

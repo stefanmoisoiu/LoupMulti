@@ -1,8 +1,8 @@
+using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
-using RootMotion;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.InteractionSystem {
 
 	/// <summary>
 	/// Controls LookAtIK for the InteractionSystem

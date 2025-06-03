@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	// Just for displaying a GUI text in the Game View.
 	public class DemoGUIMessage : MonoBehaviour {

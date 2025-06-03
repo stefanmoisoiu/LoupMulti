@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using Base_Scripts;
+using Game.Common;
 using Game.Data.Extensions;
 using Game.Game_Loop.Round;
 using Game.Game_Loop.Round.Collect;
+using Game.Game_Loop.Round.End;
 using Game.Game_Loop.Round.Tag;
 using Game.Game_Loop.Round.Upgrade;
-using Game.Manager;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -27,34 +28,33 @@ namespace Game.Game_Loop
         public UpgradeRound UpgradeRound => upgradeRound;
         [SerializeField] private CountdownRound countdownRound;
         public CountdownRound CountdownRound => countdownRound;
-    
-        public const int RoundCount = 2;
+        [SerializeField] private EndRound endRound;
+        
     
         private Coroutine _gameLoopCoroutine;
 
-        public void StartGameLoop(GameManager manager)
-        {
-            if (_gameLoopCoroutine != null) StopCoroutine(_gameLoopCoroutine);
-            _gameLoopCoroutine = StartCoroutine(MainLoop(manager));
-        }
-
-        private IEnumerator MainLoop(GameManager manager)
+        public IEnumerator MainLoop(GameManager manager)
         {
             // Choose Upgrade -> Play Round -> Repeat
-            int round = 1;
-        
+            
             gameTickManager.StartTickLoop();
 
-            while (round <= RoundCount)
+            int round = 0;
+
+
+            if (GameSettings.Instance.DebugMode)
+                Debug.LogWarning("Debug mode is enabled, never stopping game /!/");
+
+            while (PlayerHealth.AlivePlayerCount() > 1 || GameSettings.Instance.DebugMode)
             {
+                round++;
                 NetcodeLogger.Instance.LogRpc("Round " + round, NetcodeLogger.LogType.GameLoop);
 
-                manager.MapManager.SetPlayerSpawnPositions();
                 yield return upgradeRound.Execute(manager, gameLoopEvents);
                 yield return countdownRound.Execute(manager, gameLoopEvents);
                 yield return collectRound.Execute(manager, gameLoopEvents);
-                round++;
             }
+            yield return endRound.Execute(manager, gameLoopEvents);
         
             gameTickManager.StopTickLoop();
         

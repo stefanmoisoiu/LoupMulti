@@ -1,7 +1,7 @@
+using Plugins.RootMotion.FinalIK.IK_Solvers;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Components {
 
 	/// <summary>
 	/// Aim %IK solver component.

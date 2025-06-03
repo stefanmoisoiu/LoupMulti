@@ -1,8 +1,11 @@
-﻿using UnityEditor;
+﻿using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
-	namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Custom inspector for FullBodyBipedIK.

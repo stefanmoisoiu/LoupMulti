@@ -1,7 +1,7 @@
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Grounder {
 
 	/// <summary>
 	/// Dedicated abstrac base component for the Grounding solver.

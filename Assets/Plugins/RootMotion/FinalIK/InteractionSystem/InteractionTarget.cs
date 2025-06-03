@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using RootMotion;
+﻿using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.InteractionSystem {
 
 	/// <summary>
 	/// The target of an effector in the InteractionSystem.

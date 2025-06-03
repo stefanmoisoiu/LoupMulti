@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using RootMotion.FinalIK;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Tools {
 
 	/// <summary>
 	/// Shoulder rotator is a workaround for FBBIK not rotating the shoulder bones when pulled by hands.

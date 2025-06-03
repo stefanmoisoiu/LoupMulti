@@ -27,6 +27,7 @@ Material:
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
   - _MK_ARTISTIC_SKETCH
+  - _MK_DISSOLVE_BORDER_COLOR
   - _MK_ENVIRONMENT_REFLECTIONS_AMBIENT
   - _MK_IRIDESCENCE_DEFAULT
   - _MK_LIGHT_BANDED
@@ -83,7 +84,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: f5349b58fd2e80d4e9c05d6704b6c635, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DrawnMap:
@@ -209,9 +210,9 @@ Material:
     - _DetailUVSet: 0
     - _DiffuseSmoothness: 0
     - _DiffuseThresholdOffset: 0.25
-    - _Dissolve: 0
-    - _DissolveAmount: 0.5
-    - _DissolveBorderSize: 0.25
+    - _Dissolve: 2
+    - _DissolveAmount: 0
+    - _DissolveBorderSize: 0.5
     - _DissolveMapScale: 1
     - _DrawnClampMax: 1
     - _DrawnClampMin: 0
@@ -227,7 +228,7 @@ Material:
     - _Hue: 0
     - _IndirectFade: 1
     - _Initialized: 0
-    - _InputTab: 1
+    - _InputTab: 0
     - _Iridescence: 1
     - _IridescenceSize: 1.05
     - _IridescenceSmoothness: 0.5

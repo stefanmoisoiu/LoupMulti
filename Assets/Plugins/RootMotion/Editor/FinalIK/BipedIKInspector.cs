@@ -1,15 +1,16 @@
+using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.BipedIK;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
-using System;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Custom inspector for Biped IK.
 	 * */
 	[CustomEditor(typeof(BipedIK))]
-	public class BipedIKInspector : Editor {
+	public class BipedIKInspector : UnityEditor.Editor {
 		
 		private BipedIK script { get { return target as BipedIK; }}
 		

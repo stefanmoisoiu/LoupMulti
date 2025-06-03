@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	/// <summary>
 	/// Contains references to bones common to all biped characters.

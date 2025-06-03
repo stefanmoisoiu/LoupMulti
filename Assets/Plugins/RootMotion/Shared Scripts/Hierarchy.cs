@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	/// <summary>
 	/// Contains tools for working on Transform hierarchies.

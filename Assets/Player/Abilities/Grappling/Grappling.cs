@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Base_Scripts;
 using Player.Movement;
+using Player.Movement.Stamina;
 using Player.Networking;
 using Unity.Netcode;
 using UnityEngine;

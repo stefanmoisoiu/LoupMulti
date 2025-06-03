@@ -1,13 +1,13 @@
+using Plugins.RootMotion.Editor.Shared_Scripts;
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	/*
 	 * Base abstract class for IK component inspectors.
 	 * */
-	public abstract class IKInspector : Editor {
+	public abstract class IKInspector : UnityEditor.Editor {
 		
 		protected abstract void AddInspector();
 		protected abstract MonoBehaviour GetMonoBehaviour(out int executionOrder);

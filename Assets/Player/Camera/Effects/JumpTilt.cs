@@ -1,5 +1,6 @@
 using System.Collections;
 using Networking;
+using Networking.Connection;
 using Player.Movement;
 using Unity.Netcode;
 using UnityEngine;

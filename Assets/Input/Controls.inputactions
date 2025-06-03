@@ -43,26 +43,35 @@
                 },
                 {
                     "name": "Action1",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "1d13a573-e3f0-481c-9f2b-4e9872330e80",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Action2",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "dce3c089-8ac1-4677-beb2-a07fb11d6565",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Action3",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "87eaa1e8-cdb3-4e87-a929-b262988f96be",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Drill",
+                    "type": "Button",
+                    "id": "1da2268d-e9db-4471-9019-cfb663e58adb",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -332,6 +341,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Secondary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "accab9ee-77f9-4cb1-8010-13188e6afd88",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

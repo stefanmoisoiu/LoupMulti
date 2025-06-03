@@ -1,4 +1,6 @@
 using System;
+using Game.Common;
+using Game.Data;
 using Input;
 using Player.Networking;
 using UnityEngine;
@@ -18,7 +20,7 @@ namespace Player.Movement
         private float runInputThreshold = 0.8f;
 
         [SerializeField] private Grounded grounded;
-        [SerializeField] private Stamina stamina;
+        [SerializeField] private Stamina.Stamina stamina;
 
         protected override void StartAnyOwner()
         {
@@ -44,12 +46,16 @@ namespace Player.Movement
 
         private void StartRun()
         {
+            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+                OuterData.PlayingState.SpectatingGame) return;
+            if (Running) return;
             if (InputManager.Move.magnitude < runInputThreshold) return;
             Running = true;
             OnRun?.Invoke();
         }
         private void StopRun()
         {
+            if (!Running) return;
             Running = false;
             OnStopRun?.Invoke();
         }

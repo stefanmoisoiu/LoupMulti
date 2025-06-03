@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Common;
 using Game.Data.Extensions;
 using Unity.Netcode;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace Game.Data
 
         [SerializeField] private PlayerResources playerResources;
         public PlayerResources PlayerResources => playerResources;
+        [SerializeField] private PlayerState playerState;
+        public PlayerState PlayerState => playerState;
         
         
     
@@ -31,10 +34,16 @@ namespace Game.Data
         public static event Action<PlayerData> OnEntryRemovedServer;
         public static event Action<PlayerData> OnEntryRemovedClient;
     
-        public static event Action<PlayerData> OnEntryUpdatedOwner;
+        
+        public static event Action<PlayerData, PlayerData> OnEntryUpdatedOwner;
 
         private void Awake()
         {
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
             Instance = this;
         }
 
@@ -44,8 +53,9 @@ namespace Game.Data
         /// Ajoute une nouvelle entrée et réplique à tous les clients.
         /// Doit être appelé côté serveur uniquement.
         /// </summary>
-        public void AddEntry(PlayerData newPd, ClientRpcParams rpcParams = default)
+        public void AddEntry(PlayerData newPd)
         {
+            Debug.Log($"Adding entry {newPd}");
             if (!IsServer)
             {
                 Debug.LogError("AddEntry() can only be called on the server.");
@@ -54,13 +64,15 @@ namespace Game.Data
             _data[newPd.ClientId] = newPd;
             OnEntryAddedServer?.Invoke(newPd);
             AddEntryClientRpc(newPd);
+            UpdateEntryClientRpc(new(NetworkManager.ConnectedClients[newPd.ClientId]), newPd);
         }
 
         /// <summary>
         /// Met à jour l'entrée et réplique à tous les clients.
         /// </summary>
-        public void UpdateEntry(PlayerData newPd, ClientRpcParams rpcParams = default)
+        public void UpdateEntry(PlayerData newPd)
         {
+            Debug.Log($"Updating entry {newPd}");
             if (!IsServer)
             {
                 throw new Exception("UpdateEntry() can only be called on the server.");
@@ -78,7 +90,7 @@ namespace Game.Data
         /// <summary>
         /// Supprime l'entrée et réplique à tous les clients.
         /// </summary>
-        public void RemoveEntry(ulong clientId, ClientRpcParams rpcParams = default)
+        public void RemoveEntry(ulong clientId)
         {
             if (!IsServer)
             {
@@ -87,6 +99,16 @@ namespace Game.Data
             if (!_data.Remove(clientId)) return;
             OnEntryRemovedServer?.Invoke(_data[clientId]);
             RemoveEntryClientRpc(clientId);
+        }
+        
+        public void ClearEntries()
+        {
+            if (!IsServer)
+            {
+                throw new Exception("ClearEntries() can only be called on the server.");
+            }
+            _data.Clear();
+            ClearEntriesClientRpc();
         }
 
         // --- RPCs Clients ---
@@ -103,7 +125,7 @@ namespace Game.Data
         {
             _data[newPd.ClientId] = newPd;
             OnEntryUpdatedClient?.Invoke(previousPd, newPd);
-            if (newPd.ClientId == NetworkManager.Singleton.LocalClientId) OnEntryUpdatedOwner?.Invoke(newPd);
+            if (newPd.ClientId == NetworkManager.Singleton.LocalClientId) OnEntryUpdatedOwner?.Invoke(previousPd, newPd);
         }
 
         [ClientRpc]
@@ -111,6 +133,12 @@ namespace Game.Data
         {
             if (!_data.Remove(clientId, out var pd)) return;
             OnEntryRemovedClient?.Invoke(pd);
+        }
+        
+        [ClientRpc]
+        private void ClearEntriesClientRpc(ClientRpcParams rpcParams = default)
+        {
+            _data.Clear();
         }
 
         // --- API Commun ---
@@ -165,40 +193,52 @@ namespace Game.Data
             return _data.ContainsKey(clientId);
         }
     
+        public void Setup()
+        {
+            ClearEntries();
+            
+            foreach (var client in NetworkManager.Singleton.ConnectedClients)
+            {
+                // On ajoute chaque client connecté au dictionnaire
+                AddEntry(new PlayerData(client.Value));
+            }
+        }
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
 
             if (!IsServer) return;
+            Setup();
+            NetworkManager.Singleton.OnClientConnectedCallback += PlayerJoinedGame;
+        }
 
-            // … tes initialisations actuelles …
-        
-            AddEntry(new PlayerData(NetworkManager.Singleton.LocalClient));
+        public override void OnNetworkDespawn()
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= PlayerJoinedGame;
+        }
 
-            // À chaque connexion, on "sync" tout l'état actuel au newcomer
-            NetworkManager.Singleton.OnClientConnectedCallback += clientId =>
+        private void PlayerJoinedGame(ulong clientId)
+        {
+            var rpcParams = new ClientRpcParams
             {
-                var rpcParams = new ClientRpcParams
+                Send = new ClientRpcSendParams
                 {
-                    Send = new ClientRpcSendParams
-                    {
-                        TargetClientIds = new ulong[]{ clientId }
-                    }
-                };
-
-                // Pour chaque paire existante, on appelle notre AddEntryClientRpc
-                ulong[] keys = GetKeys();
-                foreach (ulong key in keys)
-                {
-                    AddEntry(_data[key], rpcParams);
+                    TargetClientIds = new ulong[]{ clientId }
                 }
-            
-                // On ajoute le joueur au dictionnaire
-                var client = NetworkManager.Singleton.ConnectedClients[clientId];
-            
-                // On envoie un RPC pour synchroniser l'état actuel
-                AddEntry(new PlayerData(client));
             };
+
+            // Pour chaque paire existante, on appelle notre AddEntryClientRpc
+            ulong[] keys = GetKeys();
+            foreach (ulong key in keys)
+            {
+                AddEntryClientRpc(_data[key], rpcParams);
+            }
+            
+            // On ajoute le joueur au dictionnaire
+            var client = NetworkManager.Singleton.ConnectedClients[clientId];
+            
+            // On envoie un RPC pour synchroniser l'état actuel
+            AddEntry(new PlayerData(client));
         }
     }
 }

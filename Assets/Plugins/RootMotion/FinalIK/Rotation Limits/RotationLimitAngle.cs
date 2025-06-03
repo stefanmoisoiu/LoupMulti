@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Rotation_Limits {
 
 	/// <summary>
 	/// Simple angular rotation limit.

@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace RootMotion.Demos
+namespace Plugins.RootMotion.Shared_Scripts
 {
 
     // Custom navigator for Unity Navigation.

@@ -1,13 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Plugins.RootMotion.FinalIK.Tools;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.Editor.FinalIK
 {
     [CustomEditor(typeof(EditorIK))]
-    public class EditorIKInspector : Editor
+    public class EditorIKInspector : UnityEditor.Editor
     {
         private EditorIK script { get { return target as EditorIK; } }
 

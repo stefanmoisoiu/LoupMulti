@@ -1,7 +1,7 @@
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Posers {
 
 	/// <summary>
 	/// The base abstract class for all class that are translating a hierarchy of bones to match the translation of bones in another hierarchy.

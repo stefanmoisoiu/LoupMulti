@@ -1,9 +1,10 @@
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using RootMotion;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.FinalIK.Posers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.InteractionSystem {
 
 	/// <summary>
 	/// Managing Interactions for a single FBBIK effector.

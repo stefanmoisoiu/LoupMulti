@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace RootMotion.FinalIK
+namespace Plugins.RootMotion.FinalIK.IK_Solvers
 {
     /// <summary>
     /// Relaxes the twist rotation if the Transform relative to it's parent and a child Transforms, using the Transform's initial rotation as the most relaxed pose.

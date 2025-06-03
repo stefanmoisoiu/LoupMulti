@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Grounder {
 
 	/// <summary>
 	/// Grounding for FBBIK characters.
@@ -54,7 +55,7 @@ namespace RootMotion.FinalIK {
 			public SpineEffector() {}
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="RootMotion.FinalIK.GrounderFBBIK+SpineEffector"/> class.
+			/// Initializes a new instance of the <see cref="GrounderFBBIK"/> class.
 			/// </summary>
 			/// <param name="effectorType">Effector type.</param>
 			/// <param name="horizontalWeight">Horizontal weight.</param>

@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using RootMotion;
-using System;
+﻿using System;
+using Plugins.RootMotion.FinalIK.IK_Solvers;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Finger_Rig {
 
 	/// <summary>
 	/// Contains a LimbIK solver and some additional logic to handle the finger.

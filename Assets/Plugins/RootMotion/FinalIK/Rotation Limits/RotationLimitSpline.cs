@@ -1,7 +1,6 @@
 using UnityEngine;
-using System.Collections;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Rotation_Limits {
 
 	/// <summary>
 	/// Using a spline to limit the range of rotation on universal and ball-and-socket joints. 

@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
-using System;
+﻿using System;
+using Plugins.RootMotion.Baker.Scripts.Helpers;
+using UnityEngine;
 
-namespace RootMotion
+namespace Plugins.RootMotion.Baker.Scripts
 {
     /// <summary>
     /// Baker for Generic/Legacy animation.

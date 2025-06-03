@@ -1,12 +1,14 @@
-﻿using UnityEngine;
+﻿using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.InteractionSystem;
+using Plugins.RootMotion.Shared_Scripts;
 using UnityEditor;
-using System.Collections;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	// Custom scene view helpers for the InteractionTrigger
 	[CustomEditor(typeof(InteractionTrigger))]
-	public class InteractionTriggerInspector : Editor {
+	public class InteractionTriggerInspector : UnityEditor.Editor {
 
 		private InteractionTrigger script { get { return target as InteractionTrigger; }}
 		

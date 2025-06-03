@@ -1,8 +1,7 @@
-using UnityEngine;
-using System.Collections;
 using System;
+using UnityEngine;
 
-namespace RootMotion {
+namespace Plugins.RootMotion.Shared_Scripts {
 
 	/// <summary>
 	/// Class for identifying biped bones based on most common naming conventions.

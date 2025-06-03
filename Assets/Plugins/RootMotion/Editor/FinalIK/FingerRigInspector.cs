@@ -1,12 +1,13 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using Plugins.RootMotion.Editor.Shared_Scripts;
+using Plugins.RootMotion.FinalIK.Finger_Rig;
 using UnityEditor;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.Editor.FinalIK {
 
 	// Custom Scene View handles for the FingerRig.
 	[CustomEditor(typeof(FingerRig))]
-	public class FingerRigInspector : Editor {
+	public class FingerRigInspector : UnityEditor.Editor {
 
 		private FingerRig script { get { return target as FingerRig; }}
 		

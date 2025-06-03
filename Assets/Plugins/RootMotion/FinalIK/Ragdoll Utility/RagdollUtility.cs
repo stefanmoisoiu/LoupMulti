@@ -1,8 +1,9 @@
-﻿using UnityEngine;
-using System.Collections;
-using RootMotion.FinalIK;
+﻿using System.Collections;
+using Plugins.RootMotion.FinalIK.IK_Components;
+using Plugins.RootMotion.Shared_Scripts;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.Ragdoll_Utility {
 
 	/// <summary>
 	/// Ragdoll Utility controls switching characters in and out of ragdoll mode. It also enables you to use IK effects on top of ragdoll simulation.
@@ -99,7 +100,7 @@ namespace RootMotion.FinalIK {
 				deltaPosition = t.position - lastPosition;
 				lastPosition = t.position;
 
-				deltaRotation = RootMotion.QuaTools.FromToRotation(lastRotation, t.rotation);
+				deltaRotation = QuaTools.FromToRotation(lastRotation, t.rotation);
 				lastRotation = t.rotation;
 
 				deltaTime = Time.deltaTime;

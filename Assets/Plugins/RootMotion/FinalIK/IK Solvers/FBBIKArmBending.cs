@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using RootMotion.FinalIK;
+﻿using Plugins.RootMotion.FinalIK.IK_Components;
+using UnityEngine;
 
-namespace RootMotion.FinalIK {
+namespace Plugins.RootMotion.FinalIK.IK_Solvers {
 
 	/// <summary>
 	/// Calculates bending direction and hand rotations for a FBBIK rig for VR hand controllers. 
