@@ -1,8 +1,13 @@
 {
-    "name": "FinalIK",
+    "name": "SmoothSyncNetcodeEditor",
     "rootNamespace": "",
-    "references": [],
-    "includePlatforms": [],
+    "references": [
+        "GUID:f80d8261426ae3e4caf80b6fe7463a7a",
+        "GUID:1491147abca9d7d4bb7105af628b223e"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

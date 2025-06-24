@@ -33,8 +33,8 @@ namespace Lobby.Spaceship.Button
         private void UpdateSpring()
         {
             float force = Spring.CalculateSpringForce(springPosition,isPressed ? 1 : 0,springVelocity,springConstant,springDamping);
-            springVelocity += force * Time.deltaTime;
-            springPosition += springVelocity * Time.deltaTime;
+            springVelocity += force * Time.fixedDeltaTime;
+            springPosition += springVelocity * Time.fixedDeltaTime;
         }
     
         private void UpdateModel()

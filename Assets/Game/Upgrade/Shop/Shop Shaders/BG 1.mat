@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BG
-  m_Shader: {fileID: -6465566751694194690, guid: 46ad61c8705f411448fe8242039ba507,
+  m_Name: BG 1
+  m_Shader: {fileID: -6465566751694194690, guid: cc3e4097f63fcbf44b70dcd594a94b1b,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -42,11 +42,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _CheckerboardRot: 45
-    - _CheckerboardScale: 6
-    - _CheckerboardSpeed: 0.01
     - _ColorMask: 15
-    - _DitherScale: 0.5
+    - _Edge_Size: 0
+    - _Line_Count: 1
+    - _Line_Size: 20
+    - _Line_Speed: 0.1
+    - _Small_Line_Count: 20
+    - _Small_Line_Size: 20
+    - _Small_Line_Speed: 0.1
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
@@ -55,8 +58,8 @@ Material:
     - _UIMaskSoftnessX: 1
     - _UIMaskSoftnessY: 1
     m_Colors:
+    - _BG_Color: {r: 0.08410465, g: 0.10761417, b: 0.16981125, a: 1}
     - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
-    - _Color1: {r: 0, g: 0.15094334, b: 0.046419494, a: 1}
-    - _Color2: {r: 0, g: 0.1981132, b: 0.005283014, a: 1}
+    - _Edge_Color: {r: 0, g: 0.7957351, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

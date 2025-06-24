@@ -1,14 +1,7 @@
 {
-    "name": "EditorTools",
+    "name": "BaseScriptsEdtior",
     "rootNamespace": "",
     "references": [
-        "GUID:e27a7b185f2043948f7406dd6e7e9327",
-        "GUID:267d1f84a1e34bcc9537fab203ac49ca",
-        "GUID:f87ccc37a1de5c049941c8cabd9e0d49",
-        "GUID:1491147abca9d7d4bb7105af628b223e",
-        "GUID:784482de69f24f88bb39df6e9f9fc60e",
-        "GUID:6c9935873585441a8b9e6a58cae9e189",
-        "GUID:be0903cd8e1546f498710afdc59db5eb",
         "GUID:84be9861a32436e449956f204cedecb3"
     ],
     "includePlatforms": [

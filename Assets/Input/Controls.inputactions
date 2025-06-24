@@ -369,6 +369,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ShopOpen",
+                    "type": "Button",
+                    "id": "1de168ad-28b5-4b6e-b0d4-dabcab3f9ee2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -380,6 +389,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Scoreboard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fda4c615-d2e6-4a39-9c01-0501bb14252e",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ShopOpen",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

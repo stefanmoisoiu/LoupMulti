@@ -1,8 +1,12 @@
 {
-    "name": "FinalIK",
+    "name": "FinalIKEditor",
     "rootNamespace": "",
-    "references": [],
-    "includePlatforms": [],
+    "references": [
+        "GUID:4a308f840695a104a8635e565ff3ef1b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

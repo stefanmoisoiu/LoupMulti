@@ -46,7 +46,7 @@ namespace Player.Movement
 
         private void StartRun()
         {
-            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+            if (DataManager.Instance != null && DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
                 OuterData.PlayingState.SpectatingGame) return;
             if (Running) return;
             if (InputManager.Move.magnitude < runInputThreshold) return;

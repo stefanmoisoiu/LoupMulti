@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Game.Common;
 using Game.Common.List;
 using Game.Game_Loop;
@@ -18,6 +19,8 @@ namespace Player.UI.Perks
         private CanvasGroup _perksListGroup;
         [SerializeField] private GameObject perkCardPrefab;
         private List<PerkCard> _perkCards = new();
+        
+        public static event Action <ushort> OnPerkChosen;
 
         protected override void StartOnlineOwner()
         {
@@ -81,6 +84,9 @@ namespace Player.UI.Perks
             _perksListGroup.alpha = 1;
             _perksListGroup.interactable = true;
             _perksListGroup.blocksRaycasts = true;
+            
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
         public void HidePerks()
         {
@@ -90,6 +96,9 @@ namespace Player.UI.Perks
             _perksListGroup.alpha = 0;
             _perksListGroup.interactable = false;
             _perksListGroup.blocksRaycasts = false;
+            
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     
         private void SetPerkCardInfo(PerkCard perkCard, PerkData perkData, ushort perkIndex)
@@ -101,6 +110,7 @@ namespace Player.UI.Perks
         {
             HidePerks();
             GameManager.Instance.PerkSelectionManager.ChoosePerkClient(index);
+            OnPerkChosen?.Invoke(index);
         }
     }
 }

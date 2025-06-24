@@ -1,5 +1,4 @@
 using System;
-using ParrelSync.Editor;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using UnityEngine;
@@ -19,11 +18,11 @@ namespace Networking.Connection
         public async void Connect()
         {
 #if UNITY_EDITOR 
-            if (ClonesManager.IsClone())
+            if (ParrelSync.Editor.ClonesManager.IsClone())
             {
                 // When using a ParrelSync clone, switch to a different authentication profile to force the clone
                 // to sign in as a different anonymous user account.
-                string customArgument = ClonesManager.GetArgument();
+                string customArgument = ParrelSync.Editor.ClonesManager.GetArgument();
                 InitializationOptions options = new();
                 options.SetProfile($"Clone_{customArgument}_Profile");
                 await UnityServices.InitializeAsync(options);

@@ -55,12 +55,12 @@ namespace Player.Model.Procedural_Anims
         
         
             float headForce = Spring.CalculateSpringForce(currentHeadTilt, headTarget , currentHeadVelocity, headSpringConstant, headDampingFactor);
-            currentHeadVelocity += headForce * Time.deltaTime;
-            currentHeadTilt += currentHeadVelocity * Time.deltaTime;
+            currentHeadVelocity += headForce * Time.fixedDeltaTime;
+            currentHeadTilt += currentHeadVelocity * Time.fixedDeltaTime;
 
             float bodyForce = Spring.CalculateSpringForce(currentBodyTilt, bodyTarget, currentBodyVelocity, bodySpringConstant, bodyDampingFactor);
-            currentBodyVelocity += bodyForce * Time.deltaTime;
-            currentBodyTilt += currentBodyVelocity * Time.deltaTime;
+            currentBodyVelocity += bodyForce * Time.fixedDeltaTime;
+            currentBodyTilt += currentBodyVelocity * Time.fixedDeltaTime;
         }
     }
 }

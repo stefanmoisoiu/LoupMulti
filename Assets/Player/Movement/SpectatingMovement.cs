@@ -24,7 +24,7 @@ namespace Player.Movement
 
         protected override void FixedUpdateAnyOwner()
         {
-            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState !=
+            if (DataManager.Instance == null || DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState !=
                 OuterData.PlayingState.SpectatingGame) return;
             Vector3 direction = new Vector3(InputManager.Move.x, (InputManager.Jump ? 1 : 0) + (InputManager.Run ? -1 : 0), InputManager.Move.y).normalized;
             if (!(direction.magnitude > 0.1f)) return;

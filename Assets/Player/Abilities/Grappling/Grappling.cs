@@ -83,7 +83,7 @@ namespace Player.Abilities.Grappling
             float velTowardsPoint = Vector3.Dot(rb.linearVelocity, dir);
         
             float force = Spring.CalculateSpringForce(_grappleSpringDist, dist, velTowardsPoint, springConstant, dampingFactor);
-            Vector3 forceToApply = dir * force;
+            Vector3 forceToApply = dir * force * Time.fixedDeltaTime;
             if (_grapplePoint.y - rb.position.y < 0) forceToApply.y = 0;
             rb.AddForce(forceToApply, ForceMode.Force);
 

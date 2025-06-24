@@ -391,6 +391,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShopOpen"",
+                    ""type"": ""Button"",
+                    ""id"": ""1de168ad-28b5-4b6e-b0d4-dabcab3f9ee2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -402,6 +411,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Scoreboard"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fda4c615-d2e6-4a39-9c01-0501bb14252e"",
+                    ""path"": ""<Keyboard>/p"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShopOpen"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -428,6 +448,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Scoreboard = m_UI.FindAction("Scoreboard", throwIfNotFound: true);
+        m_UI_ShopOpen = m_UI.FindAction("ShopOpen", throwIfNotFound: true);
     }
 
     ~@Controls()
@@ -638,11 +659,13 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_Scoreboard;
+    private readonly InputAction m_UI_ShopOpen;
     public struct UIActions
     {
         private @Controls m_Wrapper;
         public UIActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Scoreboard => m_Wrapper.m_UI_Scoreboard;
+        public InputAction @ShopOpen => m_Wrapper.m_UI_ShopOpen;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -655,6 +678,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Scoreboard.started += instance.OnScoreboard;
             @Scoreboard.performed += instance.OnScoreboard;
             @Scoreboard.canceled += instance.OnScoreboard;
+            @ShopOpen.started += instance.OnShopOpen;
+            @ShopOpen.performed += instance.OnShopOpen;
+            @ShopOpen.canceled += instance.OnShopOpen;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -662,6 +688,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Scoreboard.started -= instance.OnScoreboard;
             @Scoreboard.performed -= instance.OnScoreboard;
             @Scoreboard.canceled -= instance.OnScoreboard;
+            @ShopOpen.started -= instance.OnShopOpen;
+            @ShopOpen.performed -= instance.OnShopOpen;
+            @ShopOpen.canceled -= instance.OnShopOpen;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -698,5 +727,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     public interface IUIActions
     {
         void OnScoreboard(InputAction.CallbackContext context);
+        void OnShopOpen(InputAction.CallbackContext context);
     }
 }

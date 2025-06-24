@@ -1,4 +1,5 @@
-﻿using Input;
+﻿using Game.Game_Loop;
+using Input;
 using Player.Networking;
 using Unity.Netcode;
 using UnityEngine;
@@ -31,13 +32,21 @@ namespace Player.Tool.Hotbar
         {
             InputManager.OnSlotUse += SelectSlot;
             InputManager.OnDrillUse += SelectDrill;
+            GameManager.OnGameStateChanged += GameStateChanged;
         }
 
         protected override void DisableAnyOwner()
         {
             InputManager.OnSlotUse -= SelectSlot;   
             InputManager.OnDrillUse -= SelectDrill;
+            GameManager.OnGameStateChanged -= GameStateChanged;
         }
+
+        private void GameStateChanged(GameManager.GameState newState, float serverTime)
+        {
+            if (newState == GameManager.GameState.Lobby) SelectSlot(-1);
+        }
+        
         private const ushort DrillSlotId = ushort.MaxValue - 1;
         private void SelectDrill()
         {
@@ -45,12 +54,14 @@ namespace Player.Tool.Hotbar
         }
         private void SelectSlot(int slotId)
         {
-            if (slotId >= toolSlots.Length && slotId != DrillSlotId)
+            if (GameManager.Instance.gameState.Value == GameManager.GameState.Lobby) return;
+            
+            if (slotId == selectedSlot.Value || slotId == -1) slotId = ushort.MaxValue;
+            else if (slotId >= toolSlots.Length && slotId != DrillSlotId)
             {
                 Debug.LogError($"Tool ID {slotId} is out of range.");
                 return;
             }
-            if (slotId == selectedSlot.Value) slotId = ushort.MaxValue;
             
             ChangeSlotAnim(selectedSlot.Value, (ushort)slotId);
 

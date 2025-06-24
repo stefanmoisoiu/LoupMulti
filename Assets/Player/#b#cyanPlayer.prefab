@@ -276,7 +276,7 @@ Transform:
   m_GameObject: {fileID: 1079194528086304918}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.3}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -520,7 +520,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 2150122228102207166}
   head: {fileID: 4619258455599945709}
-  speed: 6
+  speed: 10
 --- !u!1 &2632363369017088970
 GameObject:
   m_ObjectHideFlags: 0
@@ -7078,13 +7078,13 @@ MonoBehaviour:
   positionLerpSpeed: 0.85
   rotationLerpSpeed: 0.85
   scaleLerpSpeed: 0.85
-  timeCorrectionSpeed: 0.1
+  timeCorrectionSpeed: 0.2
   snapTimeThreshold: 3
   syncPosition: 0
   syncRotation: 7
   syncScale: 7
   syncVelocity: 0
-  syncAngularVelocity: 0
+  syncAngularVelocity: 7
   isPositionCompressed: 0
   isRotationCompressed: 0
   isScaleCompressed: 0
@@ -7094,10 +7094,10 @@ MonoBehaviour:
   isSmoothingAuthorityChanges: 0
   transformSource: 0
   whenToUpdateTransform: 1
-  sendRate: 50
+  sendRate: 100
   networkChannel: 
   childObjectToSync: {fileID: 0}
-  setVelocityInsteadOfPositionOnNonOwners: 0
+  setVelocityInsteadOfPositionOnNonOwners: 1
   maxPositionDifferenceForVelocitySyncing: 10
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1

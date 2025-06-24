@@ -24,6 +24,10 @@ namespace Input
         
         public static bool    Score  { get; private set; }
         
+        // Booléens pour UI
+        
+        public static bool    Shop   { get; private set; }
+        
         
 
         // Événements pour début / fin
@@ -50,6 +54,9 @@ namespace Input
         public static event Action OnSlot3Canceled;
         public static event Action OnScoreboardOpened;
         public static event Action OnScoreboardClosed;
+        
+        public static event Action OnShopOpened;
+        public static event Action OnShopClosed;
 
         private void Awake()
         {
@@ -208,6 +215,18 @@ namespace Input
             {
                 Score = false;
                 OnScoreboardClosed?.Invoke();
+            };
+            
+            // Shop (UI)
+            _controls.UI.ShopOpen.performed += ctx =>
+            {
+                Shop = true;
+                OnShopOpened?.Invoke();
+            };
+            _controls.UI.ShopOpen.canceled += ctx =>
+            {
+                Shop = false;
+                OnShopClosed?.Invoke();
             };
 
             _controls.Enable();

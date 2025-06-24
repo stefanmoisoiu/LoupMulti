@@ -23,6 +23,9 @@ namespace Game.Upgrade.Shop
         {
             if (shopOpened == opened) return;
             shopOpened = opened;
+            
+            Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = opened;
 
             OnShopOpenedChangedRpc(opened);
 

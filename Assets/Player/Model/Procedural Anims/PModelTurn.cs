@@ -30,8 +30,8 @@ namespace Player.Model.Procedural_Anims
         {
             var targetTilt = !NetcodeManager.InGame || IsOwner ? cam.LookTarget.x : cam.lookTargetNet.Value.x;
             float headForce = Spring.CalculateSpringForce(currentTurn, targetTilt , currentTurnVelocity, TurnSpringConstant, TurnDampingFactor);
-            currentTurnVelocity += headForce * Time.deltaTime;
-            currentTurn += currentTurnVelocity * Time.deltaTime;
+            currentTurnVelocity += headForce * Time.fixedDeltaTime;
+            currentTurn += currentTurnVelocity * Time.fixedDeltaTime;
         }
     
         public override Data GetData()

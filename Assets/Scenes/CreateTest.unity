@@ -744,6 +744,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: '#yellowScene Changer'
       objectReference: {fileID: 0}
+    - target: {fileID: 7988591067457343601, guid: 46c9c1a542c909640805cad89f9defb5,
+        type: 3}
+      propertyPath: transitionDuration
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8154319868762807005, guid: 46c9c1a542c909640805cad89f9defb5,
         type: 3}
       propertyPath: m_LocalPosition.x

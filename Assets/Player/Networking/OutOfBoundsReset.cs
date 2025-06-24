@@ -17,8 +17,9 @@ public class OutOfBoundsReset : PNetworkBehaviour
     protected override void UpdateOnlineOwner()
     {
         if (!teleportCooldown) return;
-        if (sync.rb.position.y < yThreshold)
+        if (sync.rb.position.y < yThreshold || sync.rb.position.y > -yThreshold)
         {
+            Debug.LogError("OUT OF BOUNDS! Teleporting player to spawn point.");
             teleportCooldown = false;
             TeleportServerRpc();
             Invoke(nameof(ResetTeleportCooldown), 1f); // Cooldown of 1 second before next teleport

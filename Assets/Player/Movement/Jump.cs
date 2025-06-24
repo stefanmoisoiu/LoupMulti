@@ -60,7 +60,7 @@ namespace Player.Movement
 
         protected override void UpdateAnyOwner()
         {
-            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+            if (DataManager.Instance != null && DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
                 OuterData.PlayingState.SpectatingGame) return;
             _jumpCoyote -= Time.deltaTime;
             _jumpBuffer -= Time.deltaTime;
@@ -76,7 +76,7 @@ namespace Player.Movement
 
         private void StartPressJump()
         {
-            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+            if (DataManager.Instance != null && DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
                 OuterData.PlayingState.SpectatingGame) return;
             if (!CanJump()) _jumpBuffer = jumpBufferTime;
             else StartJump();

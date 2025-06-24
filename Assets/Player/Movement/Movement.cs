@@ -46,7 +46,7 @@ namespace Player.Movement
 
         protected override void FixedUpdateAnyOwner()
         {
-            if (DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
+            if (DataManager.Instance != null && DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
                 OuterData.PlayingState.SpectatingGame) return;
             Move();
         }

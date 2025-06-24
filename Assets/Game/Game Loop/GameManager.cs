@@ -26,7 +26,7 @@ namespace Game.Game_Loop
         [SerializeField] private GameLoop gameLoop;
         public GameLoop GameLoop => gameLoop;
 
-        public NetworkVariable<GameState> gameState = new();
+        public NetworkVariable<GameState> gameState = new(GameState.Lobby, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
         public static event Action<GameState, float> OnGameStateChanged;
         [Rpc(SendTo.Everyone)]
@@ -91,13 +91,15 @@ namespace Game.Game_Loop
             DataManager.Instance.PlayerState.SetNotAssignedPlayersToPlayingState();
         
             yield return mapManager.LoadRandomGameMap();
-        
+
+            gameState.Value = GameState.InGame;
             OnGameStateChangedClientRpc(GameState.InGame, NetworkManager.ServerTime.TimeAsFloat);
             OnGameStartedServer?.Invoke();
         
             MapManager.SetPlayerSpawnPositions();
             yield return gameLoop.MainLoop(this);
             
+            gameState.Value = GameState.Lobby;
             OnGameStateChangedClientRpc(GameState.Lobby, NetworkManager.ServerTime.TimeAsFloat);
             OnGameEndedServer?.Invoke();
             
