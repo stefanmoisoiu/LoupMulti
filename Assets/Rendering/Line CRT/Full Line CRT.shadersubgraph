@@ -259,6 +259,21 @@
 {
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "00bb49e72b134402b48c17e43eead529",
+    "m_Id": -1297374010,
+    "m_DisplayName": "Step",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_Step",
+    "m_StageCapability": 3,
+    "m_Value": 0.20000000298023225,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "09c5f3be78a3453cb6609ab7e58cb0a0",
     "m_Id": 0,
     "m_DisplayName": "Small Line Size",
@@ -437,6 +452,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "2f29f0e4a55942beb7229a4badbb0c4c",
+    "m_Id": -1297374010,
+    "m_DisplayName": "Step",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_Step",
+    "m_StageCapability": 3,
+    "m_Value": 0.20000000298023225,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "2f9d61d4091441a1b40cc4573fe26b79",
     "m_Group": {
@@ -555,6 +585,12 @@
             "m_Id": "d9a502bbd3e342748d655a95de2e11d3"
         },
         {
+            "m_Id": "2f29f0e4a55942beb7229a4badbb0c4c"
+        },
+        {
+            "m_Id": "63a779bd17fa421ab9caf662eb77639b"
+        },
+        {
             "m_Id": "7935bf619ffe495586c423fdb101fd8c"
         }
     ],
@@ -572,14 +608,18 @@
         "9ce80139-5230-426b-97ee-0674515cab64",
         "536c92c1-a62f-436f-8aed-f7109bc9f006",
         "bb3d0463-4d80-4809-bd07-3deba5b18c95",
-        "003d22b4-497e-49a7-934d-33843df79a2e"
+        "003d22b4-497e-49a7-934d-33843df79a2e",
+        "8a1883ad-8909-43fe-9fce-7024fd603d5f",
+        "d8a67cc3-8b8c-4f7e-92fd-2624316652b9"
     ],
     "m_PropertyIds": [
         -1691011872,
         -835788337,
         100929791,
         -1920598021,
-        -483143324
+        -483143324,
+        -1297374010,
+        179072236
     ],
     "m_Dropdowns": [],
     "m_DropdownSelectedEntries": []
@@ -660,6 +700,12 @@
             "m_Id": "69e38bd436b141d3a25a5f62e1d7f5f5"
         },
         {
+            "m_Id": "00bb49e72b134402b48c17e43eead529"
+        },
+        {
+            "m_Id": "afc2ce5c8e624dd8a39bc90cb49b937c"
+        },
+        {
             "m_Id": "e48602318241475dabc5d1eac1e45661"
         }
     ],
@@ -677,14 +723,18 @@
         "9ce80139-5230-426b-97ee-0674515cab64",
         "536c92c1-a62f-436f-8aed-f7109bc9f006",
         "bb3d0463-4d80-4809-bd07-3deba5b18c95",
-        "003d22b4-497e-49a7-934d-33843df79a2e"
+        "003d22b4-497e-49a7-934d-33843df79a2e",
+        "8a1883ad-8909-43fe-9fce-7024fd603d5f",
+        "d8a67cc3-8b8c-4f7e-92fd-2624316652b9"
     ],
     "m_PropertyIds": [
         -1691011872,
         -835788337,
         100929791,
         -1920598021,
-        -483143324
+        -483143324,
+        -1297374010,
+        179072236
     ],
     "m_Dropdowns": [],
     "m_DropdownSelectedEntries": []
@@ -701,6 +751,21 @@
     "m_ShaderOutputName": "_Line_Count",
     "m_StageCapability": 3,
     "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "63a779bd17fa421ab9caf662eb77639b",
+    "m_Id": 179072236,
+    "m_DisplayName": "Step 2",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_Step_2",
+    "m_StageCapability": 3,
+    "m_Value": 0.25,
     "m_DefaultValue": 0.0,
     "m_Labels": []
 }
@@ -1008,6 +1073,21 @@
         "x": 0.0,
         "y": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "afc2ce5c8e624dd8a39bc90cb49b937c",
+    "m_Id": 179072236,
+    "m_DisplayName": "Step 2",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_Step_2",
+    "m_StageCapability": 3,
+    "m_Value": 0.25,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
 }
 
 {
