@@ -57,28 +57,28 @@ Material:
     - _Color_Threshold: 0.63
     - _Contrast: 1.15
     - _DistanceFalloff: 20
-    - _DistortionAmp: 0.02
+    - _DistortionAmp: 0.005
     - _Fisheye_Line_Amplitude: 2.75
     - _GlitchLumStep: 0.75
     - _GlitchScale: 5
     - _Line_Count: 3
     - _Line_Size: 5
     - _Line_Speed: 0.1
-    - _LuminanceCRT: 0.69
+    - _LuminanceCRT: 1
     - _NormalCRTPow: 10
     - _NormalGlitchEdge: 0.81
     - _NormalGlitchPow: 60
     - _NormalStep: 0.9
-    - _ShadowsCRT: 0.4
+    - _ShadowsCRT: 0
     - _Small_Line_Count: 70
     - _Small_Line_Size: 5.1
     - _Small_Line_Speed: 1
     - _Speed: 0.5
     - _UpdateRate: 4
     m_Colors:
-    - _Dark_Line_Color: {r: 0, g: 0, b: 0, a: 1}
+    - _Dark_Line_Color: {r: 0.12615702, g: 0.58067, b: 0.5943396, a: 1}
     - _GlitchColor: {r: 0, g: 0.800838, b: 1, a: 1}
-    - _Line_Color: {r: 0.48584908, g: 0.6195915, b: 1, a: 1}
+    - _Line_Color: {r: 0.41451585, g: 0.6509434, b: 0.6160606, a: 1}
     - _Small_Line_Color: {r: 0.24866499, g: 0.41509432, b: 0.24866499, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

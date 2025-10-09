@@ -1,3 +1,4 @@
+using System;
 using Base_Scripts;
 using Networking;
 using Networking.Connection;
@@ -30,6 +31,14 @@ namespace Player.Model.Procedural_Anims
 
         private float currentBodyTilt;
         private float currentBodyVelocity;
+
+        private void Awake()
+        {
+            float targetTilt = GetTargetTilt();
+            currentBodyTilt = GetBodyTarget(targetTilt);
+            currentHeadTilt = GetHeadTarget(targetTilt);
+        }
+
         private void Update()
         {
             CalculateTilt();
@@ -46,12 +55,13 @@ namespace Player.Model.Procedural_Anims
                 headScale = Vector3.one,
             };
         }
+        
 
         private void CalculateTilt()
         {
-            var targetTilt = !NetcodeManager.InGame || IsOwner ? cam.LookTarget.y : cam.lookTargetNet.Value.y;
-            float bodyTarget = bodyTiltParticipationCurve.Evaluate(Mathf.Abs(targetTilt) / Camera.PCamera.MaxTilt) * Mathf.Sign(targetTilt) * Camera.PCamera.MaxTilt;
-            float headTarget = Mathf.Sqrt(bodyTiltParticipationCurve.Evaluate(Mathf.Abs(targetTilt) / Camera.PCamera.MaxTilt)) * Mathf.Sign(targetTilt) * Camera.PCamera.MaxTilt;
+            float targetTilt = GetTargetTilt();
+            float bodyTarget = GetBodyTarget(targetTilt);
+            float headTarget = GetHeadTarget(targetTilt);
         
         
             float headForce = Spring.CalculateSpringForce(currentHeadTilt, headTarget , currentHeadVelocity, headSpringConstant, headDampingFactor);
@@ -61,6 +71,19 @@ namespace Player.Model.Procedural_Anims
             float bodyForce = Spring.CalculateSpringForce(currentBodyTilt, bodyTarget, currentBodyVelocity, bodySpringConstant, bodyDampingFactor);
             currentBodyVelocity += bodyForce * Time.fixedDeltaTime;
             currentBodyTilt += currentBodyVelocity * Time.fixedDeltaTime;
+        }
+        
+        private float GetTargetTilt()
+        {
+            return !NetcodeManager.InGame || IsOwner ? cam.LookTarget.y : cam.lookTargetNet.Value.y;
+        }
+        private float GetBodyTarget(float targetTilt)
+        {
+            return bodyTiltParticipationCurve.Evaluate(Mathf.Abs(targetTilt) / Camera.PCamera.MaxTilt) * Mathf.Sign(targetTilt) * Camera.PCamera.MaxTilt;
+        }
+        private float GetHeadTarget(float targetTilt)
+        {
+            return Mathf.Sqrt(bodyTiltParticipationCurve.Evaluate(Mathf.Abs(targetTilt) / Camera.PCamera.MaxTilt)) * Mathf.Sign(targetTilt) * Camera.PCamera.MaxTilt;
         }
     }
 }

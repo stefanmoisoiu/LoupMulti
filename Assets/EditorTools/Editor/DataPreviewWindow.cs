@@ -3,7 +3,6 @@ using Game.Common;
 using Game.Common.List;
 using Game.Data;
 using Game.Game_Loop;
-using Game.Game_Loop.Round.Tag.Hot_Potato;
 using Game.Upgrade.Perks;
 using Unity.Netcode;
 using UnityEditor;
@@ -18,7 +17,7 @@ namespace EditorTools.Editor
     {
         private Vector2 _scroll;
         private int _currentTab;
-        private readonly string[] _tabs = { "Joueurs", "Netcode", "Perks", "Tick"};
+        private readonly string[] _tabs = { "Joueurs", "Netcode", "Tick"};
 
         private GUIStyle boxStyle;
         private GUIStyle headerStyle;
@@ -73,10 +72,8 @@ namespace EditorTools.Editor
             switch (_currentTab)
             {
                 case 0: DrawPlayersTab(); break;
-                //case 1: DrawHotPotatoTab(); break;
                 case 1: DrawNetcodeInfo() ; break;
-                case 2: DrawPerksTab(); break;
-                case 3: DrawTickTab(); break;
+                case 2: DrawTickTab(); break;
             }
             EditorGUILayout.EndScrollView();
         }
@@ -150,77 +147,17 @@ namespace EditorTools.Editor
             EditorGUILayout.LabelField($"<b>État :</b> {data.outerData.playingState}", labelStyle);
             EditorGUILayout.LabelField($"<b>Vie :</b> {data.inGameData.health}", labelStyle);
             EditorGUILayout.LabelField($"<b>Ressources :</b>\n{data.inGameData.resources.ToString()}", labelStyle);
-            var perks = data.inGameData.GetPerks();
-            var perkName = perks.Length > 0 ? string.Join(", ", perks.Select(u => u.PerkName)) : "<i>Aucun</i>";
-            EditorGUILayout.LabelField($"<b>Perks :</b> {perkName}", labelStyle);
-            var shopItems = data.inGameData.GetShopItems();
-            var shopNames = shopItems.Length > 0 ? string.Join(", ", shopItems.Select(u => u.ItemName)) : "<i>Aucun</i>";
-            EditorGUILayout.LabelField($"<b>Shop Items :</b> {shopNames}", labelStyle);
+            Item[] items = data.inGameData.GetItems();
+            var itemNames = items.Length > 0 ? string.Join("\n", items.Select(u => u.Info.Name)) : "<i>Aucun</i>";
+            EditorGUILayout.LabelField($"<b>Items :</b>\n{itemNames}", labelStyle);
+            // var perks = data.inGameData.GetPerks();
+            // var perkName = perks.Length > 0 ? string.Join(", ", perks.Select(u => u.Info.Name)) : "<i>Aucun</i>";
+            // EditorGUILayout.LabelField($"<b>Perks :</b> {perkName}", labelStyle);
+            // var shopItems = data.inGameData.GetShopItems();
+            // var shopNames = shopItems.Length > 0 ? string.Join(", ", shopItems.Select(u => u.Info.Name)) : "<i>Aucun</i>";
+            // EditorGUILayout.LabelField($"<b>Shop Items :</b> {shopNames}", labelStyle);
 
             EditorGUILayout.EndVertical();
-        }
-
-        private void DrawHotPotatoTab()
-        {
-            if (!Application.isPlaying)
-            {
-                EditorGUILayout.HelpBox("Start play mode to see runtime info.", MessageType.Info);
-                return;
-            }
-            var hotpot = FindFirstObjectByType<HotPotatoManager>();
-            if (hotpot == null)
-            {
-                EditorGUILayout.HelpBox("Aucun HotPotatoManager trouvé.", MessageType.Warning);
-                return;
-            }
-            EditorGUILayout.LabelField("Hot Potato", headerStyle);
-            DrawBoxed(() =>
-            {
-                EditorGUILayout.LabelField($"<b>Actif :</b> {hotpot.HotPotatoActive}", labelStyle);
-                var tgt = hotpot.Target.TargetClientId;
-                var txt = tgt == ulong.MaxValue ? "Aucun" : tgt.ToString();
-                EditorGUILayout.LabelField($"<b>Cible :</b> {txt}", labelStyle);
-            });
-        }
-
-        private void DrawPerksTab()
-        {
-            if (!Application.isPlaying)
-            {
-                EditorGUILayout.HelpBox("Start play mode to see runtime info.", MessageType.Info);
-                return;
-            }
-            if (!NetworkManager.Singleton.IsServer)
-            {
-                EditorGUILayout.HelpBox("Only available in server mode.", MessageType.Warning);
-                return;
-            }
-            var mgr = FindFirstObjectByType<PerkSelectionManager>();
-            if (mgr == null)
-            {
-                EditorGUILayout.HelpBox("Aucun PerkManager trouvé.", MessageType.Warning);
-                return;
-            }
-            EditorGUILayout.LabelField("Choix de Perk", headerStyle);
-            if (!mgr.PlayerAvailablePerks.Any())
-            {
-                EditorGUILayout.HelpBox("Pas de choix de perk disponibles.", MessageType.Info);
-                return;
-            }
-            foreach (var kvp in mgr.PlayerAvailablePerks)
-            {
-                DrawBoxed(() =>
-                {
-                    EditorGUILayout.LabelField($"Client ID: {kvp.Key}", headerStyle);
-                    var choiceNames = string.Join(", ", kvp.Value.Select(i => PerkList.Instance.GetPerk(i)?.PerkName ?? "–"));
-                    EditorGUILayout.LabelField($"<b>Choix dispos :</b> {choiceNames}", labelStyle);
-                    if (mgr.PlayerPerkChoice.TryGetValue(kvp.Key, out var sel))
-                    {
-                        var selName = PerkList.Instance.GetPerk(kvp.Value[sel])?.PerkName ?? "–";
-                        EditorGUILayout.LabelField($"<b>Choix actuel :</b> {selName}", labelStyle);
-                    }
-                });
-            }
         }
 
         private void DrawTickTab()
@@ -275,7 +212,6 @@ namespace EditorTools.Editor
             }
 
             EditorGUILayout.LabelField("🧠 Netcode Status", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Transport", nm.NetworkConfig.NetworkTransport.GetType().Name);
             EditorGUILayout.LabelField("Mode", nm.IsHost ? "Host" : nm.IsServer ? "Server" : nm.IsClient ? "Client" : "None");
             EditorGUILayout.LabelField("Local Client ID", nm.LocalClientId.ToString());
             EditorGUILayout.LabelField("Connected Clients", nm.ConnectedClients.Count.ToString());

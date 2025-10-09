@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Base_Scripts;
 using Game.Common;
+using Game.Data;
 using Game.Data.Extensions;
 using Game.Game_Loop.Round;
 using Game.Game_Loop.Round.Collect;
 using Game.Game_Loop.Round.End;
-using Game.Game_Loop.Round.Tag;
 using Game.Game_Loop.Round.Upgrade;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,27 +34,63 @@ namespace Game.Game_Loop
     
         private Coroutine _gameLoopCoroutine;
 
-        public IEnumerator MainLoop(GameManager manager)
+        private event Action OnGameEnded;
+
+        private void Start()
         {
-            // Choose Upgrade -> Play Round -> Repeat
-            
-            gameTickManager.StartTickLoop();
-
-            int round = 0;
-
-
+            if (!IsServer) return;
             if (GameSettings.Instance.DebugMode)
                 Debug.LogWarning("Debug mode is enabled, never stopping game /!/");
+            else
+                PlayerDataHealth.OnPlayerDeath += PlayerDiedServer;
+        }
 
-            while (PlayerHealth.AlivePlayerCount() > 1 || GameSettings.Instance.DebugMode)
+        private void OnDisable()
+        {
+            PlayerDataHealth.OnPlayerDeath -= PlayerDiedServer;
+        }
+
+
+        public IEnumerator MainLoop(GameManager manager)
+        {
+            _gameLoopCoroutine = StartCoroutine(PlayLoop(manager));
+            
+            gameTickManager.StartTickLoop();
+            
+            bool gameEnded = false;
+            void GameEnded()
+            {
+                gameEnded = true;
+                OnGameEnded -= GameEnded;
+            }
+            OnGameEnded += GameEnded;
+            yield return new WaitUntil(() => gameEnded);
+            
+            if (_gameLoopCoroutine != null)
+                StopCoroutine(_gameLoopCoroutine);
+            
+            yield return GameEnd(manager);
+        }
+
+        private IEnumerator PlayLoop(GameManager manager)
+        {
+            // Play Round -> Choose Upgrade -> Repeat
+            
+            int round = 0;
+
+            while (true)
             {
                 round++;
                 NetcodeLogger.Instance.LogRpc("Round " + round, NetcodeLogger.LogType.GameLoop);
 
-                yield return upgradeRound.Execute(manager, gameLoopEvents);
                 yield return countdownRound.Execute(manager, gameLoopEvents);
                 yield return collectRound.Execute(manager, gameLoopEvents);
+                yield return upgradeRound.Execute(manager, gameLoopEvents);
             }
+        }
+
+        private IEnumerator GameEnd(GameManager manager)
+        {
             yield return endRound.Execute(manager, gameLoopEvents);
         
             gameTickManager.StopTickLoop();
@@ -61,6 +98,18 @@ namespace Game.Game_Loop
             NetcodeLogger.Instance.LogRpc("Game ended", NetcodeLogger.LogType.GameLoop);
             gameLoopEvents.RoundStateChanged(GameRoundState.None, NetworkManager.ServerTime.TimeAsFloat);
             gameLoopEvents.GameEnded();
+        }
+
+        private void PlayerDiedServer(ulong clientId)
+        {
+            Debug.Log("Checking for end game conditions");
+            int alivePlayerCount = PlayerDataHealth.AlivePlayingPlayerCount();
+            Debug.Log("There are " + alivePlayerCount + " players alive");
+            if (alivePlayerCount <= 1)
+            {
+                NetcodeLogger.Instance.LogRpc("Only " + alivePlayerCount + " player(s) alive, ending game", NetcodeLogger.LogType.GameLoop);
+                OnGameEnded?.Invoke();
+            }
         }
     }
 }

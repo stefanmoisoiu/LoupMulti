@@ -12,7 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2255cb952f74594bb7eaac0814aa3ba, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  maxPerks: 64
-  perkChoices: 3
-  maxShopItems: 64
-  debug: 1
+  maxItems: 64
+  itemSelectionChoices: 3
+  abilitySlots: 3
+  collectRoundLength: 60
+  upgradeRoundLength: 30
+  debug: 0
+  debugRoundLengths: 1
+  debugCollectRoundLength: 10
+  debugUpgradeRoundLength: 10

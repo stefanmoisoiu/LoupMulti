@@ -1,5 +1,4 @@
 using Base_Scripts;
-using Player.Abilities.Grappling;
 using Player.Networking;
 using UnityEngine;
 
@@ -15,7 +14,6 @@ namespace Player.Movement
         [SerializeField] private bool debug;
 
         [SerializeField] private Jump jump;
-        [SerializeField] private Grappling grappling;
         [SerializeField] private Grounded grounded;
     
         protected override void FixedUpdateAnyOwner()
@@ -25,7 +23,6 @@ namespace Player.Movement
     
         private void StickToGround()
         {
-            if (grappling.IsGrappling) return;
             if(jump.JumpCooldown) return;
             if (!grounded.IsGrounded)
             {

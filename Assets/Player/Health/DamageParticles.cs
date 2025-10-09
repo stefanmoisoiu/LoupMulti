@@ -9,22 +9,22 @@ namespace Player.Health
     public class DamageParticles : PNetworkBehaviour
     {
         [SerializeField] private NetworkPooledParticles pooledParticles;
-        [SerializeField] private ushort particlesPerDamagePoint = 2;
+        [SerializeField] private float particlesPerDamagePoint = .25f;
         
 
         protected override void StartOnlineOwner()
         {
-            PlayerHealth.OnHealthChangedOwner += OnHealthChanged;
+            PlayerDataHealth.OnOwnerPlayerHealthChanged += OnHealthChanged;
         }
         protected override void DisableAnyOwner()
         {
-            PlayerHealth.OnHealthChangedOwner -= OnHealthChanged;
+            PlayerDataHealth.OnOwnerPlayerHealthChanged -= OnHealthChanged;
         }
 
         private void OnHealthChanged(ushort previousHealth, ushort newHealth)
         {
             if (newHealth > previousHealth) return;
-            ushort damage = (ushort)(previousHealth - newHealth);
+            float damage = (float)previousHealth - newHealth;
             if (damage > 0)
                 pooledParticles.Play(new NetworkPooledParticles.ParticleAdditionalInfo(OwnerClientId, (ushort)(damage * particlesPerDamagePoint)));
         }

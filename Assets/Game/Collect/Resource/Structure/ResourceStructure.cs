@@ -1,4 +1,5 @@
-﻿using Base_Scripts;
+﻿using System;
+using Base_Scripts;
 using Game.Common;
 using Game.Data;
 using Game.Game_Loop;
@@ -9,111 +10,83 @@ using UnityEngine.Events;
 
 namespace Game.Collect.Resource.Structure
     {
-        public class ResourceStructure : NetworkBehaviour
+        public class ResourceStructure : NetworkBehaviour,IDamageable
         {
             [SerializeField] private ResourceStructureData data;
             
             public ResourceStructureData Data => data;
             
-            [ShowInInspector] [ReadOnly] private int currentDurability;
-            public NetworkVariable<bool> fullyExploited = new();
+            public NetworkVariable<ushort> currentDurability = new(value:ushort.MaxValue);
 
-            [SerializeField] private UnityEvent OnExtractOwner;
-            [SerializeField] private UnityEvent<ulong> OnExtractAll;
-            [SerializeField] private UnityEvent<ulong> OnGiveResourceAll;
-            [SerializeField] private UnityEvent OnGiveResourceOwner;
-            [SerializeField] private UnityEvent OnExtractServer;
-            [SerializeField] private UnityEvent OnGiveResourceServer;
-            [SerializeField] private UnityEvent OnFullyExtractedOwner;
-            [SerializeField] private UnityEvent<ulong> OnFullyExtractedAll;
-            [SerializeField] private UnityEvent OnFullyExtractedServer;
+            public Action<ushort, ushort, ulong> OnExtractServer;
+            public Action<ushort, ushort, ulong> OnExtractAll;
+            [ClientRpc] private void OnExtractClientRpc(ushort amount, ushort collectedAmount, ulong origin) => OnExtractAll?.Invoke(amount, collectedAmount, origin);
+            public Action OnFullyExtractedServer;
+            public Action OnFullyExtractedAll;
 
-            private int GetMaxDurability() => data.durabilityPerResource * data.resourceAmount;
+            private ushort GetMaxDurability() => (ushort)(data.durabilityPerResource * data.resourceAmount);
             
             public override void OnNetworkSpawn()
             {
                 base.OnNetworkSpawn();
 
-                if (!IsServer) return;
-                
-                currentDurability = GetMaxDurability();
+                if (IsServer)
+                {
+                    currentDurability.Value = GetMaxDurability();
+                }
+                currentDurability.OnValueChanged += DurabilityChanged;
             }
-            
-            /// <summary>
-            /// CLIENT ONLY
-            /// </summary>
-            public void Extract(ushort amount)
+            private void DurabilityChanged(ushort previous, ushort current)
+            {
+                if (current <= 0)
+                {
+                    OnFullyExtractedAll?.Invoke();
+                }
+            }
+            public void TakeDamage(IDamageable.DamageInfo info)
             {
                 ushort tick = GameTickManager.CurrentTick;
-                ulong origin = NetworkManager.Singleton.LocalClientId;
                 
-                Debug.Log($"Extracting Resource {origin}");
-                
-                ExtractServerRpc(origin, tick, amount);
+                TryExtractServerRpc(info.Origin, tick, info.ExtractAmount);
             }
 
             [ServerRpc(RequireOwnership = false)]
-            private void ExtractServerRpc(ulong origin, ushort tick, ushort extractAmount = 1)
+            private void TryExtractServerRpc(ulong origin, ushort tick, ushort extractAmount = 1)
             {
                 if (tick > GameTickManager.CurrentTick)
                     throw new System.Exception($"Tick {tick} is greater than current tick {GameTickManager.CurrentTick}");
                 
-                if (currentDurability <= 0)
-                {
-                    Debug.Log($"Resource {Data.structureName} is already exploited");
-                    return;
-                }
+                if (currentDurability.Value <= 0)
+                    throw new Exception($"Client {origin} tried extracting resource {Data.structureName} but it is already fully exploited");
+                
+                ExtractServer(extractAmount, origin);
 
-                if (currentDurability < extractAmount) extractAmount = (ushort)currentDurability;
-                
-                ushort collectAmount = 0;
-                for (int i = 0; i < extractAmount; i++)
+                if (currentDurability.Value <= 0)
                 {
-                    currentDurability--;
-                    if (GiveResource()) collectAmount++;
-                }
-
-                
-                if (collectAmount > 0)
-                {
-                    NetcodeLogger.Instance.LogRpc($"{origin} got {collectAmount} resource from {Data.structureName} {currentDurability}/{GetMaxDurability()}", NetcodeLogger.LogType.GameLoop);
-                
-                    DataManager.Instance.PlayerResources.CollectResource(origin, data.collectedResource, collectAmount);
-                
-                
-                    OnGiveResourceServer?.Invoke();
-                    OnGiveResourceOwnerClientRpc(new ClientRpcParams() {Send = new ClientRpcSendParams() {TargetClientIds = new ulong[] { origin }}});
-                    OnGiveResourceClientRpc(origin);
-                } 
-                
-                OnExtractServer?.Invoke();
-                
-                
-                OnExtractOwnerClientRpc(new ClientRpcParams() {Send = new ClientRpcSendParams() {TargetClientIds = new ulong[] { origin }}});
-                OnExtractAllClientRpc(origin);
-                
-                if (currentDurability <= 0)
-                {
-                    NetcodeLogger.Instance.LogRpc($"Resource {Data.structureName} fully exploited", NetcodeLogger.LogType.GameLoop);
-                    OnFullyExtractedOwnerClientRpc(new ClientRpcParams() {Send = new ClientRpcSendParams() {TargetClientIds = new ulong[] { origin }}});
-                    OnFullyExtractedAllClientRpc(origin);
-                    
-                    fullyExploited.Value = true;
-                    
+                    NetcodeLogger.Instance.LogRpc($" {data.structureName} fully extracted", NetcodeLogger.LogType.GameLoop);
                     OnFullyExtractedServer?.Invoke();
                 }
             }
+
+            private void ExtractServer(ushort amount, ulong origin)
+            {
+                if (currentDurability.Value < amount) amount = currentDurability.Value;
+                
+                ushort collectedAmount = 0;
+                for (int i = 0; i < amount; i++)
+                {
+                    currentDurability.Value--;
+                    if (GiveResource()) collectedAmount++;
+                }
+                DataManager.Instance.PlayerResources.CollectResource(origin, data.collectedResource,
+                    collectedAmount);
+                
+                NetcodeLogger.Instance.LogRpc($"Client {origin} extracted {collectedAmount} {data.collectedResource.ResourceName} from {data.structureName}. Durability: {currentDurability.Value}/{GetMaxDurability()}", NetcodeLogger.LogType.GameLoop);
+                
+                OnExtractServer?.Invoke(amount, collectedAmount, origin);
+                OnExtractClientRpc(amount, collectedAmount, origin);
+            }
             
-            
-            [ClientRpc] private void OnExtractOwnerClientRpc(ClientRpcParams clientRpcParams = default) => OnExtractOwner?.Invoke();
-            [ClientRpc] private void OnExtractAllClientRpc(ulong origin, ClientRpcParams clientRpcParams = default) => OnExtractAll?.Invoke(origin);
-            
-            [ClientRpc] private void OnGiveResourceOwnerClientRpc(ClientRpcParams clientRpcParams = default) => OnGiveResourceOwner?.Invoke();
-            [ClientRpc] private void OnGiveResourceClientRpc(ulong origin) => OnGiveResourceAll?.Invoke(origin);
-            
-            [ClientRpc] private void OnFullyExtractedOwnerClientRpc(ClientRpcParams clientRpcParams = default) => OnFullyExtractedOwner?.Invoke();
-            [ClientRpc] private void OnFullyExtractedAllClientRpc(ulong origin, ClientRpcParams clientRpcParams = default) => OnFullyExtractedAll?.Invoke(origin);
-            
-            private bool GiveResource() => currentDurability % data.durabilityPerResource == 0;
+            private bool GiveResource() => currentDurability.Value % data.durabilityPerResource == 0;
         }
     }

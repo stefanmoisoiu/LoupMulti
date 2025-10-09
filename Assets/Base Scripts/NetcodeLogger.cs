@@ -12,7 +12,7 @@ namespace Base_Scripts
         {
             {LogType.Netcode, "#00FF00"},
             {LogType.Data, "#0000FF"},
-            {LogType.Perks, "#FF00FF"},
+            {LogType.ItemSelection, "#FF00FF"},
             {LogType.GameLoop, "#FFFF00"},
             {LogType.TickLoop, "#FF0000"},
             {LogType.Map, "#00FFFF"},
@@ -48,7 +48,7 @@ namespace Base_Scripts
         {
             Netcode,
             Data,
-            Perks,
+            ItemSelection,
             GameLoop,
             TickLoop,
             Map

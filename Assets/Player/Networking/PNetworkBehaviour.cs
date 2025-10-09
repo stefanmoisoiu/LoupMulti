@@ -1,16 +1,46 @@
-﻿using Networking;
+﻿using System;
+using Networking;
 using Networking.Connection;
+using Player.General_UI;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace Player.Networking
 {
     public abstract class PNetworkBehaviour : NetworkBehaviour
     {
+        public bool IsOnline => (NetcodeManager.InGame || NetcodeManager.LoadingGame) && IsSpawned;
         private bool _initializedAny = false;
+        private bool _onNetworkSpawnCalled = false;
+
+        private void OnEnable()
+        {
+            if (IsOnline)
+            {
+                if (_onNetworkSpawnCalled) OnEnableOnline();
+            }
+            else
+            {
+                OnEnableOffline();
+            }
+        }
         public override void OnNetworkSpawn()
         {
             base.OnNetworkSpawn();
+            _onNetworkSpawnCalled = true;
             if (!enabled) return;
+            OnEnableOnline();
+        }
+
+        private void OnEnableOffline()
+        {
+            StartOffline();
+            if (!_initializedAny) StartAnyOwner();
+            _initializedAny = true;
+        }
+
+        private void OnEnableOnline()
+        {
             if (!IsOwner)
             {
                 StartOnlineNotOwner();
@@ -20,17 +50,11 @@ namespace Player.Networking
             if (!_initializedAny) StartAnyOwner();
             _initializedAny = true;
         }
-        private void Start()
-        {
-            if (!enabled) return;
-            if (IsSpawned || NetcodeManager.InGame) return;
-            StartOffline();
-            if (!_initializedAny) StartAnyOwner();
-            _initializedAny = true;
-        }
+        
         private void OnDisable()
         {
-            if (IsSpawned || NetcodeManager.InGame)
+            _initializedAny = false;
+            if (IsOnline)
             {
                 if (IsOwner) DisableOnlineOwner();
                 else
@@ -38,7 +62,6 @@ namespace Player.Networking
                     DisableOnlineNotOwner();
                     return;
                 }
-            
             }
             else
             {

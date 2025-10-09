@@ -15,10 +15,19 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "MoveController",
+                    "type": "PassThrough",
+                    "id": "c24e47d5-0122-4489-b7b8-c219181a8884",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Jump",
                     "type": "Button",
                     "id": "b7d36106-49d6-4cf8-81ac-5a6f40fe45da",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -33,10 +42,19 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "LookController",
+                    "type": "PassThrough",
+                    "id": "4d220ea9-455c-4cb6-94e1-758fc1f5dad0",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Run",
                     "type": "Button",
                     "id": "59ec62f1-54cc-4e12-bdc8-1b1d326d62a1",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -181,17 +199,6 @@
                 },
                 {
                     "name": "",
-                    "id": "8e2de704-a081-4183-af7b-dca8fdd01115",
-                    "path": "<Gamepad>/leftStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "b68d5212-6fbd-43c4-9ec1-6e967ce36193",
                     "path": "<Keyboard>/space",
                     "interactions": "",
@@ -214,10 +221,10 @@
                 },
                 {
                     "name": "",
-                    "id": "c7baf239-5b87-4bdd-a63f-72347d068a10",
-                    "path": "<Gamepad>/rightStick",
+                    "id": "d49c29a0-5d08-4b72-8736-45e1c1d62842",
+                    "path": "<Mouse>/delta",
                     "interactions": "",
-                    "processors": "",
+                    "processors": "ScaleVector2(x=0.3,y=0.3)",
                     "groups": "",
                     "action": "Look",
                     "isComposite": false,
@@ -225,12 +232,12 @@
                 },
                 {
                     "name": "",
-                    "id": "d49c29a0-5d08-4b72-8736-45e1c1d62842",
-                    "path": "<Mouse>/delta",
+                    "id": "b66dbdca-ef69-4780-8ec0-708303d7b3c6",
+                    "path": "<Gamepad>/rightStick",
                     "interactions": "",
-                    "processors": "ScaleVector2(x=0.3,y=0.3)",
+                    "processors": "",
                     "groups": "",
-                    "action": "Look",
+                    "action": "LookController",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -352,6 +359,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Drill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8e2de704-a081-4183-af7b-dca8fdd01115",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveController",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

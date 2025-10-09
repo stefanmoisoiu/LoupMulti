@@ -1,5 +1,4 @@
 ﻿using System;
-using Player.Abilities.Grappling;
 using Player.Networking;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,6 +9,8 @@ namespace Player.Movement
     {
         [SerializeField] private float rayLength = 0.5f;
         [SerializeField] private LayerMask groundMask;
+        [SerializeField] private float maxGroundAngle = 45f;
+        
         [SerializeField] private bool debug = true;
 
 
@@ -22,8 +23,6 @@ namespace Player.Movement
         public Action<bool,bool> OnGroundedChanged;
 
         [SerializeField] private Jump jump;
-        [SerializeField] private Grappling grappling;
-    
     
         public bool FullyGrounded() =>  IsGrounded && !jump.JumpCooldown;
 
@@ -35,7 +34,6 @@ namespace Player.Movement
         private Vector3 LocalUp()
         {
             if (IsGrounded) return GroundHit.normal;
-            if (grappling.IsGrappling) return grappling.GetUpVector();
             return Vector3.up;
         }
         private void CheckGrounded()
@@ -43,7 +41,8 @@ namespace Player.Movement
             bool WasGrounded = IsGrounded;
             IsGrounded = Physics.Raycast(
                 transform.position, Vector3.down, out var hit, rayLength, groundMask);
-            IsGroundedNet.Value = IsGrounded;
+            if (IsOnline)
+                IsGroundedNet.Value = IsGrounded;
             GroundHit = hit;
 
             Vector3 localUp = LocalUp();
@@ -54,6 +53,13 @@ namespace Player.Movement
             {
                 OnGroundedChanged?.Invoke(WasGrounded, IsGrounded);
             }
+        }
+        
+        public bool GroundAngleValid()
+        {
+            if (!IsGrounded) return false;
+            float angle = Vector3.Angle(GroundHit.normal, Vector3.up);
+            return angle <= maxGroundAngle;
         }
 
         private void OnDrawGizmos()

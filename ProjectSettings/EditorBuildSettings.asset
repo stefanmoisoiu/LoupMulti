@@ -6,8 +6,17 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Managers/LocalManagers.unity
+    guid: 2e98f7082fc13654b8f92250e4020a32
+  - enabled: 1
     path: Assets/Scenes/Connecting.unity
     guid: 0e642fca44d08ac4f8a73db10ee8f3a9
+  - enabled: 1
+    path: Assets/Scenes/Managers/NetSceneChanger.unity
+    guid: fcf04b7f39974914680a2997bccca623
+  - enabled: 1
+    path: Assets/Scenes/Managers/NetManagers.unity
+    guid: c30c7e3eb5d1ae74abe5a3aeed2fbd62
   - enabled: 1
     path: Assets/Scenes/SoloLobby.unity
     guid: 1e7a6a415ea2e4c44b4b3dbd858c9f62

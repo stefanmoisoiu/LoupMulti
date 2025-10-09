@@ -1,71 +1,72 @@
-﻿// using System;
-// using System.Linq;
-// using Game.Upgrade.Perks;
-// using Player.Networking;
-// using UnityEngine;
-// using Ability = Player.Networking.Ability;
-//
-// namespace Player.Abilities
-// {
-//     public class AbilityManager : PNetworkBehaviour
-//     {
-//         [SerializeField] private PlayerAbility[] abilities;
-//
-//         protected override void StartOnlineOwner()
-//         {
-//             PerkManager.OnPerkChosenOwner += PerkAddedEnableAbility;
-//         }
-//
-//         protected override void DisableAnyOwner()
-//         {
-//             PerkManager.OnPerkChosenOwner -= PerkAddedEnableAbility;
-//         }
-//
-//         private void UpdateAllAbilityStates()
-//         {
-//             Debug.LogWarning("Get owned perks pas cached!!");
-//             if (GameManager.Instance != null) return;
-//             if (!DataManager.Instance.TryGetValue(NetworkManager.LocalClientId,
-//                     out PlayerData pd)) return;
-//             PerkData[] ownedPerks = pd.inGameData.GetPerks();
-//             foreach (PerkData perkData in GameManager.Instance.PerkManager.PerkList.perks)
-//             {
-//                 if (perkData.Type != PerkData.PerkType.Active) continue;
-//             
-//                 Ability ability = GetAbility(perkData.ActiveAbility);
-//                 if (ownedPerks.Contains(perkData)) ability.EnableAbility();
-//                 else ability.DisableAbility();
-//             }
-//         }
-//         private void PerkAddedEnableAbility(ushort newPerkIndex)
-//         {
-//             PerkData newPerkData = GameManager.Instance.PerkManager.PerkList.GetPerk(newPerkIndex);
-//             if (newPerkData.Type != PerkData.PerkType.Active) return;
-//         
-//             Ability ability = GetAbility(newPerkData.ActiveAbility);
-//             ability.EnableAbility();
-//         }
-//
-//         public Ability GetAbility(Game.Stats.Ability ability) => abilities.First(a => a.ability == ability).script;
-//
-//         public void EnableAbility(Game.Stats.Ability ability)
-//         {
-//             Ability script = GetAbility(ability);
-//             if (script.AbilityEnabled) return;
-//             script.EnableAbility();
-//         }
-//         public void DisableAbility(Game.Stats.Ability ability)
-//         {
-//             Ability script = GetAbility(ability);
-//             if (!script.AbilityEnabled) return;
-//             script.DisableAbility();
-//         }
-//         [Serializable]
-//         public struct PlayerAbility
-//         {
-//
-//             public Game.Stats.Ability ability;
-//             public Ability script;
-//         }
-//     }
-// }
+using Input;
+using Player.Abilities.UI;
+using Player.Networking;
+using UnityEngine;
+
+namespace Player.Abilities
+{
+    public class AbilityManager : PNetworkBehaviour
+    {
+        [SerializeField] private Ability drill;
+
+        [SerializeField] private Ability[] abilities;
+        public Ability[] Abilities => abilities;
+
+        [SerializeField] private AbilityManagerUI abilityManagerUI;
+    
+
+        public const int AbilitySlotCount = 3;
+        private Ability[] _abilitySlots;
+        public Ability[] AbilitySlotsArray => _abilitySlots;
+        private Ability _drillSlot;
+        public Ability DrillSlot => _drillSlot;
+
+        [SerializeField] private Ability testAbility;
+        protected override void StartOnlineOwner()
+        {
+            _abilitySlots = new Ability[AbilitySlotCount];
+
+            EquipAbility(testAbility, 0);
+            EquipDrillAbility(drill);
+        
+            InputManager.OnDrillUse += TryUseDrillAbility;
+            InputManager.OnAbilityUse += TryUseAbility;
+        }
+
+        protected override void DisableOnlineOwner()
+        {
+            InputManager.OnDrillUse -= TryUseDrillAbility;
+            InputManager.OnAbilityUse -= TryUseAbility;
+        }
+        public void EquipDrillAbility(Ability drillAbility) => EquipAbility(drillAbility, -1);
+        public void EquipAbility(Ability ability, int slot)
+        {
+            if (slot == -1) _drillSlot?.DisableAbility();
+            else _abilitySlots[slot]?.DisableAbility();
+        
+            if (slot == -1) _drillSlot = ability;
+            else
+            {
+                if (slot < 0 || slot >= AbilitySlotCount) return;
+                _abilitySlots[slot] = ability;
+            }
+
+            if (ability != null) ability.EnableAbility(abilityManagerUI.GetSlotUI(slot));
+        }
+        private void TryUseDrillAbility() => TryUseAbility(-1);
+        private void TryUseAbility(int slot)
+        {
+            Ability abilityToUse = null;
+        
+            if (slot == -1) abilityToUse = _drillSlot;
+            else
+            {
+                if (slot < 0 || slot >= AbilitySlotCount) return;
+                if (_abilitySlots[slot] == null) return;
+                abilityToUse = _abilitySlots[slot];
+            }
+        
+            abilityToUse?.TryUseAbility(out bool success);
+        }
+    }
+}

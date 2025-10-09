@@ -18,6 +18,8 @@ namespace Game.Game_Loop
     
         public void StartTickLoop()
         {
+            Debug.LogError("Should remove GameTickManager but too much work");
+            
             if (_coroutine != null) StopCoroutine(_coroutine);
             CurrentTick = 0;
             ResetTickLoopClientRpc();

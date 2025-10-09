@@ -9,8 +9,15 @@ namespace Input
         private Controls _controls;
 
         // Booléens accessibles
-        public static Vector2 Move   { get; private set; }
-        public static Vector2 Look   { get; private set; }
+        public static Vector2 Move => MoveController + MoveKeyboard;
+        public static Vector2 Look => LookController + LookKeyboard;
+        
+        private static Vector2 MoveController { get; set; }
+        private static Vector2 LookController { get; set; }
+        
+        private static Vector2 MoveKeyboard { get; set; }
+        private static Vector2 LookKeyboard { get; set; }
+        
         public static bool    Jump   { get; private set; }
         public static bool    Run    { get; private set; }
         
@@ -41,7 +48,7 @@ namespace Input
         public static event Action OnSecondaryStarted;
         public static event Action OnSecondaryCanceled;
         
-        public static event Action<int> OnSlotUse;
+        public static event Action<int> OnAbilityUse;
         public static event Action<int> OnSlotCanceled;
         
         public static event Action OnDrillUse;
@@ -64,7 +71,6 @@ namespace Input
             if (Instance == null)
             {
                 Instance = this;
-                DontDestroyOnLoad(gameObject);
             }
             else
             {
@@ -75,8 +81,11 @@ namespace Input
             _controls = new Controls();
 
             // Mouvements
-            _controls.Gameplay.Move.performed  += ctx => Move = ctx.ReadValue<Vector2>();
-            _controls.Gameplay.Look.performed  += ctx => Look = ctx.ReadValue<Vector2>();
+            _controls.Gameplay.Move.performed  += ctx => MoveKeyboard = ctx.ReadValue<Vector2>();
+            _controls.Gameplay.Look.performed  += ctx => LookKeyboard = ctx.ReadValue<Vector2>();
+            
+            _controls.Gameplay.MoveController.performed += ctx => MoveController = ctx.ReadValue<Vector2>();
+            _controls.Gameplay.LookController.performed += ctx => LookController = ctx.ReadValue<Vector2>();
 
             // Jump
             _controls.Gameplay.Jump.performed += ctx =>
@@ -143,7 +152,7 @@ namespace Input
             _controls.Gameplay.Slot1.performed += ctx =>
             {
                 Slot1 = true;
-                OnSlotUse?.Invoke(0);
+                OnAbilityUse?.Invoke(0);
             };
             _controls.Gameplay.Slot1.canceled += ctx =>
             {
@@ -153,7 +162,7 @@ namespace Input
             _controls.Gameplay.Slot2.performed += ctx =>
             {
                 Slot2 = true;
-                OnSlotUse?.Invoke(1);
+                OnAbilityUse?.Invoke(1);
             };
             _controls.Gameplay.Slot2.canceled += ctx =>
             {
@@ -163,7 +172,7 @@ namespace Input
             _controls.Gameplay.Slot3.performed += ctx =>
             {
                 Slot3 = true;
-                OnSlotUse?.Invoke(2);
+                OnAbilityUse?.Invoke(2);
             };
             _controls.Gameplay.Slot3.canceled += ctx =>
             {
@@ -250,8 +259,10 @@ namespace Input
         public void EnableUI()
         {
             _controls.Gameplay.Disable();
-            Look = Vector2.zero;
-            Move = Vector2.zero;
+            LookKeyboard = Vector2.zero;
+            LookController = Vector2.zero;
+            MoveKeyboard = Vector2.zero;
+            MoveController = Vector2.zero;
             _controls.UI.Enable();
         }
     }

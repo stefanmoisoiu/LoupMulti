@@ -34,6 +34,7 @@ namespace Player.Stats
             PlayerStats.AddComponent(PlayerStats.StatType.StaminaRecovery, staminaRecoveryMult);
             PlayerStats.AddComponent(PlayerStats.StatType.HealthPerSecond, healthPerSecond);
             PlayerStats.AddComponent(PlayerStats.StatType.DrillSpeed, drillSpeed);
+            Debug.Log("Adding DrillSpeed " + drillSpeed.factor);
             PlayerStats.AddComponent(PlayerStats.StatType.DrillExtractAmount, drillExtractAmount);
         }
         

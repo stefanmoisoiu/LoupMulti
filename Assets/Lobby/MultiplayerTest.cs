@@ -41,7 +41,6 @@ namespace Lobby
             {
                 await NetcodeManager.Instance.CreateGame();
                 GUIUtility.systemCopyBuffer = NetcodeManager.Instance.CurrentServerJoinCode;
-                await NetcodeSceneChanger.Instance.NetworkChangeScene(multLobbySceneName);
             }
             catch (Exception e)
             {

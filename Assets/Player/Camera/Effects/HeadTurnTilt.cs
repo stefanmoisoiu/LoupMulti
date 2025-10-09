@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Player.Camera.Effects
@@ -16,9 +17,14 @@ namespace Player.Camera.Effects
 
         [SerializeField] private PCamera cam;
     
-        private void Start()
+        private void OnEnable()
         {
             CamEffects.Effects.Add(_effect);
+        }
+
+        private void OnDisable()
+        {
+            CamEffects.Effects.Remove(_effect);
         }
 
         private void Update()

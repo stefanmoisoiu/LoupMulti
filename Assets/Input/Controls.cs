@@ -37,10 +37,19 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""MoveController"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""c24e47d5-0122-4489-b7b8-c219181a8884"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Jump"",
                     ""type"": ""Button"",
                     ""id"": ""b7d36106-49d6-4cf8-81ac-5a6f40fe45da"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -55,10 +64,19 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""LookController"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""4d220ea9-455c-4cb6-94e1-758fc1f5dad0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Run"",
                     ""type"": ""Button"",
                     ""id"": ""59ec62f1-54cc-4e12-bdc8-1b1d326d62a1"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -203,17 +221,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""8e2de704-a081-4183-af7b-dca8fdd01115"",
-                    ""path"": ""<Gamepad>/leftStick"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""b68d5212-6fbd-43c4-9ec1-6e967ce36193"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
@@ -236,10 +243,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""c7baf239-5b87-4bdd-a63f-72347d068a10"",
-                    ""path"": ""<Gamepad>/rightStick"",
+                    ""id"": ""d49c29a0-5d08-4b72-8736-45e1c1d62842"",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
-                    ""processors"": """",
+                    ""processors"": ""ScaleVector2(x=0.3,y=0.3)"",
                     ""groups"": """",
                     ""action"": ""Look"",
                     ""isComposite"": false,
@@ -247,12 +254,12 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""d49c29a0-5d08-4b72-8736-45e1c1d62842"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""id"": ""b66dbdca-ef69-4780-8ec0-708303d7b3c6"",
+                    ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": ""ScaleVector2(x=0.3,y=0.3)"",
+                    ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Look"",
+                    ""action"": ""LookController"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -376,6 +383,17 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Drill"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8e2de704-a081-4183-af7b-dca8fdd01115"",
+                    ""path"": ""<Gamepad>/leftStick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MoveController"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -433,8 +451,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         // Gameplay
         m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
         m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
+        m_Gameplay_MoveController = m_Gameplay.FindAction("MoveController", throwIfNotFound: true);
         m_Gameplay_Jump = m_Gameplay.FindAction("Jump", throwIfNotFound: true);
         m_Gameplay_Look = m_Gameplay.FindAction("Look", throwIfNotFound: true);
+        m_Gameplay_LookController = m_Gameplay.FindAction("LookController", throwIfNotFound: true);
         m_Gameplay_Run = m_Gameplay.FindAction("Run", throwIfNotFound: true);
         m_Gameplay_Action1 = m_Gameplay.FindAction("Action1", throwIfNotFound: true);
         m_Gameplay_Action2 = m_Gameplay.FindAction("Action2", throwIfNotFound: true);
@@ -517,8 +537,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Gameplay;
     private List<IGameplayActions> m_GameplayActionsCallbackInterfaces = new List<IGameplayActions>();
     private readonly InputAction m_Gameplay_Move;
+    private readonly InputAction m_Gameplay_MoveController;
     private readonly InputAction m_Gameplay_Jump;
     private readonly InputAction m_Gameplay_Look;
+    private readonly InputAction m_Gameplay_LookController;
     private readonly InputAction m_Gameplay_Run;
     private readonly InputAction m_Gameplay_Action1;
     private readonly InputAction m_Gameplay_Action2;
@@ -534,8 +556,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         private @Controls m_Wrapper;
         public GameplayActions(@Controls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Gameplay_Move;
+        public InputAction @MoveController => m_Wrapper.m_Gameplay_MoveController;
         public InputAction @Jump => m_Wrapper.m_Gameplay_Jump;
         public InputAction @Look => m_Wrapper.m_Gameplay_Look;
+        public InputAction @LookController => m_Wrapper.m_Gameplay_LookController;
         public InputAction @Run => m_Wrapper.m_Gameplay_Run;
         public InputAction @Action1 => m_Wrapper.m_Gameplay_Action1;
         public InputAction @Action2 => m_Wrapper.m_Gameplay_Action2;
@@ -558,12 +582,18 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
+            @MoveController.started += instance.OnMoveController;
+            @MoveController.performed += instance.OnMoveController;
+            @MoveController.canceled += instance.OnMoveController;
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @LookController.started += instance.OnLookController;
+            @LookController.performed += instance.OnLookController;
+            @LookController.canceled += instance.OnLookController;
             @Run.started += instance.OnRun;
             @Run.performed += instance.OnRun;
             @Run.canceled += instance.OnRun;
@@ -601,12 +631,18 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
             @Move.canceled -= instance.OnMove;
+            @MoveController.started -= instance.OnMoveController;
+            @MoveController.performed -= instance.OnMoveController;
+            @MoveController.canceled -= instance.OnMoveController;
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @LookController.started -= instance.OnLookController;
+            @LookController.performed -= instance.OnLookController;
+            @LookController.canceled -= instance.OnLookController;
             @Run.started -= instance.OnRun;
             @Run.performed -= instance.OnRun;
             @Run.canceled -= instance.OnRun;
@@ -711,8 +747,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     public interface IGameplayActions
     {
         void OnMove(InputAction.CallbackContext context);
+        void OnMoveController(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
+        void OnLookController(InputAction.CallbackContext context);
         void OnRun(InputAction.CallbackContext context);
         void OnAction1(InputAction.CallbackContext context);
         void OnAction2(InputAction.CallbackContext context);

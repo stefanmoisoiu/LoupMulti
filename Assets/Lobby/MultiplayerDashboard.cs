@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Game.Common;
 using Game.Data;
 using Game.Game_Loop;
@@ -47,27 +48,28 @@ namespace Lobby
         }
         private void OnEnable()
         {
-            if (NetcodeManager.InGame)
-            {
-                NetworkManager.Singleton.OnClientConnectedCallback += PlayerCountChanged;
-                NetworkManager.Singleton.OnClientDisconnectCallback += PlayerCountChanged;
-            
-                UpdateLobbyDashboardInfo();
-            }
-
-            // NetcodeManager.OnCreateGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
-            // NetcodeManager.OnJoinGame += () => ChangeDashboardState(DashboardState.LobbyInfo);
-            // NetcodeManager.OnLeaveGame += () => ChangeDashboardState(DashboardState.CreateJoin);
+            if (NetcodeManager.InGame) OnlineDashboardSetup();
+            else NetcodeManager.OnEnterGame += OnlineDashboardSetup;
         }
-
         private void OnDisable()
         {
+            NetcodeManager.OnEnterGame -= OnlineDashboardSetup;
             if (NetworkManager.Singleton != null)
             {
                 NetworkManager.Singleton.OnClientConnectedCallback -= PlayerCountChanged;
                 NetworkManager.Singleton.OnClientDisconnectCallback -= PlayerCountChanged;
             }
         }
+        
+        private void OnlineDashboardSetup()
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += PlayerCountChanged;
+            NetworkManager.Singleton.OnClientDisconnectCallback += PlayerCountChanged;
+            
+            UpdateLobbyDashboardInfo();
+        }
+
+
 
         public async void CreateGame()
         {
@@ -78,7 +80,7 @@ namespace Lobby
             try
             {
                 await NetcodeManager.Instance.CreateGame();
-                await NetcodeSceneChanger.Instance.NetworkChangeScene(multiplayerLobbySceneName);
+                
                 CopyToClipboardJoinCode();
                 SuccessEnterGame?.Invoke();
             }
@@ -116,9 +118,12 @@ namespace Lobby
         public void LeaveGame()
         {
             Debug.Log("Leave Game button pressed");
-        
+            StartCoroutine(LeaveGameCoroutine());
+        }
+        private IEnumerator LeaveGameCoroutine()
+        {
             NetcodeManager.Instance.LeaveGame();
-            NetcodeSceneChanger.Instance.LocalChangeScene(soloLobbySceneName);
+            yield return LocalSceneChanger.Instance.LocalLoadScene(soloLobbySceneName, SceneType.Active);
         }
         public void StartGame()
         {

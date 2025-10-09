@@ -12,18 +12,23 @@ namespace Game.Upgrade.Shop
     {
         private bool shopOpened = false;
         public bool ShopOpened => shopOpened;
-        
+
         public static event Action<bool, ShopManager> OnShopOpenedChanged;
-        [Rpc(SendTo.Everyone)] private void OnShopOpenedChangedRpc(bool opened) => OnShopOpenedChanged?.Invoke(opened, this);
-        
-        public static event Action<ushort> OnShopItemBought;
-        [Rpc(SendTo.SpecifiedInParams)] private void OnShopItemBoughtClientRpc(ushort shopItemIndex, RpcParams @params) => OnShopItemBought?.Invoke(shopItemIndex);
-        
+
+        [Rpc(SendTo.Everyone)]
+        private void OnShopOpenedChangedRpc(bool opened) => OnShopOpenedChanged?.Invoke(opened, this);
+
+        public static event Action<ushort> OnShopItemBoughtOwner;
+
+        [Rpc(SendTo.SpecifiedInParams)]
+        private void OnShopItemBoughtOwnerRpc(ushort itemInd, RpcParams @params) =>
+            OnShopItemBoughtOwner?.Invoke(itemInd);
+
         public void SetOpened(bool opened)
         {
             if (shopOpened == opened) return;
             shopOpened = opened;
-            
+
             Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked;
             Cursor.visible = opened;
 
@@ -31,35 +36,66 @@ namespace Game.Upgrade.Shop
 
             NetcodeLogger.Instance.LogRpc(opened ? "Shop opened" : "Shop closed", NetcodeLogger.LogType.GameLoop);
         }
-        
-        public void BuyShopItem(ShopItemData shopItemData)
+
+        public void BuyShopItem(Item item)
         {
-            Debug.Log($"Buying shop item {shopItemData}");
-            if (!shopItemData.HasEnoughResources(DataManager.Instance[NetworkManager.LocalClientId]))
+            Debug.Log($"Buying shop item {item.Info.Name}");
+            if (!item.ShopItemData.HasEnoughResources(DataManager.Instance[NetworkManager.LocalClientId]))
             {
                 Debug.LogWarning("Not enough resources to buy this item.");
                 return;
             }
-            
-            BuyShopItemServerRpc(ShopItemList.Instance.GetShopItem(shopItemData), NetworkManager.LocalClientId);
+
+            BuyShopItemServerRpc(ItemRegistry.Instance.GetItem(item), NetworkManager.LocalClientId);
         }
 
         [ServerRpc(RequireOwnership = false)]
-        private void BuyShopItemServerRpc(ushort shopItemDataInd, ulong clientId)
+        private void BuyShopItemServerRpc(ushort itemInd, ulong clientId)
         {
-            Debug.Log($"BuyShopItemServerRpc: {shopItemDataInd} for {clientId}");
-            ShopItemData shopItemData = ShopItemList.Instance.GetShopItem(shopItemDataInd);
-            if (!shopItemData.HasEnoughResources(DataManager.Instance[NetworkManager.LocalClientId]))
+            Item item = ItemRegistry.Instance.GetItem(itemInd);
+            
+            if (!item.ShopItemData.HasEnoughResources(DataManager.Instance[clientId]))
             {
-                NetcodeLogger.Instance.LogRpc($"Not enough resources to buy {shopItemData.ItemName} for {clientId}", NetcodeLogger.LogType.GameLoop);
+                NetcodeLogger.Instance.LogRpc($"Not enough resources to buy {item.Info.Name} for client {clientId}",
+                    NetcodeLogger.LogType.GameLoop);
                 return;
             }
-            
+
             PlayerData data = DataManager.Instance[clientId];
-            InGameData ingData = data.inGameData.AddShopItem(shopItemDataInd).AddPerk(PerkList.Instance.GetPerk(shopItemData.PerkData));
-            DataManager.Instance[clientId] = new(data) {inGameData = ingData};
-            
-            OnShopItemBoughtClientRpc(shopItemDataInd, data.SendRpcTo());
+            InGameData ingData = data.inGameData;
+            ingData = ingData.SetResources(ingData.resources.RemoveResource(item.ShopItemData.CostType, item.ShopItemData.CostAmount));
+            ingData = ingData.AddItem(itemInd);
+            DataManager.Instance[clientId] = new(data) { inGameData = ingData };
+
+            OnShopItemBoughtOwnerRpc(itemInd, data.SendRpcTo());
+        }
+        public void BuyHealth(ushort cost, ushort healAmount = 10)
+        {
+            if (!DataManager.Instance[NetworkManager.LocalClientId].inGameData.resources.HasEnough(ResourceType.Common, cost))
+            {
+                Debug.LogWarning("Not enough resources to buy health.");
+                return;
+            }
+            BuyHealthServerRpc(cost, NetworkManager.LocalClientId, healAmount);
+        }
+        [ServerRpc(RequireOwnership = false)]
+        private void BuyHealthServerRpc(ushort cost, ulong clientId, ushort healAmount = 10)
+        {
+            PlayerData data = DataManager.Instance[clientId];
+            InGameData ingData = data.inGameData;
+            if (!ingData.resources.HasEnough(ResourceType.Common, cost))
+            {
+                NetcodeLogger.Instance.LogRpc($"Not enough resources to buy health for {clientId}",
+                    NetcodeLogger.LogType.GameLoop);
+                return;
+            }
+
+            ingData = ingData.AddHealth(healAmount);
+            ingData = new(ingData)
+            {
+                resources = ingData.resources.RemoveResource(ResourceType.Common, cost)
+            };
+            DataManager.Instance[clientId] = new(data) { inGameData = ingData };
         }
     }
 }

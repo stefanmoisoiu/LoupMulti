@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   structureName: Emerald Structure
   collectedResource: {fileID: 11400000, guid: e1cc66b8071ea6943904d0448e48feb8, type: 2}
-  resourceAmount: 10
-  durabilityPerResource: 3
+  resourceAmount: 3
+  durabilityPerResource: 2

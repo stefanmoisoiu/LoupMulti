@@ -51,8 +51,8 @@ Material:
     - _VoronoiInfluence: 0.19
     - _VoronoiPower: 1
     m_Colors:
-    - _BaseColor: {r: 2.670157, g: 2.6317375, b: 0, a: 1}
-    - _EndColor: {r: 1, g: 0.047002554, b: 0, a: 1}
+    - _BaseColor: {r: 1.0257407, g: 1.0162666, b: 0.12095998, a: 1}
+    - _EndColor: {r: 0.5, g: 0.023501277, b: 0, a: 1}
     - _MidColor: {r: 1, g: 0.4221933, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

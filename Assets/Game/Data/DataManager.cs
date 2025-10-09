@@ -11,12 +11,11 @@ namespace Game.Data
     public class DataManager : NetworkBehaviour
     {
         public static DataManager Instance { get; private set; }
-        
-        [SerializeField] private PlayerHealth playerHealth;
-        public PlayerHealth PlayerHealth => playerHealth;
 
         [SerializeField] private PlayerResources playerResources;
         public PlayerResources PlayerResources => playerResources;
+        [SerializeField] private PlayerDataHealth playerDataHealth;
+        public PlayerDataHealth PlayerDataHealth => playerDataHealth;
         [SerializeField] private PlayerState playerState;
         public PlayerState PlayerState => playerState;
         
@@ -61,10 +60,10 @@ namespace Game.Data
                 Debug.LogError("AddEntry() can only be called on the server.");
                 return;
             }
-            _data[newPd.ClientId] = newPd;
+            _data[newPd.clientId] = newPd;
             OnEntryAddedServer?.Invoke(newPd);
             AddEntryClientRpc(newPd);
-            UpdateEntryClientRpc(new(NetworkManager.ConnectedClients[newPd.ClientId]), newPd);
+            UpdateEntryClientRpc(new(NetworkManager.ConnectedClients[newPd.clientId]), newPd);
         }
 
         /// <summary>
@@ -72,17 +71,17 @@ namespace Game.Data
         /// </summary>
         public void UpdateEntry(PlayerData newPd)
         {
-            Debug.Log($"Updating entry {newPd}");
+            // Debug.Log($"Updating entry {newPd}");
             if (!IsServer)
             {
                 throw new Exception("UpdateEntry() can only be called on the server.");
             }
-            if (!_data.ContainsKey(newPd.ClientId))
+            if (!_data.ContainsKey(newPd.clientId))
             {
                 return;
             }
-            PlayerData previousData = _data[newPd.ClientId];
-            _data[newPd.ClientId] = newPd;
+            PlayerData previousData = _data[newPd.clientId];
+            _data[newPd.clientId] = newPd;
             OnEntryUpdatedServer?.Invoke(previousData, newPd);
             UpdateEntryClientRpc(previousData, newPd);
         }
@@ -116,16 +115,16 @@ namespace Game.Data
         [ClientRpc]
         private void AddEntryClientRpc(PlayerData newPd, ClientRpcParams rpcParams = default)
         {
-            _data[newPd.ClientId] = newPd;
+            _data[newPd.clientId] = newPd;
             OnEntryAddedClient?.Invoke(newPd);
         }
 
         [ClientRpc]
         private void UpdateEntryClientRpc(PlayerData previousPd, PlayerData newPd, ClientRpcParams rpcParams = default)
         {
-            _data[newPd.ClientId] = newPd;
+            _data[newPd.clientId] = newPd;
             OnEntryUpdatedClient?.Invoke(previousPd, newPd);
-            if (newPd.ClientId == NetworkManager.Singleton.LocalClientId) OnEntryUpdatedOwner?.Invoke(previousPd, newPd);
+            if (newPd.clientId == NetworkManager.Singleton.LocalClientId) OnEntryUpdatedOwner?.Invoke(previousPd, newPd);
         }
 
         [ClientRpc]
@@ -193,7 +192,7 @@ namespace Game.Data
             return _data.ContainsKey(clientId);
         }
     
-        public void Setup()
+        public void Reset()
         {
             ClearEntries();
             
@@ -208,7 +207,7 @@ namespace Game.Data
             base.OnNetworkSpawn();
 
             if (!IsServer) return;
-            Setup();
+            Reset();
             NetworkManager.Singleton.OnClientConnectedCallback += PlayerJoinedGame;
         }
 

@@ -1,26 +1,26 @@
-﻿using Player.UI;
-using Player.UI.CircularBar;
+﻿using Game.Common.CircularBar;
+using Player.General_UI;
+using Player.Networking;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Player.Movement.Stamina
 {
-    public class StaminaBarUI : CircularBar
+    public class StaminaBarUI : PNetworkBehaviour
     {
         private const string StaminaTag = "StaminaBar";
         
         [SerializeField] private Stamina stamina;
+        private CircularBar _staminaBar;
 
         protected override void StartAnyOwner()
         {
-            Image img = PCanvas.CanvasObjects[StaminaTag].GetComponent<Image>();
-            target = new(img.material);
-            img.material = target;
+            _staminaBar = PCanvas.CanvasObjects[StaminaTag].GetComponent<CircularBar>();
         }
 
         protected override void UpdateAnyOwner()
         {
-            SetBarAdv(stamina.StaminaValue / stamina.MaxStamina);
+            _staminaBar.SetAdv(stamina.StaminaValue / stamina.MaxStamina);
         }
     }
 }

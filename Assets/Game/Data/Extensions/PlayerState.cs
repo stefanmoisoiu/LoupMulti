@@ -10,7 +10,7 @@ namespace Game.Data.Extensions
             foreach (PlayerData playerData in DataManager.Instance.GetValues())
             {
                 if (playerData.outerData.playingState != OuterData.PlayingState.NotAssigned) continue;
-                DataManager.Instance[playerData.ClientId] = new(playerData)
+                DataManager.Instance[playerData.clientId] = new(playerData)
                     { outerData = playerData.outerData.SetState(OuterData.PlayingState.Playing) };
             }
         }
@@ -20,7 +20,7 @@ namespace Game.Data.Extensions
             foreach (PlayerData playerData in DataManager.Instance.GetValues())
             {
                 if (playerData.outerData.playingState == OuterData.PlayingState.NotAssigned) continue;
-                DataManager.Instance[playerData.ClientId] = new(playerData)
+                DataManager.Instance[playerData.clientId] = new(playerData)
                     { outerData = playerData.outerData.SetState(OuterData.PlayingState.NotAssigned) };
             }
         }

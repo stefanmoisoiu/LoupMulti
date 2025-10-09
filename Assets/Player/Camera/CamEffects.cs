@@ -18,11 +18,6 @@ namespace Player.Camera
 
         protected override void StartAnyOwner()
         {
-            Effects = new();
-        }
-        private void Start()
-        {
-            if (!IsOwner && NetcodeManager.InGame) return;
             _baseFov = cam.Lens.FieldOfView;
         }
 

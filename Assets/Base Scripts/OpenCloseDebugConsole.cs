@@ -1,24 +1,26 @@
-using System;
 using UnityEngine;
 
-public class OpenCloseDebugConsole : MonoBehaviour
+namespace Base_Scripts
 {
-    private bool visible;
-    private void Update()
+    public class OpenCloseDebugConsole : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        private bool visible;
+        private void Update()
         {
-            visible = !visible;
-            Debug.developerConsoleVisible = visible;
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                visible = !visible;
+                Debug.developerConsoleVisible = visible;
+            }
         }
-    }
 
-    private void OnDisable()
-    {
-        if (visible)
+        private void OnDisable()
         {
-            visible = false;
-            Debug.developerConsoleVisible = false;
+            if (visible)
+            {
+                visible = false;
+                Debug.developerConsoleVisible = false;
+            }
         }
     }
 }

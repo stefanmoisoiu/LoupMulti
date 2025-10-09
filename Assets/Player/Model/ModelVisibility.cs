@@ -21,7 +21,7 @@ namespace Player.Model
 
         private void OnEntryUpdated(PlayerData previousData, PlayerData newData)
         {
-            if (newData.ClientId != OwnerClientId) return;
+            if (newData.clientId != OwnerClientId) return;
             UpdateVisibility(newData.outerData.playingState != OuterData.PlayingState.SpectatingGame);
         }
 

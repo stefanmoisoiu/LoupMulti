@@ -17,8 +17,8 @@ namespace Game.Game_Loop
 
         public static GameManager Instance;
         public static event Action<GameManager> OnCreated;
-        [SerializeField] private PerkSelectionManager perkSelectionManager;
-        public PerkSelectionManager PerkSelectionManager => perkSelectionManager;
+        [SerializeField] private ItemSelectionManager itemSelectionManager;
+        public ItemSelectionManager ItemSelectionManager => itemSelectionManager;
         [SerializeField] private ShopManager shopManager;
         public ShopManager ShopManager => shopManager;
         [SerializeField] private MapManager mapManager;
@@ -26,12 +26,10 @@ namespace Game.Game_Loop
         [SerializeField] private GameLoop gameLoop;
         public GameLoop GameLoop => gameLoop;
 
-        public NetworkVariable<GameState> gameState = new(GameState.Lobby, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
-        public static event Action<GameState, float> OnGameStateChanged;
-        [Rpc(SendTo.Everyone)]
-        private void OnGameStateChangedClientRpc(GameState newState, float serverTime)
-            => OnGameStateChanged?.Invoke(newState, serverTime);
+        private readonly NetworkVariable<GameState> _gameState = new();
+        public static GameState CurrentGameState => Instance == null ? GameState.NotConnected : Instance._gameState.Value;
+        public static event Action<GameState,GameState> OnGameStateChanged;
+        private void GameStateChanged(GameState oldState, GameState newState) => OnGameStateChanged?.Invoke(oldState, newState);
 
         public static event Action OnGameStartedServer;
         public static event Action OnGameEndedServer;
@@ -43,8 +41,16 @@ namespace Game.Game_Loop
                 Destroy(gameObject);
                 return;
             }
+
+            _gameState.OnValueChanged += GameStateChanged;
+            
             Instance = this;
             OnCreated?.Invoke(this);
+        }
+
+        private void OnDisable()
+        {
+            _gameState.OnValueChanged -= GameStateChanged;
         }
 
 
@@ -87,29 +93,36 @@ namespace Game.Game_Loop
         private IEnumerator StartGameCoroutine()
         {
             NetcodeLogger.Instance.LogRpc("Starting game", NetcodeLogger.LogType.Netcode);
+            
+            _gameState.Value = GameState.Loading;
         
             DataManager.Instance.PlayerState.SetNotAssignedPlayersToPlayingState();
         
             yield return mapManager.LoadRandomGameMap();
 
-            gameState.Value = GameState.InGame;
-            OnGameStateChangedClientRpc(GameState.InGame, NetworkManager.ServerTime.TimeAsFloat);
+            yield return mapManager.SetPlayerSpawnPositions();
+            
+            _gameState.Value = GameState.InGame;
             OnGameStartedServer?.Invoke();
         
-            MapManager.SetPlayerSpawnPositions();
             yield return gameLoop.MainLoop(this);
             
-            gameState.Value = GameState.Lobby;
-            OnGameStateChangedClientRpc(GameState.Lobby, NetworkManager.ServerTime.TimeAsFloat);
             OnGameEndedServer?.Invoke();
             
-            yield return MapManager.LoadLobbyMap();
-            DataManager.Instance.Setup();
+            _gameState.Value = GameState.Loading;
+            
+            yield return mapManager.LoadLobbyMap();
+            
+            _gameState.Value = GameState.Lobby;
+            
+            DataManager.Instance.Reset();
         }
         public enum GameState
         {
             Lobby,
-            InGame
+            Loading,
+            InGame,
+            NotConnected
         }
     }
 }

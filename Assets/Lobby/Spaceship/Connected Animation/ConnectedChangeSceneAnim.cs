@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Threading.Tasks;
+using Networking;
 using Networking.Connection;
 using UnityEngine;
 
@@ -26,7 +28,7 @@ namespace Lobby.Spaceship.Connected_Animation
             yield return new WaitForSeconds(waitDuration);
         
             // Change the scene
-            NetcodeSceneChanger.Instance.LocalChangeScene(sceneName);
+            LocalSceneChanger.Instance.StartCoroutine(LocalSceneChanger.Instance.LocalLoadScene(sceneName, SceneType.Active));
         }
     }
 }

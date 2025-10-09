@@ -14,42 +14,44 @@ namespace Game.Common
     [Serializable]
     public struct PlayerData : INetworkSerializable, IEquatable<PlayerData>
     {
-        public ulong ClientId;
+        public ulong clientId;
         
         public OuterData outerData;
         public InGameData inGameData;
         
         public PlayerData(NetworkClient client)
         {
-            ClientId = client?.ClientId ?? ulong.MaxValue;
+            clientId = client?.ClientId ?? ulong.MaxValue;
             outerData = new OuterData(client);
             inGameData = new InGameData(
-                perksIndexArray:InGameData.DefaultPerksIndexArray(),
-                shopItemsIndexArray: InGameData.DefaultShopItemsIndexArray());
+                health: GameSettings.PlayerMaxHealth,
+                items: InGameData.DefaultItemsArray(),
+                resources: new PlayerResourceData());
         }
         public PlayerData(PlayerData copy)
         {
-            ClientId = copy.ClientId;
+            clientId = copy.clientId; 
+            
             outerData = new OuterData(copy.outerData);
-            inGameData = new InGameData(copy.inGameData.health, copy.inGameData.perksIndexArray, copy.inGameData.shopItemsIndexArray, copy.inGameData.resources);
+            inGameData = new InGameData(copy.inGameData.health, copy.inGameData.items, copy.inGameData.resources);
         }
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
-            serializer.SerializeValue(ref ClientId);
+            serializer.SerializeValue(ref clientId);
             serializer.SerializeValue(ref outerData);
             serializer.SerializeValue(ref inGameData);
         }
-        public RpcParams SendRpcTo() => RpcParamsExt.Instance.SendToClientIDs(new []{ClientId});
+        public RpcParams SendRpcTo() => RpcParamsExt.Instance.SendToClientIDs(new []{clientId});
         public override string ToString()
         {
-            return $"ClientId: {ClientId}\n" +
+            return $"ClientId: {clientId}\n" +
                    $"OuterData:\n{outerData}\n \n" +
                    $"InGameData:\n{inGameData}";
         }
 
         public bool Equals(PlayerData other)
         {
-            return ClientId == other.ClientId && outerData.Equals(other.outerData) && inGameData.Equals(other.inGameData);
+            return clientId == other.clientId && outerData.Equals(other.outerData) && inGameData.Equals(other.inGameData);
         }
         public override bool Equals(object obj)
         {
@@ -57,7 +59,7 @@ namespace Game.Common
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(ClientId, outerData, inGameData);
+            return HashCode.Combine(clientId, outerData, inGameData);
         }
     }
     
@@ -117,51 +119,44 @@ namespace Game.Common
     public struct InGameData : INetworkSerializable, IEquatable<InGameData>
     {
         public ushort health;
-        public ushort[] perksIndexArray;
-        public ushort[] shopItemsIndexArray;
+        
+        
+        public ushort[] items;
         public PlayerResourceData resources;
-        [ShowInInspector] public string perksString => string.Join(", ", GetPerks().Select(u => u.PerkName));
-
-        public override string ToString()
-        {
-            PerkData[] perks = GetPerks();
-            return $"Health: {health}\nResources: {resources}\nPerks: {string.Join(", ", perks.Select(u => u))}";
-        }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref resources);
             serializer.SerializeValue(ref health);
             
-            perksIndexArray ??= new ushort[GameSettings.Instance.MaxPerks];
+            items ??= new ushort[GameSettings.Instance.MaxItems];
             
-            for (int i = 0; i < perksIndexArray.Length; i++)
-                serializer.SerializeValue(ref perksIndexArray[i]);
-            
-            
-            shopItemsIndexArray ??= new ushort[GameSettings.Instance.MaxShopItems];
-            
-            for (int i = 0; i < shopItemsIndexArray.Length; i++)
-                serializer.SerializeValue(ref shopItemsIndexArray[i]);
+            for (int i = 0; i < items.Length; i++)
+                serializer.SerializeValue(ref items[i]);
         }
         
-        public InGameData(ushort health = GameSettings.PlayerMaxHealth, ushort[] perksIndexArray = null, ushort[] shopItemsIndexArray = null, PlayerResourceData resources = new())
+        public InGameData(ushort health = GameSettings.PlayerMaxHealth, ushort[] items = null, PlayerResourceData resources = new())
         {
             this.health = health;
-            this.perksIndexArray = perksIndexArray;
-            this.shopItemsIndexArray = shopItemsIndexArray;
+            if (health > GameSettings.PlayerMaxHealth) this.health = GameSettings.PlayerMaxHealth;
+
+            this.items = items;
             this.resources = resources;
             
-            if(perksIndexArray == null) Debug.LogError("initialise perksIndexArray ca marche pas sinon");
-            if (shopItemsIndexArray == null) Debug.LogError("initialise shopItemsIndexArray ca marche pas sinon");
+            if (items == null) throw new ArgumentNullException(nameof(items), "Items array cannot be null.");
+        }
+        
+        public InGameData SetResources(PlayerResourceData newResources)
+        {
+            resources = newResources;
+            return this;
         }
 
         public InGameData(InGameData copy)
         {
             health = copy.health;
+            items = copy.items;
             resources = copy.resources;
-            perksIndexArray = copy.perksIndexArray;
-            shopItemsIndexArray = copy.shopItemsIndexArray;
         }
         
         public InGameData AddHealth(ushort amount)
@@ -191,69 +186,35 @@ namespace Game.Common
         }
         public bool IsAlive() => health > 0;
         
-        public InGameData AddPerk(ushort perkIndex)
+        public InGameData AddItem(ushort itemIndex)
         {
-            perksIndexArray ??= DefaultPerksIndexArray();
-            for (int i = 0; i < perksIndexArray.Length; i++)
+            items ??= new ushort[GameSettings.Instance.MaxItems];
+            for (int i = 0; i < items.Length; i++)
             {
-                if (perksIndexArray[i] != ushort.MaxValue) continue;
+                if (items[i] != ushort.MaxValue) continue;
                 
-                perksIndexArray[i] = perkIndex;
-                return this;
-            }
-            return this;
-        }
-        public PerkData[] GetPerks()
-        {
-            if (perksIndexArray == null || perksIndexArray.Length == 0) return new PerkData[] {};
-
-            List<PerkData> perks = new();
-
-            for (int i = 0; i < GameSettings.Instance.MaxPerks; i++)
-            {
-                if (perksIndexArray[i] == ushort.MaxValue) continue;
-                perks.Add(PerkList.Instance.GetPerk(perksIndexArray[i]));
-            }
-            return perks.ToArray();
-        }
-        public static ushort[] DefaultPerksIndexArray()
-        { 
-            ushort[] res = new ushort[GameSettings.Instance.MaxPerks];
-            for (int i = 0; i < GameSettings.Instance.MaxPerks; i++) res[i] = ushort.MaxValue;
-            return res;
-        } 
-        
-        public InGameData AddShopItem(ushort shopItemIndex)
-        {
-            shopItemsIndexArray ??= new ushort[GameSettings.Instance.MaxShopItems];
-            for (int i = 0; i < shopItemsIndexArray.Length; i++)
-            {
-                if (shopItemsIndexArray[i] != ushort.MaxValue) continue;
-                
-                shopItemsIndexArray[i] = shopItemIndex;
+                items[i] = itemIndex;
                 return this;
             }
             return this;
         }
         
-        public ShopItemData[] GetShopItems()
+        public Item[] GetItems()
         {
-            if (shopItemsIndexArray == null || shopItemsIndexArray.Length == 0) return new ShopItemData[] {};
-            
-            List<ShopItemData> shopItems = new();
-
-            for (int i = 0; i < GameSettings.Instance.MaxShopItems; i++)
+            items ??= new ushort[GameSettings.Instance.MaxItems];
+            List<Item> res = new List<Item>(items.Length);
+            for (int i = 0; i < items.Length; i++)
             {
-                if (shopItemsIndexArray[i] == ushort.MaxValue) continue;
-                shopItems.Add(ShopItemList.Instance.GetShopItem(shopItemsIndexArray[i]));
+                if (items[i] == ushort.MaxValue) continue;
+                Item item = ItemRegistry.Instance.GetItem(items[i]);
+                res.Add(item);
             }
-            return shopItems.ToArray();
+            return res.ToArray();
         }
-        
-        public static ushort[] DefaultShopItemsIndexArray()
+        public static ushort[] DefaultItemsArray()
         { 
-            ushort[] res = new ushort[GameSettings.Instance.MaxShopItems];
-            for (int i = 0; i < GameSettings.Instance.MaxShopItems; i++) res[i] = ushort.MaxValue;
+            ushort[] res = new ushort[GameSettings.Instance.MaxItems];
+            for (int i = 0; i < GameSettings.Instance.MaxItems; i++) res[i] = ushort.MaxValue;
             return res;
         }
         
@@ -261,8 +222,7 @@ namespace Game.Common
         {
             return health == other.health &&
                    resources.Equals(other.resources) &&
-                   Equals(perksIndexArray, other.perksIndexArray) &&
-                   Equals(shopItemsIndexArray, other.shopItemsIndexArray);
+                   Equals(items, other.items);
         }
         public override bool Equals(object obj)
         {
@@ -270,7 +230,7 @@ namespace Game.Common
         }
         public override int GetHashCode()
         {
-            return HashCode.Combine(health, resources, perksIndexArray);
+            return HashCode.Combine(health, resources, items);
         }
     }
     
@@ -332,6 +292,16 @@ namespace Game.Common
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
             return this;
+        }
+        
+        public ushort GetResourceAmount(ResourceType type)
+        {
+            return type switch
+            {
+                ResourceType.Common => commonAmount,
+                ResourceType.Rare => rareAmount,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
         }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter

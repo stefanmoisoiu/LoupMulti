@@ -6,7 +6,7 @@ namespace Base_Scripts
     [RequireComponent(typeof(ParticleSystem))] [ExecuteAlways]
     public class ParticleAbsorbEffect : MonoBehaviour
     {
-        [SerializeField] private float advTime = 0.5f;
+        [SerializeField] [Range(0,1)] private float advTime = 0.5f;
         [SerializeField] private AnimationCurve curve;
     
     

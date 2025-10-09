@@ -1,4 +1,5 @@
-﻿using Game.Common;
+﻿using System;
+using Game.Common;
 using Game.Common.List;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,26 +10,39 @@ namespace Game.Data.Extensions
     {
         [SerializeField] private ResourceList resourceList;
         
-        // public Action<ushort, Game_Loop.Round.Collect.Resource.ResourceData> OnResourceCollectedOwner;
+        public static event Action<ushort, ushort, ResourceData> OnResourceCollectedOwner;
         
-        // [Rpc(SendTo.SpecifiedInParams)]
-        // private void OnResourceCollectedClientRpc(ushort amount, ushort resourceIndex, RpcParams rpcParams) => OnResourceCollectedOwner?.Invoke(amount, resourceList.GetResource(resourceIndex));
+        [Rpc(SendTo.SpecifiedInParams)]
+        private void OnResourceCollectedClientRpc(ushort amountCollected, ushort total, ushort resourceIndex, RpcParams @params) => OnResourceCollectedOwner?.Invoke(amountCollected, total, resourceList.GetResource(resourceIndex));
         
         /// <summary>
         /// SERVER ONLY
         /// </summary>
         public void CollectResource(ulong origin, ResourceData resourceData, ushort amount)
         {
+            if (!IsServer) throw new Exception("CollectResource can only be called on the server");
+            if (amount == 0) return;
+            
             PlayerData player = DataManager.Instance[origin];
-            if (player.ClientId == ulong.MaxValue) throw new System.Exception($"Player with ClientId {origin} not found");
+            if (player.clientId == ulong.MaxValue) throw new System.Exception($"Player with ClientId {origin} not found");
 
+            InGameData inGameData = player.inGameData;
+            inGameData = new(player.inGameData)
+            {
+                resources = inGameData.resources.AddResource(resourceData.ResourceType, amount)
+            };
+            
+            
             DataManager.Instance[origin] = new(player)
             {
-                inGameData = new(player.inGameData)
-                {
-                    resources = player.inGameData.resources.AddResource(resourceData.ResourceType, amount)
-                }
+                inGameData = inGameData
             };
+            
+            OnResourceCollectedClientRpc(
+                amount, 
+                inGameData.resources.GetResourceAmount(resourceData.ResourceType), 
+                resourceList.GetResource(resourceData), 
+                player.SendRpcTo());
         }
     }
 }

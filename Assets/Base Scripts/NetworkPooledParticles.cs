@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -14,15 +15,29 @@ namespace Base_Scripts
         [SerializeField] private Vector3 basePosition;
         [SerializeField] private Quaternion baseRotation;
         [SerializeField] private bool debug;
-    
-    
-        private void Awake()
+
+
+        private void OnEnable()
         {
+            Setup();
+        }
+
+        private void Setup()
+        {
+            if (particlePool != null)
+            {
+                for (int i = 0; i < particlePool.Length; i++)
+                {
+                    if (particlePool[i] != null)
+                        Destroy(particlePool[i].gameObject);
+                }
+            }
+            
             particlePool = new ParticleSystem[poolSize];
             for (int i = 0; i < poolSize; i++)
                 particlePool[i] = Instantiate(particlePrefab, transform).GetComponent<ParticleSystem>();
         }
-
+        
         public void Play()
         {
             Play(transform.TransformPoint(basePosition), baseRotation, new());
@@ -30,7 +45,7 @@ namespace Base_Scripts
 
         public void Play(ulong target)
         {
-            Play(transform.TransformPoint(basePosition), baseRotation, new (effectsTarget: target));
+            Play(transform.TransformPoint(basePosition), baseRotation, new (target: target));
         }
         public void Play(ParticleAdditionalInfo info)
         {
@@ -38,20 +53,24 @@ namespace Base_Scripts
         }
         public void Play(Vector3 position, Quaternion rotation, ParticleAdditionalInfo info)
         {
-            PlayPooledParticle(position, rotation, info);
             PlayServerRpc(position, rotation, NetworkManager.LocalClientId,  info);
         }
     
         [ServerRpc(RequireOwnership = false)]
         private void PlayServerRpc(Vector3 position, Quaternion rotation, ulong origin, ParticleAdditionalInfo info)
         {
-            PlayClientRpc(position, rotation,info, RpcParamsExt.Instance.SendToAllExcept(new []{ origin }));
+            PlayClientRpc(position, rotation,info);
         }
-    
-        [Rpc(SendTo.SpecifiedInParams)]
-        private void PlayClientRpc(Vector3 position, Quaternion rotation,ParticleAdditionalInfo info, RpcParams rpcParams = default) => PlayPooledParticle(position, rotation, info);
+
+        [Rpc(SendTo.Everyone)]
+        private void PlayClientRpc(Vector3 position, Quaternion rotation, ParticleAdditionalInfo info)
+        {
+            PlayPooledParticle(position, rotation, info);
+        }
         private void PlayPooledParticle(Vector3 position, Quaternion rotation, ParticleAdditionalInfo info)
         {
+            if (info.CustomParticleCount == 0) return;
+            
             ParticleSystem p = particlePool[currentIndex];
 
             if (p == null)
@@ -63,12 +82,12 @@ namespace Base_Scripts
             p.transform.position = position;
             p.transform.rotation = rotation;
         
-            if (info.effectsTarget != ulong.MaxValue && p.TryGetComponent(out ParticleAbsorbEffect effect))
-                effect.SetTarget(NetworkManager.ConnectedClients[info.effectsTarget].PlayerObject.transform);
+            if (info.Target != ulong.MaxValue && p.TryGetComponent(out ParticleAbsorbEffect effect))
+                effect.SetTarget(NetworkManager.ConnectedClients[info.Target].PlayerObject.transform);
             
-            if (info.customParticleCount != ushort.MaxValue)
+            if (info.CustomParticleCount != ushort.MaxValue)
             {
-                p.emission.SetBurst(0, new () { count = info.customParticleCount });
+                p.emission.SetBurst(0, new () { count = info.CustomParticleCount });
             }
             p.Play();
         
@@ -91,19 +110,19 @@ namespace Base_Scripts
 
         public struct ParticleAdditionalInfo : INetworkSerializable
         {
-            public ulong effectsTarget;
-            public ushort customParticleCount;
+            public ulong Target;
+            public ushort CustomParticleCount;
             
-            public ParticleAdditionalInfo(ulong effectsTarget = ushort.MaxValue, ushort customParticleCount = ushort.MaxValue)
+            public ParticleAdditionalInfo(ulong target = ushort.MaxValue, ushort customParticleCount = ushort.MaxValue)
             {
-                this.effectsTarget = effectsTarget;
-                this.customParticleCount = customParticleCount;
+                Target = target;
+                CustomParticleCount = customParticleCount;
             }
 
             public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
             {
-                serializer.SerializeValue(ref effectsTarget);
-                serializer.SerializeValue(ref customParticleCount);
+                serializer.SerializeValue(ref Target);
+                serializer.SerializeValue(ref CustomParticleCount);
             }
         }
     }

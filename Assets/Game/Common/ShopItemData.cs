@@ -6,21 +6,10 @@ namespace Game.Common
     [CreateAssetMenu(fileName = "Shop Item", menuName = "Game/Upgrade/Shop/Shop Item")]
     public class ShopItemData : ScriptableObject
     {
-    
-        [TitleGroup("Base")] [SerializeField] private string itemName;
-        public string ItemName => itemName;
-        [TitleGroup("Base")] [TextArea][SerializeField] private string itemDescription;
-        public string ItemDescription => itemDescription;
-        [TitleGroup("Base")] [SerializeField] private Sprite icon;
-        public Sprite Icon => icon;
-        [TitleGroup("Base")] [SerializeField] private bool multipleAllowed = true;
-        public bool MultipleAllowed => multipleAllowed;
-    
-    
         [TitleGroup("Price")] [SerializeField] private ResourceType costType;
         public ResourceType CostType => costType;
-        [TitleGroup("Price")] [SerializeField] private int costAmount;
-        public int CostAmount => costAmount;
+        [TitleGroup("Price")] [SerializeField] private ushort costAmount;
+        public ushort CostAmount => costAmount;
         
         public bool HasEnoughResources(PlayerData data)
         {
@@ -29,9 +18,20 @@ namespace Game.Common
             return value >= costAmount;
         }
         
-        [TitleGroup("Effect")] [SerializeField] [InlineEditor]
-        private PerkData perkData;
-        public PerkData PerkData => perkData;
+        public enum ShopItemType
+        {
+            Perk,
+            Ability
+        }
+        public ShopItemType shopItemType;
+        
+        [ShowIf("@shopItemType == ShopItemType.Perk")]
+        [TitleGroup("Perk")] [InlineEditor]
+        public PerkData perkData;
+        
+        [ShowIf("@shopItemType == ShopItemType.Ability")]
+        [TitleGroup("Ability")] [InlineEditor]
+        public AbilityData abilityData;
     }
 }
   
