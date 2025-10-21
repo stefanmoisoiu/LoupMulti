@@ -25,6 +25,11 @@ namespace Player.General_UI.Shop
             ShopManager.OnShopOpenedChanged += ShopOpenedChangedChanged;
         }
 
+        protected override void DisableAnyOwner()
+        {
+            ShopManager.OnShopOpenedChanged -= ShopOpenedChangedChanged;
+        }
+
         private void ShopOpenedChangedChanged(bool opened, ShopManager shopManager)
         {
             if (!opened) return;

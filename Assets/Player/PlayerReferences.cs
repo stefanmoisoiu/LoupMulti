@@ -1,4 +1,5 @@
-﻿using Game.Common;
+﻿using System;
+using Game.Common;
 using Player.Health;
 using UnityEngine;
 
@@ -10,6 +11,12 @@ namespace Player
         public PlayerHealthComponent PlayerHealthComponent => playerHealthComponent;
 
 
-        public void TakeDamage(IDamageable.DamageInfo info) => playerHealthComponent.TakeDamage(info);
+        public event Action<ushort> OnDamaged;
+
+        public void TakeDamage(IDamageable.DamageInfo info)
+        {
+            playerHealthComponent.TakeDamage(info);
+            OnDamaged?.Invoke(info.DamageAmount);
+        }
     }
 }

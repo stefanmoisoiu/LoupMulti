@@ -11,12 +11,20 @@ namespace Player.Model.Procedural_Anims
         [SerializeField] private Transform head;
         [SerializeField] private Transform headCog;
         [SerializeField] private Transform ball;
+        [SerializeField] private Transform leftArm;
+        [SerializeField] private Transform rightArm;
+        [SerializeField] private Transform leftHand;
+        [SerializeField] private Transform rightHand;
 
         private AnimComponent _baseBody;
         private AnimComponent _baseBodyCog;
         private AnimComponent _baseHead;
         private AnimComponent _baseHeadCog;
         private AnimComponent _baseBall;
+        private AnimComponent _baseLeftArm;
+        private AnimComponent _baseRightArm;
+        private AnimComponent _baseLeftHand;
+        private AnimComponent _baseRightHand;
         
         private readonly List<AnimComponent> Anims = new();
         public void AddAnim(AnimComponent anim) => Anims.Add(anim);
@@ -28,7 +36,11 @@ namespace Player.Model.Procedural_Anims
             BodyCog,
             Head,
             HeadCog,
-            Ball
+            Ball,
+            LeftArm,
+            RightArm,
+            LeftHand,
+            RightHand,
         }
 
         public Transform GetTarget(Target target)
@@ -45,6 +57,14 @@ namespace Player.Model.Procedural_Anims
                     return headCog;
                 case Target.Ball:
                     return ball;
+                case Target.LeftArm:
+                    return leftArm;
+                case Target.RightArm:
+                    return rightArm;
+                case Target.LeftHand:
+                    return leftHand;
+                case Target.RightHand:
+                    return rightHand;
             }
             throw new System.Exception("Invalid target");
         }
@@ -66,6 +86,10 @@ namespace Player.Model.Procedural_Anims
             _baseHead = new(head) { Target = Target.Head};
             _baseHeadCog = new(headCog) { Target = Target.HeadCog};
             _baseBall = new(ball) { Target = Target.Ball};
+            _baseLeftArm = new(leftArm) { Target = Target.LeftArm};
+            _baseRightArm = new(rightArm) { Target = Target.RightArm};
+            _baseLeftHand = new(leftHand) { Target = Target.LeftHand};
+            _baseRightHand = new(rightHand) { Target = Target.RightHand};
         }
 
         private void ApplyBase()
@@ -75,6 +99,10 @@ namespace Player.Model.Procedural_Anims
             ApplyComponent(_baseHead, ApplyType.Base);
             ApplyComponent(_baseHeadCog, ApplyType.Base);
             ApplyComponent(_baseBall, ApplyType.Base);
+            ApplyComponent(_baseLeftArm, ApplyType.Base);
+            ApplyComponent(_baseRightArm, ApplyType.Base);
+            ApplyComponent(_baseLeftHand, ApplyType.Base);
+            ApplyComponent(_baseRightHand, ApplyType.Base);
         }
 
         enum ApplyType {Add, Base}

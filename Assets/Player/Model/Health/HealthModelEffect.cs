@@ -18,7 +18,8 @@ namespace Player.Model.Health
         [SerializeField] private Renderer[] affectedRenderers;
         [TitleGroup("References")] [SerializeField]
         private MonoBehaviour healthScript;
-        private IHealth healthComponent => healthScript as IHealth;
+        private IHealable healable => healthScript as IHealable;
+        private IDamageable damageable => healthScript as IDamageable;
 
         
         private Material[] mats;
@@ -41,19 +42,30 @@ namespace Player.Model.Health
         private void OnEnable()
         {
             GenerateMaterials();
-            healthComponent.OnHealthChanged += OnHealthChanged;
+            
+            if (healable != null)
+                healable.OnHealed += OnHeal;
+            if (damageable != null)
+                damageable.OnDamaged += OnDamage;
         }
 
         private void OnDisable()
         {
-            healthComponent.OnHealthChanged -= OnHealthChanged;
+            if (healable != null)
+                healable.OnHealed -= OnHeal;
+            if (damageable != null)
+                damageable.OnDamaged -= OnDamage;
         }
-    
-        private void OnHealthChanged(ushort previousHealth, ushort newHealth)
+
+        private void OnHeal(ushort amount)
         {
             if (coroutine != null) StopCoroutine(coroutine);
-            bool heal = newHealth > previousHealth;
-            coroutine = StartCoroutine(Anim(heal));
+            coroutine = StartCoroutine(Anim(true));
+        }
+        private void OnDamage(ushort amount)
+        {
+            if (coroutine != null) StopCoroutine(coroutine);
+            coroutine = StartCoroutine(Anim(false));
         }
     
         private void GenerateMaterials()

@@ -43,6 +43,9 @@ namespace Game.Collect.Resource.Structure
                     OnFullyExtractedAll?.Invoke();
                 }
             }
+
+            public event Action<ushort> OnDamaged;
+
             public void TakeDamage(IDamageable.DamageInfo info)
             {
                 ushort tick = GameTickManager.CurrentTick;
@@ -85,6 +88,8 @@ namespace Game.Collect.Resource.Structure
                 
                 OnExtractServer?.Invoke(amount, collectedAmount, origin);
                 OnExtractClientRpc(amount, collectedAmount, origin);
+                
+                OnDamaged?.Invoke(collectedAmount);
             }
             
             private bool GiveResource() => currentDurability.Value % data.durabilityPerResource == 0;

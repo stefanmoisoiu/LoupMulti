@@ -17,7 +17,7 @@ namespace Player.Hitbox
 
             for (int i = 0; i < hitboxTargets.Length; i++)
             {
-                (hitboxTargets[i] as HighlightedHitbox)?.Outline?.RemoveOutline();
+                (hitboxTargets[i] as HighlightedHitboxTarget)?.Outline?.RemoveOutline();
                 hitboxTargets[i] = null;
             }
         }
@@ -37,7 +37,7 @@ namespace Player.Hitbox
                 {
                     for (int i = 0; i < hitboxTargets.Length; i++)
                     {
-                        (hitboxTargets[i] as HighlightedHitbox)?.Outline?.RemoveOutline();
+                        (hitboxTargets[i] as HighlightedHitboxTarget)?.Outline?.RemoveOutline();
                         hitboxTargets[i] = null;
                     }
 
@@ -48,7 +48,7 @@ namespace Player.Hitbox
                 {
                     if (hitboxTargets[i] == null) continue;
                     if (targets.Contains(hitboxTargets[i])) continue;
-                    (hitboxTargets[i] as HighlightedHitbox)?.Outline?.RemoveOutline();
+                    (hitboxTargets[i] as HighlightedHitboxTarget)?.Outline?.RemoveOutline();
                     hitboxTargets[i] = null;
                 }
 
@@ -60,7 +60,7 @@ namespace Player.Hitbox
                         if (hitboxTargets[j] == null)
                         {
                             hitboxTargets[j] = target;
-                            HighlightedHitbox h = target as HighlightedHitbox;
+                            HighlightedHitboxTarget h = target as HighlightedHitboxTarget;
                             h?.Outline?.AddOutline();
                             break;
                         }
@@ -72,16 +72,16 @@ namespace Player.Hitbox
                 HitboxTarget target = hitbox.CalculateClosestHitbox();
                 if (target == null)
                 {
-                    (hitboxTargets[0] as HighlightedHitbox)?.Outline?.RemoveOutline();
+                    (hitboxTargets[0] as HighlightedHitboxTarget)?.Outline?.RemoveOutline();
                     hitboxTargets[0] = null;
                     return;
                 }
 
                 if (hitboxTargets[0] == target) return;
                 
-                (hitboxTargets[0] as HighlightedHitbox)?.Outline?.RemoveOutline();
+                (hitboxTargets[0] as HighlightedHitboxTarget)?.Outline?.RemoveOutline();
                 hitboxTargets[0] = target;
-                (target as HighlightedHitbox)?.Outline?.AddOutline();
+                (target as HighlightedHitboxTarget)?.Outline?.AddOutline();
             }
         }
     }

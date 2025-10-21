@@ -8,6 +8,8 @@ namespace Game.Common
     /// </summary>
     public interface IHealable
     {
+        public event Action<ushort> OnHealed;
+        
         /// <summary>
         /// Applique un soin à cet objet.
         /// </summary>

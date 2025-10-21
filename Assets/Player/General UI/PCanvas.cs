@@ -56,6 +56,7 @@ namespace Player.General_UI
         
         private IEnumerator TranisitionCoroutine(bool visible)
         {
+            if (_canvasGroup == null) yield break;
             float startValue = _canvasGroup.alpha;
             float endValue = visible ? 1f : 0f;
             

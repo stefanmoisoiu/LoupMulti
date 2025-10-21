@@ -27,10 +27,11 @@ namespace Player.Health
         private void CheckHealthChanged(ushort previousHealth, ushort newHealth, ulong clientId)
         {
             if (clientId != OwnerClientId) return;
-            
             OnHealthChanged?.Invoke(previousHealth, newHealth);
         }
-        
+
+        public event Action<ushort> OnDamaged;
+
         public void TakeDamage(IDamageable.DamageInfo info)
         {
             TakeDamageServerRpc(GameTickManager.CurrentTick, info);
@@ -49,10 +50,14 @@ namespace Player.Health
                 return;
             }
             
-            ushort previousHealth = playerData.inGameData.health;
             playerData.inGameData = playerData.inGameData.RemoveHealth(info.DamageAmount);
             DataManager.Instance[OwnerClientId] = playerData;
+            
+            TakeDamageClientRpc(info.DamageAmount);
         }
+        [ClientRpc] private void TakeDamageClientRpc(ushort damageAmount) => OnDamaged?.Invoke(damageAmount);
+
+        public event Action<ushort> OnHealed;
 
         public void Heal(IHealable.HealInfo info)
         {
@@ -82,8 +87,10 @@ namespace Player.Health
             
             playerData.inGameData = playerData.inGameData.AddHealth(info.HealAmount);
             DataManager.Instance[OwnerClientId] = playerData;
-            Debug.Log($"Healing {info.HealAmount} health from {info.Origin}. {previousHealth}HP -> {playerData.inGameData.health}HP");
+            
+            OnHealedClientRpc(info.HealAmount);
         }
+        [ClientRpc] private void OnHealedClientRpc(ushort healAmount) => OnHealed?.Invoke(healAmount);
 
         public ushort GetHealth()
         {

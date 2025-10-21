@@ -6,11 +6,11 @@ namespace Player.General_UI
     {
         protected override void StartAnyOwner()
         {
-            PCanvas.Instance.TransitionCanvasVisible(true);
+            PCanvas.Instance?.TransitionCanvasVisible(true);
         }
         protected override void DisableAnyOwner()
         {
-            PCanvas.Instance.TransitionCanvasVisible(false);
+            PCanvas.Instance?.TransitionCanvasVisible(false);
         }
     }
 }

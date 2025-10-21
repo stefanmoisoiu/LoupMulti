@@ -8,6 +8,7 @@ namespace Game.Common
     /// </summary>
     public interface IDamageable
     {
+        public event Action<ushort> OnDamaged;
         /// <summary>
         /// Applique une interaction (dégâts, extraction, etc.) à cet objet.
         /// </summary>

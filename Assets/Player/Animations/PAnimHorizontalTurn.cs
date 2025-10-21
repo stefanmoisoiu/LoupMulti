@@ -10,7 +10,9 @@ namespace Player.Model.Procedural_Anims
     public class PAnimHorizontalTurn : PNetworkBehaviour
     {
         [SerializeField] private PAnimManager animManager;
-        private AnimComponent _animComponent = new() { Target = PAnimManager.Target.Body };
+        private AnimComponent _bodyAnimComponent = new() { Target = PAnimManager.Target.Body };
+        private AnimComponent _bodyCogAnimComponent = new() { Target = PAnimManager.Target.BodyCog };
+        private AnimComponent _headCogAnimComponent = new() { Target = PAnimManager.Target.HeadCog };
         
         [SerializeField] private Camera.PCamera cam;
         [Header("Tilt properties")]
@@ -20,22 +22,32 @@ namespace Player.Model.Procedural_Anims
         private float _currentTurn;
         private float _currentTurnVelocity;
 
+        [SerializeField] [Range(0,2)] private float cogMult = 1f;
+        
+
         protected override void StartOnlineNotOwner()
         {
             _currentTurn = cam.lookTargetNet.Value.x;
-            animManager.AddAnim(_animComponent);
+            animManager.AddAnim(_bodyAnimComponent);
+            animManager.AddAnim(_bodyCogAnimComponent);
+            animManager.AddAnim(_headCogAnimComponent);
         }
 
         protected override void StartAnyOwner()
         {
-            animManager.AddAnim(_animComponent);
+            animManager.AddAnim(_bodyAnimComponent);
+            animManager.AddAnim(_bodyCogAnimComponent);
+            animManager.AddAnim(_headCogAnimComponent);
         }
 
         private void Update()
         {
             CalculateTilt();
 
-            _animComponent.Rotation = Quaternion.Euler(0, 0, _currentTurn);
+            _bodyAnimComponent.Rotation = Quaternion.Euler(0, 0, _currentTurn);
+            _bodyCogAnimComponent.Rotation = Quaternion.Euler(0, 0, -_currentTurn * cogMult);
+            _headCogAnimComponent.Rotation = Quaternion.Euler(0, 0, -_currentTurn * cogMult);
+            
         }
 
         private void CalculateTilt()

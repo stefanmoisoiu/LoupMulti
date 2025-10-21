@@ -20,22 +20,23 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Rock
+  m_Name: Plating 1
   m_Shader: {fileID: 4800000, guid: 733fefdcde0d35f4b822d2935d5a22f4, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _MK_ALBEDO_MAP
   - _MK_ARTISTIC_SKETCH
-  - _MK_COLOR_GRADING_ALBEDO
+  - _MK_DISSOLVE_BORDER_COLOR
   - _MK_ENVIRONMENT_REFLECTIONS_AMBIENT
+  - _MK_IRIDESCENCE_DEFAULT
   - _MK_LIGHT_BANDED
   - _MK_NORMAL_MAP
   - _MK_RECEIVE_SHADOWS
+  - _MK_RIM_DEFAULT
   - _MK_SPECULAR_ISOTROPIC
   m_InvalidKeywords:
   - _MK_ARTISTIC_ANIMATION_STUTTER
-  - _MK_OUTLINE_DATA_UV7
   - _MK_WRAPPED_DIFFUSE
   - _RECEIVESHADOWS_ON
   - _WRAPPEDLIGHTING_ON
@@ -52,7 +53,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AlbedoMap:
-        m_Texture: {fileID: 2800000, guid: 8f0363868d25d41449e8c4b65c9c5c7c, type: 3}
+        m_Texture: {fileID: 2800000, guid: e40195a8be96ab64f9869541ac59ab53, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
@@ -84,7 +85,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DissolveMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: f5349b58fd2e80d4e9c05d6704b6c635, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DrawnMap:
@@ -112,7 +113,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 8f0363868d25d41449e8c4b65c9c5c7c, type: 3}
+        m_Texture: {fileID: 2800000, guid: e40195a8be96ab64f9869541ac59ab53, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -124,14 +125,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: d4af37f9fc3b2de4392557f6d4a4c972, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2d69008a46c5c704ca13b674b24302ea, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _OutlineMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -201,11 +198,11 @@ Material:
     - _BlendModePreserveSpecular: 1
     - _BlendSrc: 1
     - _BlendSrcAlpha: 1
-    - _Brightness: 2.71
+    - _Brightness: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _ColorGrading: 1
+    - _ColorGrading: 0
     - _Contrast: 1
     - _Cull: 2
     - _Cutoff: 0.5
@@ -214,9 +211,9 @@ Material:
     - _DetailUVSet: 0
     - _DiffuseSmoothness: 0
     - _DiffuseThresholdOffset: 0.25
-    - _Dissolve: 0
-    - _DissolveAmount: 0.5
-    - _DissolveBorderSize: 0.25
+    - _Dissolve: 2
+    - _DissolveAmount: 0
+    - _DissolveBorderSize: 0.5
     - _DissolveMapScale: 1
     - _DrawnClampMax: 1
     - _DrawnClampMin: 0
@@ -232,9 +229,9 @@ Material:
     - _Hue: 0
     - _IndirectFade: 1
     - _Initialized: 0
-    - _InputTab: 1
-    - _Iridescence: 0
-    - _IridescenceSize: 1.05
+    - _InputTab: 0
+    - _Iridescence: 1
+    - _IridescenceSize: 1.37
     - _IridescenceSmoothness: 0.5
     - _IridescenceThresholdOffset: 0
     - _Light: 2
@@ -245,24 +242,16 @@ Material:
     - _NormalMapIntensity: 1
     - _OcclusionStrength: 1
     - _OptionsTab: 1
-    - _Outline: 1
-    - _OutlineClipOffset: 0
-    - _OutlineData: 1
-    - _OutlineFadeMax: 2
-    - _OutlineFadeMin: 0.25
-    - _OutlineNoise: 0
-    - _OutlineSize: 200
-    - _OutlineTab: 1
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RenderFace: 2
     - _RenderPriority: 0
-    - _Rim: 0
-    - _RimSize: 1
+    - _Rim: 1
+    - _RimSize: 5
     - _RimSmoothness: 0.5
     - _RimThresholdOffset: 0.25
-    - _Saturation: 0.8
+    - _Saturation: 1
     - _SketchMapScale: 1
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
@@ -300,9 +289,8 @@ Material:
     - _GoochBrightColor: {r: 1, g: 1, b: 1, a: 1}
     - _GoochDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _IridescenceColor: {r: 1, g: 1, b: 1, a: 0.5}
-    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _RimBrightColor: {r: 1, g: 1, b: 1, a: 1}
-    - _RimColor: {r: 1, g: 1, b: 1, a: 1}
+    - _RimColor: {r: 1, g: 1, b: 1, a: 0}
     - _RimDarkColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecularColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
