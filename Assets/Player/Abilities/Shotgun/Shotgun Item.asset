@@ -10,10 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46ed1c94a272421f804aa3382606ad3b, type: 3}
-  m_Name: MinorSpeedBoost Item
+  m_Name: Shotgun Item
   m_EditorClassIdentifier: 
-  Type: 0
-  Info: {fileID: 11400000, guid: 230a23b100c62af4086c515464261089, type: 2}
-  ShopItemData: {fileID: 11400000, guid: 2c2584a6c2561aa4d9ccabe017cc70cf, type: 2}
-  PerkData: {fileID: 11400000, guid: d9dd8e7d26e23fe46bf2da2337fe20b5, type: 2}
-  AbilityData: {fileID: 0}
+  info:
+    name: Shotgun
+    description: Shoots bolts in a wide spread
+    icon: {fileID: 21300000, guid: cfba44daff7388045806be79cfcf54bc, type: 3}
+    rarity: 0
+  isInShop: 1
+  shopCategory: 0
+  shopItemData:
+    costType: 0
+    costAmount: 0
+  itemType: 1
+  abilityData:
+    baseCooldown: 1
+  isInSelectionPool: 0

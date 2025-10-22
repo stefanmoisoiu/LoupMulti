@@ -10,10 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46ed1c94a272421f804aa3382606ad3b, type: 3}
-  m_Name: MinorDrillSpeedBoost Item
+  m_Name: DrillSpeedBoost Item
   m_EditorClassIdentifier: 
-  Type: 0
-  Info: {fileID: 11400000, guid: c64e038a4572758439a3f6b8b15273d6, type: 2}
-  ShopItemData: {fileID: 11400000, guid: 28fda254b2a788843a13e4b05a00f0df, type: 2}
-  PerkData: {fileID: 11400000, guid: 103fc66814f161746aa83685debc1235, type: 2}
-  AbilityData: {fileID: 0}
+  info:
+    name: Drill Speed Boost
+    description: Reduces the cooldown of the drill
+    icon: {fileID: 3286163911610860551, guid: 696e8711cfebbc04f926c79c595ec8e7, type: 3}
+    rarity: 0
+  isInShop: 1
+  shopCategory: 0
+  shopItemData:
+    costType: 0
+    costAmount: 0
+  itemType: 0
+  abilityData:
+    baseCooldown: 1
+  isInSelectionPool: 0

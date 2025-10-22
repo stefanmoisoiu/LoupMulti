@@ -7,8 +7,8 @@ namespace Player.Abilities.UI
 {
     public class AbilityManagerUI : PNetworkBehaviour
     {
-        public AbilitySlotUI _drillSlot;
-        public AbilitySlotUI[] _abilitySlots;
+        private AbilitySlotUI _drillSlot;
+        private AbilitySlotUI[] _abilitySlots;
         [SerializeField] private string drillSlotTag;
         [SerializeField] private string abilitySlotsTag;
 

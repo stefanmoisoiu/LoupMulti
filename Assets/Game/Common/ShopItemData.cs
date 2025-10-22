@@ -1,10 +1,11 @@
+using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Game.Common
 {
-    [CreateAssetMenu(fileName = "Shop Item", menuName = "Game/Upgrade/Shop/Shop Item")]
-    public class ShopItemData : ScriptableObject
+    [Serializable]
+    public class ShopItemData
     {
         [TitleGroup("Price")] [SerializeField] private ResourceType costType;
         public ResourceType CostType => costType;
@@ -17,21 +18,6 @@ namespace Game.Common
                 : data.inGameData.resources.rareAmount;
             return value >= costAmount;
         }
-        
-        public enum ShopItemType
-        {
-            Perk,
-            Ability
-        }
-        public ShopItemType shopItemType;
-        
-        [ShowIf("@shopItemType == ShopItemType.Perk")]
-        [TitleGroup("Perk")] [InlineEditor]
-        public PerkData perkData;
-        
-        [ShowIf("@shopItemType == ShopItemType.Ability")]
-        [TitleGroup("Ability")] [InlineEditor]
-        public AbilityData abilityData;
     }
 }
   

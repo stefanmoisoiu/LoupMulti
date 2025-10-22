@@ -10,10 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46ed1c94a272421f804aa3382606ad3b, type: 3}
-  m_Name: HealingDrill Item
+  m_Name: SpeedBoost Item
   m_EditorClassIdentifier: 
-  Type: 0
-  Info: {fileID: 11400000, guid: ac0f6797a5051ff41819e894fa239e5c, type: 2}
-  ShopItemData: {fileID: 0}
-  PerkData: {fileID: 11400000, guid: 5008a74c40b004948a4140a2cefd40e1, type: 2}
-  AbilityData: {fileID: 0}
+  info:
+    name: Speed Boost
+    description: 'Grants a small movement speed boost. '
+    icon: {fileID: 3286163911610860551, guid: 5ca90c49801a57d40925fca15cd41656, type: 3}
+    rarity: 0
+  isInShop: 0
+  shopCategory: 0
+  shopItemData:
+    costType: 0
+    costAmount: 0
+  itemType: 0
+  abilityData:
+    baseCooldown: 1
+  isInSelectionPool: 0

@@ -4,105 +4,132 @@ using Player.Abilities.UI;
 using Player.Networking;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Player.Abilities
 {
-        public class Ability : PNetworkBehaviour
+    public class Ability : PNetworkBehaviour
+    {
+        [BoxGroup("Data")]
+        [SerializeField] [InlineEditor] private Item item;
+        public AbilityData AbilityData => item.AbilityData;
+        
+        private float _cooldown;
+        public float Cooldown => _cooldown;
+        
+        
+        private bool _abilityEnabled;
+        public bool AbilityEnabled => _abilityEnabled;
+        private bool _canUseAbility;
+
+        private AbilitySlotUI _slotUI;
+
+        [Title("Events")]
+        public Action OnAbilityEnabledOwner;
+        public Action OnAbilityDisabledOwner;
+        public Action OnAbilityUsedOwner;
+        public Action OnAbilityAvailableOwner;
+        public Action<bool> OnCanUseAbilityChangedOwner;
+                
+        protected override void UpdateOnlineOwner()
         {
-                [SerializeField] [InlineEditor] private AbilityData abilityData;
-                public AbilityData AbilityData => abilityData;
-                
-                private float _cooldown = 0;
-                public float Cooldown => _cooldown;
-                
-                private AbilitySlotUI _slotUI;
-
-                private bool _abilityEnabled = false;
-                public bool AbilityEnabled => _abilityEnabled;
-                
-                public Action OnAbilityEnabledOwner;
-                public Action OnAbilityDisabledOwner;
-                public Action OnAbilityUsedOwner;
-                public Action OnAbilityAvailableOwner;
-                
-                public Action<bool> OnCanUseAbilityChangedOwner;
-                private bool _canUseAbility = false;
-
-                protected virtual void ReduceCooldown()
-                {
-                        float previousCooldown = _cooldown;
-                        _cooldown -= Time.deltaTime;
-                        if (_cooldown < 0) _cooldown = 0;
-                        
-                        if (previousCooldown > 0 && _cooldown <= 0 && _abilityEnabled)
-                                OnAbilityAvailableOwner?.Invoke();
-                }
-                
-                private void UpdateCanUseAbility()
-                {
-                        bool canUse = CanUseAbility();
-                        if (canUse != _canUseAbility)
-                        {
-                                _canUseAbility = canUse;
-                                OnCanUseAbilityChangedOwner?.Invoke(canUse);
-                        }
-                }
-                
-                protected override void UpdateOnlineOwner()
-                {
-                        ReduceCooldown();
-                        UpdateCanUseAbility();
-                }
-                
-                public void EnableAbility(AbilitySlotUI ui)
-                {
-                        _abilityEnabled = true;
-                        
-                        _slotUI = ui;
-                        ui.SetIcon(abilityData.Info.Icon);
-                        OnCanUseAbilityChangedOwner += ui.CanUseAbilityChanged;
-                        ui.CanUseAbilityChanged(CanUseAbility());
-                        
-                        OnAbilityEnabledOwner?.Invoke();
-                        
-                        if (_cooldown <= 0)
-                                OnAbilityAvailableOwner?.Invoke();
-                }
-                public void DisableAbility()
-                {
-                        _abilityEnabled = false;
-                        
-                        _slotUI.SetIcon(null);
-                        OnCanUseAbilityChangedOwner -= _slotUI.CanUseAbilityChanged;
-                        
-                        _slotUI.SetCooldown(0, abilityData.BaseCooldown);
-                        _slotUI = null;
-                        
-                        OnAbilityDisabledOwner?.Invoke();
-                }
-                public virtual void TryUseAbility(out bool success)
-                {
-                        success = false;
-                        if (!CanUseAbility()) return;
-                        success = true;
-                        ApplyCooldown();
-                        OnAbilityUsedOwner?.Invoke();
-                }
-                
-                public virtual bool CanUseAbility() => _abilityEnabled && _cooldown <= 0;
-
-                public void ApplyCooldown(float newCooldown = float.MinValue)
-                {
-                        _cooldown = newCooldown == float.MinValue ? abilityData.BaseCooldown : Mathf.Max(0, newCooldown);
-                        _slotUI.SetCooldown(_cooldown, _cooldown);
-                }
-                
-                public void ReduceCooldown(float amount)
-                {
-                        _cooldown -= amount;
-                        if (_cooldown < 0) _cooldown = 0;
-                        _slotUI.ReduceCooldown(_cooldown);
-                }
+            UpdateCooldown();
         }
+
+        private void UpdateCooldown()
+        {
+            if (_cooldown <= 0) return;
+            
+            _cooldown -= Time.deltaTime;
+
+            _slotUI?.UpdateCooldownDisplay(_cooldown, item.AbilityData.BaseCooldown);
+            
+            if (_cooldown <= 0)
+            {
+                _cooldown = 0;
+                if (_abilityEnabled)
+                {
+                    OnAbilityAvailableOwner?.Invoke();
+                    UpdateCanUseAbilityFlag();
+                }
+            }
+        }
+        
+        private void UpdateCanUseAbilityFlag()
+        {
+            bool canUse = CanUseAbility();
+            if (canUse != _canUseAbility)
+            {
+                _canUseAbility = canUse;
+                OnCanUseAbilityChangedOwner?.Invoke(canUse);
+            }
+        }
+                
+        public void EnableAbility(AbilitySlotUI ui)
+        {
+            _abilityEnabled = true;
+            
+            _slotUI = ui;
+            _slotUI.SetIcon(item.Info.Icon);
+            OnCanUseAbilityChangedOwner += _slotUI.CanUseAbilityChanged;
+            
+            OnAbilityEnabledOwner?.Invoke();
+
+            if (_cooldown <= 0)
+            {
+                OnAbilityAvailableOwner?.Invoke();
+            }
+            
+            UpdateCanUseAbilityFlag();
+        }
+        
+        public void DisableAbility()
+        {
+            _abilityEnabled = false;
+            
+            if (_slotUI != null)
+            {
+                _slotUI.SetIcon(null);
+                OnCanUseAbilityChangedOwner -= _slotUI.CanUseAbilityChanged;
+                _slotUI.UpdateCooldownDisplay(0, item.AbilityData.BaseCooldown);
+                _slotUI = null;
+            }
+            
+            OnAbilityDisabledOwner?.Invoke();
+            UpdateCanUseAbilityFlag();
+        }
+        
+        public virtual void TryUseAbility(out bool success)
+        {
+            success = false;
+            if (!CanUseAbility()) return;
+            
+            success = true;
+            ApplyCooldown();
+            OnAbilityUsedOwner?.Invoke();
+        }
+                
+        public virtual bool CanUseAbility() => _abilityEnabled && _cooldown <= 0;
+
+        public void ApplyCooldown(float newCooldown = float.MinValue)
+        {
+            _cooldown = newCooldown == float.MinValue ? item.AbilityData.BaseCooldown : Mathf.Max(0, newCooldown);
+            _slotUI?.UpdateCooldownDisplay(_cooldown, item.AbilityData.BaseCooldown);
+            UpdateCanUseAbilityFlag();
+        }
+                
+        public void ReduceCooldown(float amount)
+        {
+            if (_cooldown <= 0) return;
+            
+            _cooldown -= amount;
+            if (_cooldown < 0) _cooldown = 0;
+            
+            _slotUI?.UpdateCooldownDisplay(_cooldown, item.AbilityData.BaseCooldown);
+            
+            if (_cooldown <= 0)
+            {
+                UpdateCanUseAbilityFlag();
+            }
+        }
+    }
 }

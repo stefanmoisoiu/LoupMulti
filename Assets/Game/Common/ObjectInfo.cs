@@ -5,15 +5,15 @@ using UnityEngine.Serialization;
 
 namespace Game.Common
 {
-    [CreateAssetMenu(fileName = "Perk", menuName = "Game/Upgrade/Object Info")]
-    public class ObjectInfo : ScriptableObject
+    [Serializable]
+    public class ObjectInfo
     {
 #pragma warning disable CS0108, CS0114
-        [TitleGroup("Information")] [SerializeField] private string name;
+        [TitleGroup("Information")] [HorizontalGroup("Information/0")] [VerticalGroup("Information/0/0")] [SerializeField] private string name;
+        [TitleGroup("Information")] [SerializeField] [VerticalGroup("Information/0/0")]  private ObjectRarity rarity;
+        [PreviewField(ObjectFieldAlignment.Right, Height = 64)] [TitleGroup("Information")] [HorizontalGroup("Information/0")] [SerializeField] private Sprite icon;
 #pragma warning restore CS0108, CS0114
         [TitleGroup("Information")] [SerializeField] [TextArea] private string description;
-        [TitleGroup("Information")] [SerializeField] private Sprite icon;
-        [TitleGroup("Information")] [SerializeField] private ObjectRarity rarity;
         
         public string Name => name;
         public string Description => description;

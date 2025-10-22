@@ -12,8 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46ed1c94a272421f804aa3382606ad3b, type: 3}
   m_Name: DrillingAddiction Item
   m_EditorClassIdentifier: GameCommon:Game.Common:Item
-  Type: 0
-  Info: {fileID: 11400000, guid: 0a59b888690617047b452e3f6f86a35c, type: 2}
-  ShopItemData: {fileID: 0}
-  PerkData: {fileID: 11400000, guid: 3cfedd5f125bcab4b87806df7a175794, type: 2}
-  AbilityData: {fileID: 0}
+  info:
+    name: Drilling Addiction
+    description: Not Implemented.
+    icon: {fileID: 3286163911610860551, guid: 0228c7249db3e8744892ae1008ba530e, type: 3}
+    rarity: 0
+  isInShop: 0
+  shopCategory: 0
+  shopItemData:
+    costType: 0
+    costAmount: 0
+  itemType: 0
+  abilityData:
+    baseCooldown: 1
+  isInSelectionPool: 1

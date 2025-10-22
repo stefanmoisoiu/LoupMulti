@@ -1,11 +1,12 @@
-﻿using Sirenix.OdinInspector;
+﻿using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Game.Common
 {
-    [CreateAssetMenu(fileName = "Perk", menuName = "Game/Upgrade/Perk/Perk")]
-    public class PerkData : ScriptableObject
+    [Serializable]
+    public class PerkData
     {
         
     }

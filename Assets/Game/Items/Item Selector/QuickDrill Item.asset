@@ -10,19 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46ed1c94a272421f804aa3382606ad3b, type: 3}
-  m_Name: Drill Item
+  m_Name: QuickDrill Item
   m_EditorClassIdentifier: 
   info:
-    name: Drill
+    name: Quick Drill
+    description: Creates a weak point around you after drilling. Hitting the weak
+      point will reduce the drill cooldown.
+    icon: {fileID: 3286163911610860551, guid: 5198a1f1283717140ad164926b7783e4, type: 3}
     rarity: 0
-    icon: {fileID: 1306246849, guid: 0fc910aaef8bf3f439a2687c3f3d8529, type: 3}
-    description: 
   isInShop: 0
   shopCategory: 0
   shopItemData:
     costType: 0
     costAmount: 0
-  itemType: 1
+  itemType: 0
   abilityData:
-    baseCooldown: 3
-  isInSelectionPool: 0
+    baseCooldown: 1
+  isInSelectionPool: 1
