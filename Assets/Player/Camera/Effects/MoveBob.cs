@@ -25,6 +25,7 @@ namespace Player.Camera.Effects
 
         [SerializeField] private Run run;
         [SerializeField] private Grounded grounded;
+        [SerializeField] private FreezePlayer freezePlayer;
 
         private void Start()
         {
@@ -71,6 +72,6 @@ namespace Player.Camera.Effects
         }
 
         private bool CanBob() =>
-            grounded.FullyGrounded() && InputManager.Move.magnitude > 0;
+            grounded.FullyGrounded() && InputManager.Move.magnitude > 0 && !freezePlayer.Frozen;
     }
 }

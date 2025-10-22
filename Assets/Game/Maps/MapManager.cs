@@ -52,11 +52,10 @@ namespace Game.Maps
             OnMapLoadedClientRpc(CurrentMap);
         }
 
-        public IEnumerator SetPlayerSpawnPositions()
+        public void SetPlayerSpawnPositions()
         {
             PlayerData[] players = DataManager.Instance.Search(new[] { OuterData.PlayingState.Playing });
             for (ushort i = 0; i < players.Length; i++) TeleportPlayerClientRpc(i,players[i].SendRpcTo());
-            yield return new WaitForSeconds(1);
         }
         
         [Rpc(SendTo.SpecifiedInParams)]

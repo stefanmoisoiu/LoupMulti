@@ -1,21 +1,26 @@
 ﻿using Game.Common;
 using Player.Networking;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Player.Perks
 {
-    public abstract class PerkEffect : PNetworkBehaviour{
-        
+    public abstract class PerkEffect : PNetworkBehaviour
+    {
         private bool applied = false;
         public bool Applied => applied;
 
-        [SerializeField] private PerkData associatedPerkData;
-        public PerkData Data => associatedPerkData;
-        
+        public Item Item { get; private set; }
+
+        public void Initialize(Item itemData)
+        {
+            Item = itemData;
+        }
+
         public void SetApplied(bool applied)
         {
             if (applied == this.applied) return;
-            Debug.Log($"SetApplied: {applied} for {name}");
+            Debug.Log($"SetApplied: {applied} for {Item.Info.Name}");
             
             if (applied)
                 StartApply();

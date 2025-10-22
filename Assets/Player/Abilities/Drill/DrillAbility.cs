@@ -59,7 +59,7 @@ namespace Player.Abilities.Drill
             if (!target.TryGetComponent(out IDamageable damageableTarget)) throw new Exception("Target is not IDamageable");
         
             success = true;
-            ApplyCooldown(AbilityData.BaseCooldown/PlayerStats.DrillSpeed.Apply(1));
+            ApplyCooldown(Item.AbilityData.BaseCooldown/PlayerStats.DrillSpeed.Apply(1));
             
             if (_useDrillCoroutine != null) StopCoroutine(_useDrillCoroutine);
             _useDrillCoroutine = StartCoroutine(UseDrillCoroutine(target, damageableTarget));

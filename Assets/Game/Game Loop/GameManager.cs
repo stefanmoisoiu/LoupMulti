@@ -28,8 +28,8 @@ namespace Game.Game_Loop
 
         private readonly NetworkVariable<GameState> _gameState = new();
         public static GameState CurrentGameState => Instance == null ? GameState.NotConnected : Instance._gameState.Value;
-        public static event Action<GameState,GameState> OnGameStateChanged;
-        private void GameStateChanged(GameState oldState, GameState newState) => OnGameStateChanged?.Invoke(oldState, newState);
+        public static event Action<GameState,GameState> OnGameStateChangedAll;
+        private void GameStateChangedAll(GameState oldState, GameState newState) => OnGameStateChangedAll?.Invoke(oldState, newState);
 
         public static event Action OnGameStartedServer;
         public static event Action OnGameEndedServer;
@@ -42,7 +42,7 @@ namespace Game.Game_Loop
                 return;
             }
 
-            _gameState.OnValueChanged += GameStateChanged;
+            _gameState.OnValueChanged += GameStateChangedAll;
             
             Instance = this;
             OnCreated?.Invoke(this);
@@ -50,7 +50,7 @@ namespace Game.Game_Loop
 
         private void OnDisable()
         {
-            _gameState.OnValueChanged -= GameStateChanged;
+            _gameState.OnValueChanged -= GameStateChangedAll;
         }
 
 
@@ -99,8 +99,6 @@ namespace Game.Game_Loop
             DataManager.Instance.PlayerState.SetNotAssignedPlayersToPlayingState();
         
             yield return mapManager.LoadRandomGameMap();
-
-            yield return mapManager.SetPlayerSpawnPositions();
             
             _gameState.Value = GameState.InGame;
             OnGameStartedServer?.Invoke();

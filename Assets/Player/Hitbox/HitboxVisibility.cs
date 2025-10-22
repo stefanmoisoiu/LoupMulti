@@ -15,17 +15,17 @@ namespace Player.Hitbox
         {
             UpdateHitboxVisibility();
             DataManager.OnEntryUpdatedClient += EntryUpdatedClient;
-            GameManager.OnGameStateChanged += GameStateOnValueChanged;
+            GameManager.OnGameStateChangedAll += GameStateOnValueChangedAll;
         }
         
         protected override void DisableAnyOwner()
         {
-            GameManager.OnGameStateChanged -= GameStateOnValueChanged;
+            GameManager.OnGameStateChangedAll -= GameStateOnValueChangedAll;
             DataManager.OnEntryUpdatedClient -= EntryUpdatedClient;
         }
 
 
-        private void GameStateOnValueChanged(GameManager.GameState previousValue, GameManager.GameState newValue) => UpdateHitboxVisibility();
+        private void GameStateOnValueChangedAll(GameManager.GameState previousValue, GameManager.GameState newValue) => UpdateHitboxVisibility();
         private void EntryUpdatedClient(PlayerData previousValue, PlayerData newValue) => UpdateHitboxVisibility();
         
         private void UpdateHitboxVisibility()
