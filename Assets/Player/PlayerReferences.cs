@@ -1,6 +1,8 @@
 ﻿using System;
 using Game.Common;
+using Player.Events;
 using Player.Health;
+using Player.Stats;
 using UnityEngine;
 
 namespace Player
@@ -9,6 +11,10 @@ namespace Player
     {
         [SerializeField] private PlayerHealthComponent playerHealthComponent;
         public PlayerHealthComponent PlayerHealthComponent => playerHealthComponent;
+        [SerializeField] private StatManager statManager;
+        public StatManager StatManager => statManager;
+        [SerializeField] private PlayerEventHub playerEventHub;
+        public PlayerEventHub PlayerEventHub => playerEventHub;
 
 
         public event Action<ushort> OnDamaged;

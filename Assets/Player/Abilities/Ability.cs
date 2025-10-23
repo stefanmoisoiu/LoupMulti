@@ -2,6 +2,7 @@
 using Game.Common;
 using Player.Abilities.UI;
 using Player.Networking;
+using Player.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,10 +11,12 @@ namespace Player.Abilities
     public class Ability : PNetworkBehaviour
     {
         public Item Item { get; private set; }
+        public PlayerReferences PlayerReferences { get; private set; }
 
         private float _cooldown;
         public float Cooldown => _cooldown;
-        
+
+        private float _maxCooldown;
         
         private bool _abilityEnabled;
         public bool AbilityEnabled => _abilityEnabled;
@@ -27,10 +30,13 @@ namespace Player.Abilities
         public Action OnAbilityUsedOwner;
         public Action OnAbilityAvailableOwner;
         public Action<bool> OnCanUseAbilityChangedOwner;
-
-        public void Initialize(Item item)
+        
+        public void Initialize(Item item, PlayerReferences playerReferences)
         {
             Item = item;
+            PlayerReferences = playerReferences;
+            
+            _maxCooldown = Item.AbilityData.BaseCooldown;
         }
         
         protected override void UpdateOnlineOwner()
@@ -44,7 +50,7 @@ namespace Player.Abilities
             
             _cooldown -= Time.deltaTime;
 
-            _slotUI?.UpdateCooldownDisplay(_cooldown, Item.AbilityData.BaseCooldown);
+            _slotUI?.UpdateCooldownDisplay(_cooldown, _maxCooldown);
             
             if (_cooldown <= 0)
             {
@@ -93,7 +99,7 @@ namespace Player.Abilities
             {
                 _slotUI.SetIcon(null);
                 OnCanUseAbilityChangedOwner -= _slotUI.CanUseAbilityChanged;
-                _slotUI.UpdateCooldownDisplay(0, Item.AbilityData.BaseCooldown);
+                _slotUI.UpdateCooldownDisplay(0, _maxCooldown);
                 _slotUI = null;
             }
             
@@ -113,10 +119,11 @@ namespace Player.Abilities
                 
         public virtual bool CanUseAbility() => _abilityEnabled && _cooldown <= 0;
 
-        public void ApplyCooldown(float newCooldown = float.MinValue)
+        public void ApplyCooldown(float newCooldown = float.MinValue, float maxCooldown = float.MinValue)
         {
-            _cooldown = newCooldown == float.MinValue ? Item.AbilityData.BaseCooldown : Mathf.Max(0, newCooldown);
-            _slotUI?.UpdateCooldownDisplay(_cooldown, Item.AbilityData.BaseCooldown);
+            _maxCooldown = maxCooldown == float.MinValue ? Item.AbilityData.BaseCooldown : Mathf.Max(0, maxCooldown);
+            _cooldown = newCooldown == float.MinValue ? _maxCooldown : Mathf.Clamp(newCooldown, 0, _maxCooldown);
+            _slotUI?.UpdateCooldownDisplay(_cooldown, _maxCooldown);
             UpdateCanUseAbilityFlag();
         }
                 
@@ -127,7 +134,7 @@ namespace Player.Abilities
             _cooldown -= amount;
             if (_cooldown < 0) _cooldown = 0;
             
-            _slotUI?.UpdateCooldownDisplay(_cooldown, Item.AbilityData.BaseCooldown);
+            _slotUI?.UpdateCooldownDisplay(_cooldown, _maxCooldown);
             
             if (_cooldown <= 0)
             {

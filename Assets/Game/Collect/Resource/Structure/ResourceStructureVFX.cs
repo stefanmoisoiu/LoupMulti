@@ -1,6 +1,6 @@
 ﻿using System;
 using Base_Scripts;
-using Player.Hitbox;
+using Player.Target;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -10,10 +10,11 @@ namespace Game.Collect.Resource.Structure
     {
         [SerializeField] private ResourceStructure structure;
 
-        [SerializeField] private HitboxTarget hitboxTarget;
+        [SerializeField] private Targetable targetable;
         
         [SerializeField] private NetworkPooledParticles extractParticles;
-        [SerializeField] private ushort particlesPerExtraction = 8;
+        [SerializeField] private ushort extractionParticleCount = 8;
+        [SerializeField] private ushort collectParticleCount = 10;
         
         [SerializeField] private NetworkPooledParticles collectResourcesParticles;
 
@@ -61,15 +62,15 @@ namespace Game.Collect.Resource.Structure
 
         private void Extracted(ushort amount, ushort collectedAmount, ulong origin)
         {
-            extractParticles?.Play(new NetworkPooledParticles.ParticleAdditionalInfo() { CustomParticleCount = (ushort)(amount * particlesPerExtraction), Target = origin});
-            collectResourcesParticles?.Play(new NetworkPooledParticles.ParticleAdditionalInfo() { CustomParticleCount = collectedAmount, Target = origin}); 
+            extractParticles?.Play(new NetworkPooledParticles.ParticleAdditionalInfo() { CustomParticleCount = (ushort)(amount * extractionParticleCount), Target = origin});
+            collectResourcesParticles?.Play(new NetworkPooledParticles.ParticleAdditionalInfo() { CustomParticleCount = (ushort)(collectedAmount * collectParticleCount), Target = origin}); 
             
             shake.AddShake(exractShakeSettings);
         }
         private void FullyExtracted()
         {
             structure.OnFullyExtractedAll -= FullyExtracted;
-            hitboxTarget.SetHitboxEnabled(false);
+            targetable.SetHitboxEnabled(false);
             foreach (var go in hideWhenDepleted)
                 go.SetActive(false);
         }

@@ -68,7 +68,7 @@ namespace Game.Maps
             NetworkObject player = client.PlayerObject;
             SmoothSyncNetcode sync = player.GetComponent<SmoothSyncNetcode>();
             
-            sync.rb.position = spawnPoint.position;
+            sync.transform.position = spawnPoint.position;
             sync.transform.rotation = spawnPoint.rotation;
             sync.rb.linearVelocity = Vector3.zero;
             sync.teleportOwnedObjectFromOwner();

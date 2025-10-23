@@ -1,4 +1,5 @@
-﻿using Player.Stats;
+﻿using Base_Scripts;
+using Player.Stats;
 using UnityEngine;
 
 namespace Player.Perks.Drilling_Addiction
@@ -10,15 +11,23 @@ namespace Player.Perks.Drilling_Addiction
         [SerializeField] private Vector2 speedFactorRange;
         [SerializeField] private float curveEnd;
         private float timeSinceLastMine;
-        
 
-        private PlayerStatComponent statComponent = new();
-        
+
+        [SerializeField] private FloatStat maxSpeedStat;
+        [SerializeField] private FloatStat accelerationStat;
+        private StatModifier<float>.ModifierComponent _maxSpeedModifier = new (1,0);
+        private StatModifier<float>.ModifierComponent _accelerationModifier = new (1,0);
         
         internal override void StartApply()
         {
-            statComponent.Add();
+            PlayerReferences.StatManager.GetFloatStat(maxSpeedStat).AddModifier(_maxSpeedModifier);
+            PlayerReferences.StatManager.GetFloatStat(accelerationStat).AddModifier(_accelerationModifier);
             Debug.LogError("Drilling Addiction not implemented");
+        }
+        internal override void StopApply()
+        {
+            PlayerReferences.StatManager.GetFloatStat(maxSpeedStat).RemoveModifier(_maxSpeedModifier);
+            PlayerReferences.StatManager.GetFloatStat(accelerationStat).RemoveModifier(_accelerationModifier);
         }
 
         protected override void UpdateOnlineOwner()
@@ -44,14 +53,12 @@ namespace Player.Perks.Drilling_Addiction
             float healPerSec = Mathf.Lerp(healPerSecRange.x, healPerSecRange.y, value);
             float speedPerSec = Mathf.Lerp(speedFactorRange.x, speedFactorRange.y, value);
             
-            statComponent.healthPerSecond.added = healPerSec;
-            statComponent.maxSpeed.factor = speedPerSec;
-            statComponent.acceleration.factor = speedPerSec;
-        }
-
-        internal override void StopApply()
-        {
-            statComponent.Remove();
+            
+            _maxSpeedModifier.factor = speedPerSec;
+            _accelerationModifier.factor = speedPerSec;
+            
+            PlayerReferences.StatManager.GetFloatStat(maxSpeedStat)?.MarkDirty();
+            PlayerReferences.StatManager.GetFloatStat(accelerationStat)?.MarkDirty();
         }
     }
 }

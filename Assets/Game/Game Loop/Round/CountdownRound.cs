@@ -9,10 +9,9 @@ namespace Game.Game_Loop.Round
     
         public override IEnumerator Execute(GameManager gameManager, GameLoopEvents gameLoopEvents)
         {
-            gameLoopEvents.RoundStateChanged(GameRoundState.Countdown, NetworkManager.ServerTime.TimeAsFloat);
-            
             gameManager.MapManager.SetPlayerSpawnPositions();
             
+            gameLoopEvents.RoundStateChanged(GameRoundState.Countdown, NetworkManager.ServerTime.TimeAsFloat);
             yield return new WaitForSeconds(CountdownTime);
         }
     }

@@ -5,7 +5,8 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Game.Common;
 using Game.Upgrade.Shop;
-using AYellowpaper.SerializedCollections; // Ajouté
+using AYellowpaper.SerializedCollections;
+using Player.Stats; // Ajouté
 
 namespace Player.Abilities
 {
@@ -13,13 +14,14 @@ namespace Player.Abilities
     {
         [TitleGroup("Configuration")]
         [SerializeField] private Item drillItem;
-
+        [SerializeField] private PlayerReferences _playerReferences;
         [TitleGroup("UI")]
         [SerializeField] private AbilityManagerUI abilityManagerUI;
 
         [TitleGroup("Ability Mapping")]
         [SerializeField]
         private SerializedDictionary<Item, Ability> abilityMap;
+        
 
         public const int AbilitySlotCount = 3;
         
@@ -37,6 +39,7 @@ namespace Player.Abilities
 
         protected override void StartOnlineOwner()
         {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
             _abilitySlots = new Ability[AbilitySlotCount];
             EquipDrillAbility(drillItem);
         
@@ -78,7 +81,7 @@ namespace Player.Abilities
             }
 
             Ability newAbility = GetAbility(item);
-            newAbility.Initialize(item); 
+            newAbility.Initialize(item, _playerReferences); 
 
             if (slot == -1) _drillSlot = newAbility;
             else _abilitySlots[slot] = newAbility;

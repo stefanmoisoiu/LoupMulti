@@ -1869,8 +1869,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ef3df8045564a3b9130dcc70c1ebc56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxEnabled: 1
-  collider: {fileID: 1010697956}
+  targetEnabled: 1
   type: 1
   outline: {fileID: 1010697958}
 --- !u!114 &1010697958
@@ -13275,8 +13274,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetOrigin: {fileID: 2109990766}
-  excludeOwnedHitboxes: 0
-  hitboxTargets: 01000000
+  excludeOwnedTargets: 0
+  targetTypes: 
   shape: 0
   offset: {x: -5, y: 0, z: 0}
   boxSize: {x: 1, y: 1, z: 1}
@@ -13294,7 +13293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c8caf9899cc45d44a42cafb2d4f071b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitbox: {fileID: 2109990767}
+  targetDetector: {fileID: 2109990767}
   damage: 20
   damageCooldown: 1
 --- !u!1660057539 &9223372036854775807

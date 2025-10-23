@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   info:
     name: Speed Boost
-    description: 'Grants a small movement speed boost. '
-    icon: {fileID: 3286163911610860551, guid: 5ca90c49801a57d40925fca15cd41656, type: 3}
     rarity: 0
-  isInShop: 0
+    icon: {fileID: 3286163911610860551, guid: 5ca90c49801a57d40925fca15cd41656, type: 3}
+    description: 'Grants a small movement speed boost. '
+  isInShop: 1
   shopCategory: 0
   shopItemData:
     costType: 0

@@ -12,7 +12,10 @@ namespace Player.Movement
     public class Jump : PNetworkBehaviour
     {
         [SerializeField] private Rigidbody rb;
-        
+
+        private PlayerReferences _playerReferences;
+        private StatManager StatManager => _playerReferences.StatManager;
+        [SerializeField] private FloatStat jumpHeightStat;
         
         [SerializeField] private float jumpForce;
 
@@ -40,6 +43,7 @@ namespace Player.Movement
 
         protected override void StartAnyOwner()
         {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
             InputManager.OnJumpStarted += StartPressJump;
             grounded.OnGroundedChanged += CheckCoyote;
         }
@@ -94,7 +98,7 @@ namespace Player.Movement
         
             rb.useGravity = true;
 
-            float finalJumpForce = PlayerStats.JumpHeight.Apply(jumpForce);
+            float finalJumpForce = StatManager.GetFloatStat(jumpHeightStat).Apply(jumpForce);
         
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, finalJumpForce, rb.linearVelocity.z);
         

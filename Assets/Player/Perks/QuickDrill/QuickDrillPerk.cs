@@ -1,7 +1,7 @@
 ﻿using Input;
 using Player.Abilities;
 using Player.Abilities.Drill;
-using Player.Hitbox;
+using Player.Target;
 using UnityEngine;
 
 namespace Player.Perks.QuickDrill
@@ -22,16 +22,16 @@ namespace Player.Perks.QuickDrill
         
         internal override void StartApply()
         {
-            DrillAbility.OnDrillUsedOwner += OnDrillUsedOwner;
+            PlayerReferences.PlayerEventHub.OnDrillUsed += OnDrillUsedOwner;
             InputManager.OnDrillUse += TryHitWeakPoint;
         }
         internal override void StopApply()
         {
-            DrillAbility.OnDrillUsedOwner -= OnDrillUsedOwner;
+            PlayerReferences.PlayerEventHub.OnDrillUsed -= OnDrillUsedOwner;
             InputManager.OnDrillUse -= TryHitWeakPoint;
         }
 
-        private void OnDrillUsedOwner(HitboxTarget target)
+        private void OnDrillUsedOwner(Targetable target)
         {
             GameObject weakPoint = Instantiate(weakPointPrefab, transform);
             if (!weakPoint.TryGetComponent(out WeakPoint weakPointComponent)) throw new System.Exception("WeakPoint prefab does not have a WeakPoint component");

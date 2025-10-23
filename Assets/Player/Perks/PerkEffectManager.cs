@@ -6,12 +6,14 @@ using Player.Networking;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Collections.Generic;
-using AYellowpaper.SerializedCollections; // Ajouté
+using AYellowpaper.SerializedCollections;
+using Player.Stats; // Ajouté
 
 namespace Player.Perks
 {
     public class PerkEffectManager : PNetworkBehaviour
     {
+        private PlayerReferences _playerReferences;
         [TitleGroup("Perk Prefab Mapping")]
         [Tooltip("Relation 'bakée' entre un Item et son prefab PerkEffect.")]
         [SerializeField]
@@ -33,6 +35,7 @@ namespace Player.Perks
 
         protected override void StartOnlineOwner()
         {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
             ShopManager.OnShopItemBoughtOwner += OnShopItemBoughtOwner;
             ItemSelectionManager.OnItemChosenOwner += OnItemChosenOwner;
             GameManager.OnGameStateChangedAll += OnGameStateChangedAll;
@@ -76,7 +79,7 @@ namespace Player.Perks
             GameObject spawnedObject = Instantiate(prefab.gameObject, transform);
             PerkEffect newPerkInstance = spawnedObject.GetComponent<PerkEffect>();
 
-            newPerkInstance.Initialize(item);
+            newPerkInstance.Initialize(item, _playerReferences);
             newPerkInstance.SetApplied(true);
             _activePerks.Add(newPerkInstance);
         }

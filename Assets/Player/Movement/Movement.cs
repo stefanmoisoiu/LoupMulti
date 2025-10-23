@@ -14,6 +14,12 @@ namespace Player.Movement
     {
         [SerializeField] private Transform orientation;
         [SerializeField] private Rigidbody rb;
+        [SerializeField] private FloatStat maxSpeedStat;
+        [SerializeField] private FloatStat accelerationStat;
+        
+        private PlayerReferences _playerReferences;
+        private StatManager StatManager => _playerReferences.StatManager;
+        
         
         
         [SerializeField] private float maxWalkSpeed = 10f;
@@ -40,6 +46,7 @@ namespace Player.Movement
         private PIDController pidZ;
         protected override void StartAnyOwner()
         {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
             InitializePID();
         }
 
@@ -50,7 +57,7 @@ namespace Player.Movement
         }
         public float GetMaxSpeed()
         {
-            float maxSpeed = PlayerStats.MaxSpeed.Apply(maxWalkSpeed);
+            float maxSpeed = StatManager.GetFloatStat(maxSpeedStat).Apply(maxWalkSpeed);
             if (run.Running) maxSpeed += maxRunSpeed - maxWalkSpeed;
             return maxSpeed;
         }
@@ -58,7 +65,7 @@ namespace Player.Movement
         // Retourne l'accélération MAXIMALE autorisée
         private float GetAcceleration()
         {
-            float a = PlayerStats.Acceleration.Apply(acceleration);
+            float a = StatManager.GetFloatStat(accelerationStat).Apply(acceleration);
             if (!grounded.FullyGrounded()) a *= airAccelMultiplier;
             return a;
         }

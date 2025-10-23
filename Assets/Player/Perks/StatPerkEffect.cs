@@ -5,15 +5,16 @@ namespace Player.Perks
 {
     public class StatPerkEffect : PerkEffect
     {
-        [SerializeField] private PlayerStatComponent statComponent;
+        [SerializeField] private PlayerStatModifier playerStatModifier;
+        
         internal override void StartApply()
         {
-            statComponent.Add();
+            playerStatModifier.Add(PlayerReferences.StatManager);
         }
 
         internal override void StopApply()
         {
-            statComponent.Remove();
+            playerStatModifier.Remove(PlayerReferences.StatManager);
         }
     }
 }

@@ -333,7 +333,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 899db2f692cf4aa4cb72d8b619956380,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3485101412433476063}
+      addedObject: {fileID: 7953888089830366871}
   m_SourcePrefab: {fileID: 100100000, guid: 899db2f692cf4aa4cb72d8b619956380, type: 3}
 --- !u!4 &230676201429111855 stripped
 Transform:
@@ -415,8 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ef3df8045564a3b9130dcc70c1ebc56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitboxEnabled: 1
-  collider: {fileID: 3485101412433476063}
+  targetEnabled: 1
   type: 2
   outline: {fileID: 5183530143801284045}
 --- !u!114 &3957210160218962740
@@ -487,7 +486,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   structure: {fileID: 3957210160218962740}
-  hitboxTarget: {fileID: 3782375801760705134}
+  targetable: {fileID: 3782375801760705134}
   extractParticles: {fileID: 3801253616893983381}
   particlesPerExtraction: 5
   collectResourcesParticles: {fileID: 3658410774844626596}
@@ -555,8 +554,8 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
---- !u!64 &3485101412433476063
-MeshCollider:
+--- !u!65 &7953888089830366871
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -573,10 +572,9 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 2212009239438826721, guid: 899db2f692cf4aa4cb72d8b619956380, type: 3}
+  serializedVersion: 3
+  m_Size: {x: 1.6, y: 1.6, z: 1.6}
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!4 &8308217098387986766 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4865064391339405807, guid: 899db2f692cf4aa4cb72d8b619956380,

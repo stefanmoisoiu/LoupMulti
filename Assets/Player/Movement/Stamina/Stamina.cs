@@ -7,18 +7,23 @@ namespace Player.Movement.Stamina
     public class Stamina : PNetworkBehaviour
     {
         [SerializeField] private Run run;
+        private PlayerReferences _playerReferences;
+        private StatManager StatManager => _playerReferences.StatManager;
+        [SerializeField] private FloatStat maxStaminaStat;
+        [SerializeField] private FloatStat staminaRecoveryStat;
         
         
         [SerializeField] private float baseRecoverRate = 10f;
         [SerializeField] private int baseMaxStamina = 100;
 
-        public int MaxStamina => PlayerStats.MaxStamina.Apply(baseMaxStamina);
+        public float MaxStamina => StatManager.GetFloatStat(maxStaminaStat).Apply(baseMaxStamina);
         
         private float _staminaValue;
         public float StaminaValue => _staminaValue;
 
         protected override void StartAnyOwner()
         {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
             _staminaValue = MaxStamina;
         }
 
@@ -29,7 +34,7 @@ namespace Player.Movement.Stamina
         private void TryRecoverStamina()
         {
             if (run.Running) return;
-            float recoverAmount = PlayerStats.StaminaRecovery.Apply(baseRecoverRate) * Time.deltaTime;
+            float recoverAmount = StatManager.GetFloatStat(staminaRecoveryStat).Apply(baseRecoverRate) * Time.deltaTime;
             IncreaseStamina(recoverAmount);
         }
 

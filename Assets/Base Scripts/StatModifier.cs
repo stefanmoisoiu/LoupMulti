@@ -5,47 +5,79 @@ using UnityEngine;
 
 namespace Base_Scripts
 {
+    [Serializable]
     public class StatModifier<T> where T : struct
     {
-        public List<ModifierComponent> _modifiers = new();
+        private List<ModifierComponent> _modifiers = new();
         
+        // Cache
+        private bool _isDirty = true;
+        private float _cachedFactor = 1f;
+        private T _cachedAdded;
+
+        // Appelée pour forcer un recalcul (très important)
+        public void MarkDirty() => _isDirty = true;
+
+        private void Recalculate()
+        {
+            _cachedFactor = 1f;
+            float added = 0;
+
+            foreach (ModifierComponent modifier in _modifiers)
+            {
+                _cachedFactor *= modifier.factor;
+                added +=
+                    modifier.added switch
+                    {
+                        float floatValue => floatValue,
+                        int intValue => intValue,
+                        _ => throw new InvalidOperationException($"Unsupported type {typeof(T)} for added value.")
+                    };
+            }
+            
+            Debug.LogError($"Recalculated factor: {_cachedFactor}, added: {added}");
+
+            if (typeof(T) == typeof(float)) _cachedAdded = (T)(object)added;
+            else if (typeof(T) == typeof(int)) _cachedAdded = (T)(object)(int)added;
+            else throw new InvalidOperationException($"Unsupported type {typeof(T)} for added value.");
+            
+            _isDirty = false;
+        }
+
         public float GetFactor()
         {
-            float factor = 1;
-            foreach (var modifier in _modifiers) factor *= Mathf.Pow(modifier.factor, modifier.power);
-            return factor;
+            if (_isDirty) Recalculate();
+            return _cachedFactor;
         }
 
         public T GetAdded()
         {
-            float added = 0;
-            foreach (var modifier in _modifiers)
-            {
-                if (modifier.added is float floatValue) added += floatValue;
-                else if (modifier.added is int intValue) added += intValue;
-                else throw new InvalidOperationException($"Unsupported type {typeof(T)} for added value.");
-            }
-            if (typeof(T) == typeof(float)) return (T)(object)added;
-            if (typeof(T) == typeof(int)) return (T)(object)(int)added;
-            throw new InvalidOperationException($"Unsupported type {typeof(T)} for added value.");
+            if (_isDirty) Recalculate();
+            return _cachedAdded;
         }
 
         public T Apply(T value)
         {
-            float factor = GetFactor();
-            T added = GetAdded();
-            if (typeof(T) == typeof(float)) return (T)(object)((float)(object)value * factor + (float)(object)added);
-            if (typeof(T) == typeof(int)) return (T)(object)(int)((int)(object)value * factor + (int)(object)added);
+            if (_isDirty) Recalculate();
+            
+            if (typeof(T) == typeof(float)) return (T)(object)((float)(object)value * _cachedFactor + (float)(object)_cachedAdded);
+            if (typeof(T) == typeof(int)) return (T)(object)(int)((int)(object)value * _cachedFactor + (int)(object)_cachedAdded);
             throw new InvalidOperationException($"Unsupported type {typeof(T)} for Apply method.");
         }
     
         public void AddModifier(ModifierComponent modifier)
         {
+            Debug.LogError($"ADDING MODIFIER: PREVIOUS MODIFIER SIZE : {_modifiers.Count}");
             _modifiers.Add(modifier);
+            Debug.LogError($"ADDING MODIFIER: NEW MODIFIER SIZE : {_modifiers.Count}");
+            MarkDirty();
         }
+        
         public void RemoveModifier(ModifierComponent modifier)
         {
+            Debug.LogError($"REMOVING MODIFIER: {modifier}");
             _modifiers.Remove(modifier);
+            MarkDirty();
         }
 
         [Serializable]
@@ -53,13 +85,11 @@ namespace Base_Scripts
         {
             public float factor;
             public T added;
-            public float power;
 
             public ModifierComponent(float factor, T added, float power = 1)
             {
                 this.factor = factor;
                 this.added = added;
-                this.power = power;
             }
         }
     }

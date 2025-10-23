@@ -1,7 +1,7 @@
 ﻿using Game.Common;
 using Player.Abilities.Drill;
 using Player.Health;
-using Player.Hitbox;
+using Player.Target;
 using UnityEngine;
 
 namespace Player.Perks.HealingDrill
@@ -18,11 +18,11 @@ namespace Player.Perks.HealingDrill
         internal override void StartApply()
         {
             Debug.Log("HealingDrillPerk applied");
-            DrillAbility.OnDrillUsedOwner += OnDrillUsedOwner;
+            PlayerReferences.PlayerEventHub.OnDrillUsed += OnDrillUsedOwner;
             
         }
 
-        private void OnDrillUsedOwner(HitboxTarget target)
+        private void OnDrillUsedOwner(Targetable target)
         {
             bool heal = Random.value <= chanceToHeal;
             if (heal)
@@ -34,7 +34,7 @@ namespace Player.Perks.HealingDrill
 
         internal override void StopApply()
         {
-            DrillAbility.OnDrillUsedOwner -= OnDrillUsedOwner;
+            PlayerReferences.PlayerEventHub.OnDrillUsed -= OnDrillUsedOwner;
         }
         
         
