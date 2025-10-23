@@ -6655,7 +6655,7 @@ GameObject:
   - component: {fileID: 1383711943}
   - component: {fileID: 1383711942}
   m_Layer: 0
-  m_Name: '#magentaMain Camera'
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12234,7 +12234,7 @@ GameObject:
   - component: {fileID: 1841590725}
   - component: {fileID: 1841590724}
   m_Layer: 0
-  m_Name: '#magentaGlobal Volume'
+  m_Name: Global Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

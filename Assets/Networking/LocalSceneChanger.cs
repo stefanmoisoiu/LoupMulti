@@ -19,7 +19,7 @@ namespace Networking
         public SceneInfo GetSceneInfo(string sceneName)
         {
             for (int i = 0; i < localScenes.Length; i++) 
-                if (localScenes[i].Scene.name == sceneName) return localScenes[i];
+                if (localScenes[i].SceneName == sceneName) return localScenes[i];
             throw new Exception("Scene not found in scenes array: " + sceneName);
         }
         
@@ -56,7 +56,7 @@ namespace Networking
         {
             if (_activeLocalScene != null)
             {
-                SceneManager.UnloadSceneAsync(_activeLocalScene.Scene.name);
+                SceneManager.UnloadSceneAsync(_activeLocalScene.SceneName);
                 _activeLocalScene = null;
             }
         }
@@ -83,12 +83,12 @@ namespace Networking
                     yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
                     SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
                     
-                    Debug.Log("Local scene loaded: " + _activeLocalScene.Scene.name);
+                    Debug.Log("Local scene loaded: " + _activeLocalScene.SceneName);
                     
                     if (previousLocalScene != null)
                     {
-                        Debug.Log("Unloading previous local scene: " + previousLocalScene.Scene.name);
-                        yield return SceneManager.UnloadSceneAsync(previousLocalScene.Scene.name);
+                        Debug.Log("Unloading previous local scene: " + previousLocalScene.SceneName);
+                        yield return SceneManager.UnloadSceneAsync(previousLocalScene.SceneName);
                     }
                     
                     if (sceneInfo.Transition)
@@ -99,7 +99,7 @@ namespace Networking
                 case SceneType.Manager:
                     yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
                     _loadedLocalManagerScenes.Add(sceneInfo);
-                    Debug.Log("Local manager scene loaded: " + sceneInfo.Scene.name);
+                    Debug.Log("Local manager scene loaded: " + sceneInfo.SceneName);
                     break;
             }
         }

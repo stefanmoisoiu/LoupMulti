@@ -760,6 +760,7 @@ MonoBehaviour:
     NetworkTopology: 0
     UseCMBService: 0
     AutoSpawnPlayerPrefabClientSide: 1
+    NetworkMessageMetrics: 1
     NetworkProfilingMetrics: 1
     OldPrefabList: []
   RunInBackground: 1
@@ -1143,7 +1144,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_TargetDisplay: 0
 --- !u!224 &2125074023
 RectTransform:
@@ -1202,7 +1203,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  transitionDuration: 0.5
+  transitionDuration: 0.3
 --- !u!1 &6621955033935583814
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,38 +1249,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   localScenes:
-  - Scene: {fileID: 102900000, guid: 0e642fca44d08ac4f8a73db10ee8f3a9, type: 3}
+  - SceneName: Connecting
     Type: 0
     Transition: 1
-    IsNetwork: 0
-  - Scene: {fileID: 102900000, guid: b82305bbe8f85ef49bac85a12772448b, type: 3}
+  - SceneName: SoloLobby
     Type: 0
     Transition: 1
-    IsNetwork: 0
-  - Scene: {fileID: 102900000, guid: a6c07996eadbeb04d91b5e55fdc54821, type: 3}
+  - SceneName: CreateTest
     Type: 0
     Transition: 1
-    IsNetwork: 0
-  - Scene: {fileID: 102900000, guid: 1e7a6a415ea2e4c44b4b3dbd858c9f62, type: 3}
+  - SceneName: JoinTest
     Type: 0
     Transition: 1
-    IsNetwork: 0
-  - Scene: {fileID: 102900000, guid: 2e98f7082fc13654b8f92250e4020a32, type: 3}
+  - SceneName: LocalManagers
     Type: 1
     Transition: 0
-    IsNetwork: 0
-  - Scene: {fileID: 102900000, guid: fcf04b7f39974914680a2997bccca623, type: 3}
-    Type: 1
-    Transition: 0
-    IsNetwork: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 8154319868725080842}
   - {fileID: 879512680}
-  - {fileID: 2125074023}
   - {fileID: 443578923}
   - {fileID: 964813898}
   - {fileID: 100310303}
+  - {fileID: 2125074023}
   - {fileID: 719409976}

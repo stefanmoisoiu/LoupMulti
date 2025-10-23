@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Rendering.Transitions;
@@ -17,12 +15,11 @@ namespace Networking
         
         [SerializeField] private SceneInfo[] netScenes;
         public static NetcodeSceneChanger Instance { get; private set; }
-        
         public SceneInfo GetSceneInfo(string sceneName)
         {
             for (int i = 0; i < netScenes.Length; i++) 
-                if (netScenes[i].Scene.name == sceneName) return netScenes[i];
-            throw new Exception("Scene not found in scenes array: " + sceneName);
+                if (netScenes[i].SceneName == sceneName) return netScenes[i];
+            throw new Exception("Scene '" + sceneName + "' not found in NetcodeSceneChanger's netScenes array.");
         }
         
         public bool IsSceneLoaded(string sceneName, SceneType type)
@@ -32,9 +29,8 @@ namespace Networking
             {
                 case SceneType.Active:
                     if (_activeNetScene == null) return false;
-                    return _activeNetScene.Scene.name == sceneName;
+                    return _activeNetScene.SceneName == sceneName;
                 case SceneType.Manager:
-                    Debug.Log("Checking if manager scene is loaded: " + sceneName);
                     SceneInfo eventInfo = GetSceneInfo(sceneName);
                     foreach (var scene in _loadedNetManagerScenes)
                         if (scene == eventInfo)
@@ -44,7 +40,6 @@ namespace Networking
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
         private void Start()
         {
             if (Instance != null)
@@ -53,24 +48,29 @@ namespace Networking
                 return;
             }
             Instance = this;
-            if ((IsHost || IsServer) && !IsSpawned) GetComponent<NetworkObject>().Spawn(true);
+            
+            if ((NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer) && !IsSpawned)
+            {
+                GetComponent<NetworkObject>().Spawn(true);
+            }
             
             NetworkManager.Singleton.SceneManager.SetClientSynchronizationMode(LoadSceneMode.Additive);
             NetworkManager.Singleton.SceneManager.OnSceneEvent += HandleSceneEvent;
-            NetworkManager.SceneManager.VerifySceneBeforeLoading += VerifyNetScene;
+
+            NetworkManager.Singleton.SceneManager.VerifySceneBeforeLoading += VerifySceneBeforeLoading;
+            // On a supprimé la ligne "VerifySceneBeforeLoading"
         }
-        private bool VerifyNetScene(int sceneIndex, string sceneName, LoadSceneMode loadSceneMode)
+
+        private bool VerifySceneBeforeLoading(int sceneIndex, string sceneName, LoadSceneMode loadSceneMode)
         {
-            Debug.Log("Verifying scene for network load: " + sceneName + " (Index: " + sceneIndex + ", Mode: " + loadSceneMode + ")");
             try
             {
-                SceneInfo info = LocalSceneChanger.Instance.GetSceneInfo(sceneName);
-                Debug.Log($"sceneName was found in local scenes : {LocalSceneChanger.Instance.IsSceneLoaded(info.Scene.name, info.Type)}, IsNetwork: {info.IsNetwork}");
-                return info.IsNetwork;
-            }
-            catch (Exception e)
-            {
+                SceneInfo eventInfo = GetSceneInfo(sceneName);
                 return true;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
         
@@ -79,6 +79,7 @@ namespace Networking
             if (NetworkManager.Singleton != null && NetworkManager.Singleton.SceneManager != null)
                 NetworkManager.Singleton.SceneManager.OnSceneEvent -= HandleSceneEvent;
         }
+        
         private void HandleSceneEvent(SceneEvent sceneEvent)
         {
             if (sceneEvent.ClientId != NetworkManager.Singleton.LocalClientId) return;
@@ -87,55 +88,78 @@ namespace Networking
                 Debug.LogError("SceneEvent with null SceneName");
                 return;
             }
-            SceneInfo eventInfo = GetSceneInfo(sceneEvent.SceneName);
+            
+            SceneInfo eventInfo;
+            try {
+                eventInfo = GetSceneInfo(sceneEvent.SceneName);
+            }
+            catch (Exception) {
+                // Cette scène n'est pas gérée par ce manager (c'est peut-être une scène locale)
+                // On l'ignore.
+                return;
+            }
             
             switch (sceneEvent.SceneEventType)
             {
                 case SceneEventType.Load:
-                    Debug.Log("Loading scene: " + sceneEvent.SceneName);
+                    Debug.Log("Loading network scene: " + sceneEvent.SceneName);
                     
                     if (!eventInfo.Transition) break;
                     sceneEvent.AsyncOperation.allowSceneActivation = false;
                     
                     IEnumerator TransitionInCoroutine()
                     {
+                        Debug.Log($"Start transition IN {Time.time}");
                         yield return TransitionManager.Instance.TransitionCoroutine(true);
                         sceneEvent.AsyncOperation.allowSceneActivation = true;
+                        Debug.Log($"End transition IN {Time.time}");
                     }
                     StartCoroutine(TransitionInCoroutine());
                     
                     break;
-                case SceneEventType.Synchronize:
-                    Debug.Log("Synchronizing scene: " + sceneEvent.SceneName);
-                    break;
-                case SceneEventType.SynchronizeComplete:
-                    Debug.Log("Synchronizing COMPLETE scene: " + sceneEvent.SceneName);
-                    break;
-
+                
                 case SceneEventType.LoadComplete:
-                    Debug.Log("Loaded scene: " + sceneEvent.SceneName);
+                    Debug.Log("Loaded network scene: " + sceneEvent.SceneName);
                     
                     if (eventInfo.Type == SceneType.Active)
                     {
                         SceneManager.SetActiveScene(sceneEvent.Scene);
                         LocalSceneChanger.Instance.UnloadActiveLocalScene();
                     }
+
+                    if (eventInfo.Transition)
+                    {
+                        IEnumerator TransitionOutCoroutine()
+                        {
+                            yield return new WaitForSeconds(0.5f);
+                            Debug.Log($"Start transition OUT {Time.time}");
+                            yield return TransitionManager.Instance.TransitionCoroutine(false);
+                            yield return null;
+                            Debug.Log($"End transition OUT {Time.time}");
+                        }
+                        StartCoroutine(TransitionOutCoroutine());
+                    }
                     break;
 
                 case SceneEventType.LoadEventCompleted:
+                    // Déclenché uniquement sur le SERVEUR
                     Debug.Log("Load event completed for scene: " + sceneEvent.SceneName);
-                    // Déclenché uniquement sur le SERVEUR lorsque TOUS les clients ont fini de charger.
-                    
-                    if (eventInfo.Transition)
-                    {
-                        TransitionManager.Instance.TransitionCoroutine(false);
-                    }
                     break;
+                
+                // On peut ignorer les autres événements pour l'instant
+                case SceneEventType.Synchronize: break;
+                case SceneEventType.SynchronizeComplete: break;
             }
         }
 
         public IEnumerator NetcodeLoadScene(string sceneName, SceneType type)
         {
+            if (!NetworkManager.Singleton.IsServer) 
+            {
+                Debug.LogError("NetcodeLoadScene ne peut être appelé que par le serveur !");
+                yield break;
+            }
+            
             if (IsSceneLoaded(sceneName, type)) yield break;
             
             SceneInfo info = GetSceneInfo(sceneName);
@@ -156,9 +180,9 @@ namespace Networking
 
         private IEnumerator ServerLoadAndUnload(string newSceneName, SceneInfo previousActiveNetScene)
         {
+            // --- CHARGEMENT ---
             NetworkManager.Singleton.SceneManager.LoadScene(newSceneName, LoadSceneMode.Additive);
-
-            // Attendre que la scène soit complètement chargée sur tous les clients
+            
             bool loadCompleted = false;
             void OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
             {
@@ -170,25 +194,25 @@ namespace Networking
 
             Debug.Log($"[Server] Chargement de '{newSceneName}' terminé sur tous les clients.");
 
+            // --- DÉCHARGEMENT ---
             if (previousActiveNetScene != null)
             {
-                Debug.Log($"[Server] Déchargement de la scène précédente '{previousActiveNetScene.Scene.name}'.");
-                //Attendre 1 frame pour éviter le SceneEventInProgress après LoadEventCompleted.
-                yield return null; 
+                Debug.Log($"[Server] Déchargement de la scène précédente '{previousActiveNetScene.SceneName}'.");
+                yield return null; // Attendre 1 frame
                 
                 NetworkManager.Singleton.SceneManager.UnloadScene(
-                    SceneManager.GetSceneByName(previousActiveNetScene.Scene.name));
+                    SceneManager.GetSceneByName(previousActiveNetScene.SceneName));
 
                 bool unloadCompleted = false;
                 void OnUnloadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
                 {
-                    if (sceneName == previousActiveNetScene.Scene.name) unloadCompleted = true;
+                    if (sceneName == previousActiveNetScene.SceneName) unloadCompleted = true;
                 }
                 NetworkManager.Singleton.SceneManager.OnUnloadEventCompleted += OnUnloadEventCompleted;
                 yield return new WaitUntil(() => unloadCompleted);
                 NetworkManager.Singleton.SceneManager.OnUnloadEventCompleted -= OnUnloadEventCompleted;
                 
-                Debug.Log($"[Server] Déchargement de '{previousActiveNetScene.Scene.name}' terminé sur tous les clients.");
+                Debug.Log($"[Server] Déchargement de '{previousActiveNetScene.SceneName}' terminé sur tous les clients.");
             }
         }
     }

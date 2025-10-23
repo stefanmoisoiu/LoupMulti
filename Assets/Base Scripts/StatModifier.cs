@@ -34,8 +34,6 @@ namespace Base_Scripts
                         _ => throw new InvalidOperationException($"Unsupported type {typeof(T)} for added value.")
                     };
             }
-            
-            Debug.LogError($"Recalculated factor: {_cachedFactor}, added: {added}");
 
             if (typeof(T) == typeof(float)) _cachedAdded = (T)(object)added;
             else if (typeof(T) == typeof(int)) _cachedAdded = (T)(object)(int)added;
@@ -67,15 +65,12 @@ namespace Base_Scripts
     
         public void AddModifier(ModifierComponent modifier)
         {
-            Debug.LogError($"ADDING MODIFIER: PREVIOUS MODIFIER SIZE : {_modifiers.Count}");
             _modifiers.Add(modifier);
-            Debug.LogError($"ADDING MODIFIER: NEW MODIFIER SIZE : {_modifiers.Count}");
             MarkDirty();
         }
         
         public void RemoveModifier(ModifierComponent modifier)
         {
-            Debug.LogError($"REMOVING MODIFIER: {modifier}");
             _modifiers.Remove(modifier);
             MarkDirty();
         }

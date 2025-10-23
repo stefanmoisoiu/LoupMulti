@@ -55,23 +55,27 @@ namespace Game.Maps
         public void SetPlayerSpawnPositions()
         {
             PlayerData[] players = DataManager.Instance.Search(new[] { OuterData.PlayingState.Playing });
-            for (ushort i = 0; i < players.Length; i++) TeleportPlayerClientRpc(i,players[i].SendRpcTo());
+            for (ushort i = 0; i < players.Length; i++) TeleportPlayer(i, NetworkManager.ConnectedClients[players[i].clientId]);
         }
         
-        [Rpc(SendTo.SpecifiedInParams)]
-        private void TeleportPlayerClientRpc(ushort spawnPointInd, RpcParams @params)
+        private void TeleportPlayer(ushort spawnPointInd, NetworkClient client)
         {
-            if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(@params.Receive.SenderClientId, out NetworkClient client))
-                throw new Exception("My Client not found " + @params.Receive.SenderClientId);
             Debug.Log($"Teleporting player to spawn position [{spawnPointInd}]");
             Transform spawnPoint = MapSpawnPositions.instance.GetSpawnPoint(spawnPointInd);
             NetworkObject player = client.PlayerObject;
+            if (player == null)
+            {
+                Debug.LogError("TeleportPlayerClientRpc: PlayerObject local est null !");
+                return;
+            }
             SmoothSyncNetcode sync = player.GetComponent<SmoothSyncNetcode>();
+            if (sync == null)
+            {
+                Debug.LogError("TeleportPlayerClientRpc: SmoothSyncNetcode non trouvé sur le PlayerObject !");
+                return;
+            }
             
-            sync.transform.position = spawnPoint.position;
-            sync.transform.rotation = spawnPoint.rotation;
-            sync.rb.linearVelocity = Vector3.zero;
-            sync.teleportOwnedObjectFromOwner();
+            sync.teleportAnyObjectFromServer(spawnPoint.position, spawnPoint.rotation, Vector3.one);
         }
     }
 }

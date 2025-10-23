@@ -10,7 +10,7 @@ namespace Base_Scripts.Editor
     {
         [Header("Liste des scènes à ouvrir")]
         public List<SceneAsset> scenes = new List<SceneAsset>();
-
+        
         [Header("Liste des prefabs à instancier")]
         public List<GameObject> prefabs = new List<GameObject>();
     }

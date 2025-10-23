@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 38959269}
   - component: {fileID: 38959268}
   m_Layer: 0
-  m_Name: '#magentaMain Camera'
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -300,7 +300,7 @@ GameObject:
   - component: {fileID: 1162433064}
   - component: {fileID: 1162433063}
   m_Layer: 0
-  m_Name: '#magentaGlobal Volume'
+  m_Name: Global Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -350,7 +350,7 @@ GameObject:
   - component: {fileID: 1835722686}
   - component: {fileID: 1835722685}
   m_Layer: 0
-  m_Name: '#magentaDirectional Light'
+  m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -472,7 +472,7 @@ GameObject:
   - component: {fileID: 2039415593}
   - component: {fileID: 2039415594}
   m_Layer: 0
-  m_Name: '#blueConnect'
+  m_Name: Connect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

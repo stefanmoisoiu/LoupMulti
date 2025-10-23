@@ -18,6 +18,6 @@ MonoBehaviour:
   collectRoundLength: 60
   upgradeRoundLength: 30
   debug: 0
-  debugRoundLengths: 1
+  debugRoundLengths: 0
   debugCollectRoundLength: 10
   debugUpgradeRoundLength: 10

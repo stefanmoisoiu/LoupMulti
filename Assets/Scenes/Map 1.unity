@@ -647,7 +647,7 @@ GameObject:
   - component: {fileID: 287838767}
   - component: {fileID: 287838766}
   m_Layer: 0
-  m_Name: '#blueMap Spawn Points'
+  m_Name: Map Spawn Points
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1060,7 +1060,7 @@ GameObject:
   - component: {fileID: 730012072}
   - component: {fileID: 730012071}
   m_Layer: 0
-  m_Name: '#magentaEventSystem'
+  m_Name: EventSystem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2667,7 +2667,7 @@ GameObject:
   - component: {fileID: 1272842709}
   - component: {fileID: 1272842708}
   m_Layer: 0
-  m_Name: '#magentaDirectional Light'
+  m_Name: Directional Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6796,7 +6796,7 @@ GameObject:
   - component: {fileID: 1367907744}
   - component: {fileID: 1367907743}
   m_Layer: 0
-  m_Name: '#magentaMain Camera'
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8528,7 +8528,7 @@ GameObject:
   - component: {fileID: 1802551880}
   - component: {fileID: 1802551879}
   m_Layer: 0
-  m_Name: '#magentaGlobal Volume'
+  m_Name: Global Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13275,7 +13275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offsetOrigin: {fileID: 2109990766}
   excludeOwnedTargets: 0
-  targetTypes: 
+  targetTypes: 01000000
   shape: 0
   offset: {x: -5, y: 0, z: 0}
   boxSize: {x: 1, y: 1, z: 1}

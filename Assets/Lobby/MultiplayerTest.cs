@@ -10,9 +10,7 @@ namespace Lobby
         [SerializeField] private string multLobbySceneName = "MultiLobby";
 
         [SerializeField] private Type type;
-
-        private bool joining;
-
+        
         enum Type
         {
             Create,
@@ -50,7 +48,7 @@ namespace Lobby
 
         private void TryJoin()
         {
-            if (joining) return; // clipboard copy
+            if (NetcodeManager.LoadingGame || NetcodeManager.InGame) return;
             string code = GUIUtility.systemCopyBuffer;
             Debug.Log(code);
             if (code is not { Length: 6 }) return;
@@ -60,7 +58,6 @@ namespace Lobby
 
         private async void Join(string joinCode)
         {
-            joining = true;
             try
             {
                 await NetcodeManager.Instance.JoinGame(joinCode);
@@ -69,7 +66,6 @@ namespace Lobby
             {
                 Debug.LogError(e);
             }
-            joining = false;
         }
     }
 }

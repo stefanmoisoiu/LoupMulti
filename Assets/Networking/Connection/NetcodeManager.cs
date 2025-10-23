@@ -8,6 +8,7 @@ using Unity.Networking.Transport.Relay;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Networking.Connection
 {
@@ -40,10 +41,11 @@ namespace Networking.Connection
             }
         }
 
-        public async Task CreateGame()
+    public async Task CreateGame()
         {
             LoadingGame = true;
             
+            // 1. Logique Relay
             Allocation alloc = await RelayManager.CreateRelay(MaxPlayers - 1);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(alloc.AllocationId);
             RelayServerData relayServerData = new RelayServerData(alloc, "dtls");
@@ -51,26 +53,54 @@ namespace Networking.Connection
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
             Debug.Log("Starting Host...");
+
+            // 2. Attendre que Netcode soit prêt
+            var serverStartedTcs = new TaskCompletionSource<bool>();
+            Action onServerStarted = null;
+            onServerStarted = () =>
+            {
+                NetworkManager.Singleton.OnServerStarted -= onServerStarted;
+                serverStartedTcs.SetResult(true);
+            };
             
-            bool success = NetworkManager.Singleton.StartHost();
-            if (!success) throw new Exception("Failed to start host");
+            NetworkManager.Singleton.OnServerStarted += onServerStarted;
+
+            if (!NetworkManager.Singleton.StartHost())
+            {
+                NetworkManager.Singleton.OnServerStarted -= onServerStarted;
+                throw new Exception("Failed to start host");
+            }
             
-            Debug.Log("Host started");
+            await serverStartedTcs.Task; 
+            
+            Debug.Log("Host started successfully.");
             
             CurrentServerJoinCode = joinCode;
             ServerData = relayServerData;
-                
+            
+            
             IEnumerator RunCoroutine(IEnumerator c, TaskCompletionSource<bool> tcs)
             {
                 yield return StartCoroutine(c);
                 tcs.SetResult(true);
             }
-                
-            var tcs = new TaskCompletionSource<bool>();
-            StartCoroutine(RunCoroutine(LocalSceneChanger.Instance.LocalLoadScene(NetSceneChangerName, SceneType.Manager), tcs));
-            await tcs.Task;
-            
-            await Task.Yield(); 
+            TaskCompletionSource<bool> tcs = new();
+            // StartCoroutine(RunCoroutine(LocalSceneChanger.Instance.LocalLoadScene(NetSceneChangerName, SceneType.Manager), tcs));
+            // await tcs.Task;
+
+            NetworkManager.Singleton.SceneManager.LoadScene(NetSceneChangerName, LoadSceneMode.Additive);
+
+            int waitFrames = 0;
+            while (NetcodeSceneChanger.Instance == null)
+            {
+                await Task.Yield();
+                waitFrames++;
+                if (waitFrames > 9999)
+                {
+                    throw new Exception("Timeout: NetcodeSceneChanger.Instance n'a pas été initialisé.");
+                }
+            }
+            Debug.Log($"NetcodeSceneChanger.Instance initialisé après {waitFrames} frames.");
             
             tcs = new TaskCompletionSource<bool>();
             StartCoroutine(RunCoroutine(NetcodeSceneChanger.Instance.NetcodeLoadScene(NetManagers, SceneType.Manager), tcs));
@@ -88,6 +118,7 @@ namespace Networking.Connection
                 
             Debug.Log("Created game with join code: " + joinCode);
         }
+        
         public async Task JoinGame(string joinCode)
         {
             if (string.IsNullOrEmpty(joinCode) || joinCode.Length != 6)
@@ -101,17 +132,8 @@ namespace Networking.Connection
                 JoinAllocation joinAlloc = await RelayManager.JoinRelayByCode(joinCode);
                 RelayServerData relayServerData = new (joinAlloc, "dtls");
                 NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-
-                
-                TaskCompletionSource<bool> tcs = new();
-                IEnumerator TransitionCoroutine(bool fadeIn)
-                {
-                    yield return TransitionManager.Instance.TransitionCoroutine(fadeIn);
-                    tcs.SetResult(true);
-                }
-                TransitionManager.Instance.StartCoroutine(TransitionCoroutine(true));
-                await tcs.Task;
             
+                Debug.Log($"Attempting StartClient. IsClient={NetworkManager.Singleton.IsClient}, IsHost={NetworkManager.Singleton.IsHost}, IsServer={NetworkManager.Singleton.IsServer}");
                 bool success = NetworkManager.Singleton.StartClient();
                 if (!success) Debug.LogError("Failed to start client");
             
@@ -123,8 +145,6 @@ namespace Networking.Connection
             
                 OnJoinGame?.Invoke();
                 OnEnterGame?.Invoke();
-                
-                TransitionManager.Instance.TransitionCoroutine(false);
                 
                 NetworkManager.Singleton.OnClientStopped += ClientStoppedLeaveGame;
             }

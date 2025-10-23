@@ -12,7 +12,7 @@ namespace Game.Game_Loop.Round.Collect
         public override IEnumerator Execute(GameManager gameManager, GameLoopEvents gameLoopEvents)
         {
             gameLoopEvents.RoundStateChanged(GameRoundState.Collect, NetworkManager.ServerTime.TimeAsFloat);
-            yield return new WaitForSeconds(GameSettings.Instance.CollectRoundLength);
+            yield return new WaitForSeconds(GameSettings.Instance.UpgradeRoundLength);
         }
     }
 }
