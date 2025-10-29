@@ -16,15 +16,15 @@ namespace Player.Health
 
         private void OnEnable()
         {
-            PlayerDataHealth.OnPlayerHealthChanged += CheckHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedServer += CheckHealthChangedServer;
         }
 
         private void OnDisable()
         {
-            PlayerDataHealth.OnPlayerHealthChanged -= CheckHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedServer -= CheckHealthChangedServer;
         }
 
-        private void CheckHealthChanged(ushort previousHealth, ushort newHealth, ulong clientId)
+        private void CheckHealthChangedServer(ushort previousHealth, ushort newHealth, ulong clientId)
         {
             if (clientId != OwnerClientId) return;
             OnHealthChanged?.Invoke(previousHealth, newHealth);
@@ -79,7 +79,7 @@ namespace Player.Health
                 Debug.Log($"Player {OwnerClientId} is dead. Ignoring heal.");
                 return;
             }
-            if (playerData.inGameData.health >= GameSettings.PlayerMaxHealth)
+            if (playerData.inGameData.health >= GameSettings.Instance.PlayerMaxHealth)
             {
                 Debug.Log($"Player {OwnerClientId} is already at max health. Ignoring heal.");
                 return;
@@ -94,13 +94,13 @@ namespace Player.Health
 
         public ushort GetHealth()
         {
-            if (DataManager.Instance == null) return GameSettings.PlayerMaxHealth;
+            if (DataManager.Instance == null) return GameSettings.Instance.PlayerMaxHealth;
             return DataManager.Instance[OwnerClientId].inGameData.health;
         }
         
         public ushort GetMaxHealth()
         {
-            return GameSettings.PlayerMaxHealth;
+            return GameSettings.Instance.PlayerMaxHealth;
         }
     }
 }

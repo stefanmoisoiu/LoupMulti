@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Game.Common;
 using Game.Data;
 using Game.Upgrade.Shop;
@@ -32,9 +33,9 @@ namespace Player.General_UI.Shop
             image.sprite = _item.Info.Icon;
             shopInfoBubbleTarget.SetData(_item.Info.Name, _item.Info.Description, _item.ShopItemData.CostAmount, _item.ShopItemData.CostType);
 
-            ushort[] ownedItems = DataManager.Instance[NetworkManager.Singleton.LocalClientId].inGameData.items;
+            List<OwnedItemData> ownedItems = DataManager.Instance[NetworkManager.Singleton.LocalClientId].inGameData.ownedItems;
             
-            if (ownedItems.Contains(ItemRegistry.Instance.GetItem(_item))) DisableShopItemUI();
+            if (ownedItems.Any(x => x.ItemRegistryIndex == ItemRegistry.Instance.GetItem(_item))) DisableShopItemUI();
             else button.onClick.AddListener(() => shopManager.BuyShopItem(_item));
         }
 

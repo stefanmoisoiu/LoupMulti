@@ -81,7 +81,7 @@ namespace Game.Collect.Resource.Structure
                     currentDurability.Value--;
                     if (GiveResource()) collectedAmount++;
                 }
-                DataManager.Instance.PlayerResources.CollectResource(origin, data.collectedResource,
+                DataManager.Instance.PlayerResourcesHelper.CollectResource(origin, data.collectedResource,
                     collectedAmount);
                 
                 NetcodeLogger.Instance.LogRpc($"Client {origin} extracted {collectedAmount} {data.collectedResource.ResourceName} from {data.structureName}. Durability: {currentDurability.Value}/{GetMaxDurability()}", NetcodeLogger.LogType.GameLoop);

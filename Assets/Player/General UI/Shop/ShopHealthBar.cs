@@ -16,39 +16,41 @@ namespace Player.General_UI.Shop
         [SerializeField] private string shopHealthBarTag = "ShopHealthBar";
         [SerializeField] private string shopHealthBarButtonTag = "ShopHealthBarButton";
 
-        private ushort lastShopOpenedHealth = GameSettings.PlayerMaxHealth;
+        private ushort _lastShopOpenedHealth;
         
-        private HealthBarEffect healthBarEffect;
-        private Button shopHealthBarButton;
-        private CanvasGroup buttonCanvasGroup;
+        private HealthBarEffect _healthBarEffect;
+        private Button _shopHealthBarButton;
+        private CanvasGroup _buttonCanvasGroup;
         protected override void StartAnyOwner()
         {
-            healthBarEffect = PCanvas.CanvasObjects[shopHealthBarTag].GetComponent<HealthBarEffect>();
+            _healthBarEffect = PCanvas.CanvasObjects[shopHealthBarTag].GetComponent<HealthBarEffect>();
             
-            shopHealthBarButton = PCanvas.CanvasObjects[shopHealthBarButtonTag].GetComponent<Button>();
-            buttonCanvasGroup = PCanvas.CanvasObjects[shopHealthBarButtonTag].GetComponent<CanvasGroup>();
-            buttonCanvasGroup.alpha = 1;
+            _shopHealthBarButton = PCanvas.CanvasObjects[shopHealthBarButtonTag].GetComponent<Button>();
+            _buttonCanvasGroup = PCanvas.CanvasObjects[shopHealthBarButtonTag].GetComponent<CanvasGroup>();
+            _buttonCanvasGroup.alpha = 1;
+
+            _lastShopOpenedHealth = GameSettings.Instance.PlayerMaxHealth;
             
-            shopHealthBarButton.onClick.AddListener(BuyHealth);
+            _shopHealthBarButton.onClick.AddListener(BuyHealth);
             
             ShopManager.OnShopOpenedChanged += ShopOpenedChanged;
-            PlayerDataHealth.OnOwnerPlayerHealthChanged += HealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner += HealthChanged;
             DataManager.OnEntryUpdatedOwner += OnEntryUpdatedOwner;
         }
 
         protected override void DisableAnyOwner()
         {
             ShopManager.OnShopOpenedChanged -= ShopOpenedChanged;
-            PlayerDataHealth.OnOwnerPlayerHealthChanged -= HealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner -= HealthChanged;
             DataManager.OnEntryUpdatedOwner -= OnEntryUpdatedOwner;
             
-            shopHealthBarButton?.onClick.RemoveListener(BuyHealth);
+            _shopHealthBarButton?.onClick.RemoveListener(BuyHealth);
         }
 
         private void BuyHealth()
         {
             ushort health = DataManager.Instance[OwnerClientId].inGameData.health;
-            if (health >= GameSettings.PlayerMaxHealth)
+            if (health >= GameSettings.Instance.PlayerMaxHealth)
             {
                 Debug.Log("Tried to buy health at max health.");
                 return;
@@ -58,7 +60,7 @@ namespace Player.General_UI.Shop
         private void HealthChanged(ushort previousHealth, ushort newHealth)
         {
             if (!GameManager.Instance.ShopManager.ShopOpened) return;
-            healthBarEffect.UpdateHealthBar(previousHealth, newHealth, GameSettings.PlayerMaxHealth);
+            _healthBarEffect.UpdateHealthBar(previousHealth, newHealth, GameSettings.Instance.PlayerMaxHealth);
         }
 
         private void ShopOpenedChanged(bool opened, ShopManager shopManager)
@@ -66,9 +68,9 @@ namespace Player.General_UI.Shop
             if (!opened) return;
 
             ushort health = DataManager.Instance[OwnerClientId].inGameData.health;
-            healthBarEffect.UpdateHealthBar(lastShopOpenedHealth, health, GameSettings.PlayerMaxHealth);
+            _healthBarEffect.UpdateHealthBar(_lastShopOpenedHealth, health, GameSettings.Instance.PlayerMaxHealth);
             
-            lastShopOpenedHealth = health;
+            _lastShopOpenedHealth = health;
         }
         
         private void OnEntryUpdatedOwner(PlayerData previousData, PlayerData newData)
@@ -76,15 +78,15 @@ namespace Player.General_UI.Shop
             InGameData igData = newData.inGameData;
             
             bool hasEnoughResources = igData.resources.HasEnough(ResourceType.Common, 1);
-            bool hasLifeToRestore = igData.health < GameSettings.PlayerMaxHealth;
+            bool hasLifeToRestore = igData.health < GameSettings.Instance.PlayerMaxHealth;
             
             SetBuyButtonEnabled(hasEnoughResources && hasLifeToRestore);
         }
 
         private void SetBuyButtonEnabled(bool buttonEnabled)
         {
-            buttonCanvasGroup.alpha = buttonEnabled ? 1 : .5f;
-            buttonCanvasGroup.interactable = buttonEnabled;
+            _buttonCanvasGroup.alpha = buttonEnabled ? 1 : .5f;
+            _buttonCanvasGroup.interactable = buttonEnabled;
         }
     }
 }

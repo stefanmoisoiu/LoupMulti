@@ -7,17 +7,18 @@ using UnityEngine;
 
 namespace Game.Data.Extensions
 {
-    public class PlayerDataHealth : NetworkBehaviour
+    public class PlayerHealthHelper : NetworkBehaviour
     {
-        public static event Action<ushort, ushort, ulong> OnPlayerHealthChanged;
-        public static event Action<ushort, ushort> OnOwnerPlayerHealthChanged;
-        public static event Action<ulong> OnPlayerDeath;
+        
+        public static event Action<ushort, ushort, ulong> OnPlayerHealthChangedServer;
+        public static event Action<ushort, ushort> OnPlayerHealthChangedOwner;
+        public static event Action<ulong> OnPlayerDeathServer;
         public static event Action OnOwnerPlayerDied;
         
         [Rpc(SendTo.SpecifiedInParams)]
         private void OwnerPlayerHealthChangedRpc(ushort previousHealth, ushort newHealth, RpcParams @params)
         {
-            OnOwnerPlayerHealthChanged?.Invoke(previousHealth, newHealth);
+            OnPlayerHealthChangedOwner?.Invoke(previousHealth, newHealth);
         }
         
         [Rpc(SendTo.SpecifiedInParams)]
@@ -55,12 +56,13 @@ namespace Game.Data.Extensions
             ushort newHealth = newData.inGameData.health;
             if (previousHealth == newHealth) return;
             
-            OnPlayerHealthChanged?.Invoke(previousHealth, newHealth, newData.clientId);
+            OnPlayerHealthChangedServer?.Invoke(previousHealth, newHealth, newData.clientId);
             OwnerPlayerHealthChangedRpc(previousHealth, newHealth, newData.SendRpcTo());
 
             if (newData.inGameData.health == 0 && previousData.inGameData.health > 0)
             {
-                OnPlayerDeath?.Invoke(newData.clientId);
+                Debug.Log("All players died.");
+                OnPlayerDeathServer?.Invoke(newData.clientId);
                 OwnerPlayerDeathRpc(newData.SendRpcTo());
             }
         }

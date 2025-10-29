@@ -1,7 +1,6 @@
 ﻿using System;
 using Base_Scripts;
 using Game.Common;
-using Game.Common.List;
 using Game.Data;
 using Unity.Netcode;
 using UnityEngine;

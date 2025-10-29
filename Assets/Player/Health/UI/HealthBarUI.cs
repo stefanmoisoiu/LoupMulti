@@ -15,16 +15,16 @@ namespace Player.Health
         protected override void StartOnlineOwner()
         {
             _healthBar = PCanvas.CanvasObjects[HealthTag].GetComponent<CircularBar>();
-            PlayerDataHealth.OnOwnerPlayerHealthChanged += OnHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner += OnPlayerHealthChangedHealthChanged;
         }
         protected override void DisableAnyOwner()
         {
-            PlayerDataHealth.OnOwnerPlayerHealthChanged -= OnHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner -= OnPlayerHealthChangedHealthChanged;
         }
 
-        private void OnHealthChanged(ushort previousHealth, ushort newHealth)
+        private void OnPlayerHealthChangedHealthChanged(ushort previousHealth, ushort newHealth)
         {
-            float newAdv = (float)newHealth / GameSettings.PlayerMaxHealth;
+            float newAdv = (float)newHealth / GameSettings.Instance.PlayerMaxHealth;
             _healthBar.SetAdv(newAdv);
         }
     }

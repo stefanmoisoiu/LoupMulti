@@ -14,14 +14,14 @@ namespace Player.Health
 
         protected override void StartOnlineOwner()
         {
-            PlayerDataHealth.OnOwnerPlayerHealthChanged += OnHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner += OnPlayerHealthChangedHealthChanged;
         }
         protected override void DisableAnyOwner()
         {
-            PlayerDataHealth.OnOwnerPlayerHealthChanged -= OnHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner -= OnPlayerHealthChangedHealthChanged;
         }
 
-        private void OnHealthChanged(ushort previousHealth, ushort newHealth)
+        private void OnPlayerHealthChangedHealthChanged(ushort previousHealth, ushort newHealth)
         {
             if (newHealth > previousHealth) return;
             float damage = (float)previousHealth - newHealth;

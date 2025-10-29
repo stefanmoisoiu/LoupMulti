@@ -25,6 +25,9 @@ namespace Game.Common
             Ability,
         }
 
+        [BoxGroup("Carousel Information")]
+        [SerializeField] private bool inCarousel = true;
+        public bool InCarousel => inCarousel;
         [BoxGroup("Item Data")] [SerializeField]
         private ItemType itemType;
         public ItemType Type => itemType;
@@ -37,10 +40,6 @@ namespace Game.Common
         [BoxGroup("Item Data")] [ShowIf("itemType", ItemType.Ability)] [SerializeField]
         private AbilityData abilityData;
         public AbilityData AbilityData => abilityData;
-        
-        [SerializeField]
-        private bool isInSelectionPool = false;
-        public bool IsInSelectionPool => isInSelectionPool;
 
         [Button("Rebuild Item Registry")]
         private void RebuildItemRegistry()

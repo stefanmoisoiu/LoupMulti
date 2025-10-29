@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1510370224068740443}
   - component: {fileID: 8825995602349428183}
   - component: {fileID: 2918829233749490678}
-  - component: {fileID: 7488420344349431461}
+  - component: {fileID: 8507901004791063527}
   m_Layer: 0
   m_Name: Game Data
   m_TagString: Untagged
@@ -48,9 +48,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  playerResources: {fileID: 8825995602349428183}
-  playerDataHealth: {fileID: 7488420344349431461}
-  playerState: {fileID: 2918829233749490678}
+  playerResourcesHelper: {fileID: 8825995602349428183}
+  playerHealthHelper: {fileID: 8507901004791063527}
+  playerStateHelper: {fileID: 2918829233749490678}
 --- !u!114 &8825995602349428183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
---- !u!114 &7488420344349431461
+--- !u!114 &8507901004791063527
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 860274811423780810}
   - component: {fileID: 12686099556307846}
   - component: {fileID: 8672235172968375494}
+  - component: {fileID: 4938333089700405605}
   m_Layer: 0
   m_Name: Upgrade
   m_TagString: Untagged
@@ -138,6 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  mainCarousel: {fileID: 4938333089700405605}
 --- !u!114 &12686099556307846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,6 +153,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  carouselOptionProbability:
+    outcomes:
+    - Outcome: 0
+      Weight: 35
+      IsLocked: 0
+    - Outcome: 1
+      Weight: 35
+      IsLocked: 0
+    - Outcome: 2
+      Weight: 30
+      IsLocked: 1
 --- !u!114 &8672235172968375494
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,6 +177,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+--- !u!114 &4938333089700405605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258857228147332458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0fc53c5e6514ffbaf33f9c6df6fc9ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  carouselManager: {fileID: 12686099556307846}
+  mainCarouselConfig: {fileID: 11400000, guid: c3fbc3a99a371ea4cad31b6c6dcb44b3, type: 2}
 --- !u!1 &2229703625455434037
 GameObject:
   m_ObjectHideFlags: 0
@@ -284,12 +312,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  itemSelectionManager: {fileID: 12686099556307846}
+  carouselManager: {fileID: 12686099556307846}
   shopManager: {fileID: 8672235172968375494}
   mapManager: {fileID: 4823457383044820859}
   gameLoop: {fileID: 2652290516336462276}
-  gameState:
-    m_InternalValue: 0
 --- !u!114 &4823457383044820859
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,6 +446,7 @@ GameObject:
   - component: {fileID: 2652290516336462276}
   - component: {fileID: 4628776859169173046}
   - component: {fileID: 4430463748764479185}
+  - component: {fileID: 4269843060001203202}
   m_Layer: 0
   m_Name: GameLoop
   m_TagString: Untagged
@@ -465,6 +492,9 @@ MonoBehaviour:
   upgradeRound: {fileID: 860274811423780810}
   countdownRound: {fileID: 7143222465130577843}
   endRound: {fileID: 5644376015185266943}
+  gameReportManager: {fileID: 4269843060001203202}
+  CurrentRound:
+    m_InternalValue: 0
 --- !u!114 &4628776859169173046
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,3 +523,16 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   roundState:
     m_InternalValue: 0
+--- !u!114 &4269843060001203202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8265304381197042471}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3b6a8d5033141799133e94ac5231119, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1

@@ -4,7 +4,7 @@ using Base_Scripts;
 using Game.Data;
 using Game.Data.Extensions;
 using Game.Maps;
-using Game.Upgrade.Perks;
+using Game.Upgrade.Carousel;
 using Game.Upgrade.Shop;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,8 +17,8 @@ namespace Game.Game_Loop
 
         public static GameManager Instance;
         public static event Action<GameManager> OnCreated;
-        [SerializeField] private ItemSelectionManager itemSelectionManager;
-        public ItemSelectionManager ItemSelectionManager => itemSelectionManager;
+        [SerializeField] private CarouselManager carouselManager;
+        public CarouselManager CarouselManager => carouselManager;
         [SerializeField] private ShopManager shopManager;
         public ShopManager ShopManager => shopManager;
         [SerializeField] private MapManager mapManager;
@@ -60,8 +60,6 @@ namespace Game.Game_Loop
 
             if (IsServer)
             {
-                NetcodeLogger.Instance.LogRpc("Starting Game Manager", NetcodeLogger.LogType.Netcode);
-        
                 NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
                 NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
                 NetworkObject.DestroyWithScene = false;
@@ -96,7 +94,7 @@ namespace Game.Game_Loop
             
             _gameState.Value = GameState.Loading;
         
-            DataManager.Instance.PlayerState.SetNotAssignedPlayersToPlayingState();
+            DataManager.Instance.PlayerStateHelper.SetNotAssignedPlayersToPlayingState();
         
             yield return mapManager.LoadRandomGameMap();
             
@@ -104,6 +102,7 @@ namespace Game.Game_Loop
             OnGameStartedServer?.Invoke();
         
             yield return gameLoop.MainLoop(this);
+            DataManager.Instance.Reset();
             
             OnGameEndedServer?.Invoke();
             
@@ -113,7 +112,6 @@ namespace Game.Game_Loop
             
             _gameState.Value = GameState.Lobby;
             
-            DataManager.Instance.Reset();
         }
         public enum GameState
         {

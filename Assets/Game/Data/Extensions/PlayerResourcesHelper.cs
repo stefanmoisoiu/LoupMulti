@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game.Data.Extensions
 {
-    public class PlayerResources : NetworkBehaviour
+    public class PlayerResourcesHelper : NetworkBehaviour
     {
         [SerializeField] private ResourceList resourceList;
         

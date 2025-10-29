@@ -1,5 +1,6 @@
 ﻿using Game.Game_Loop;
 using Game.Game_Loop.Round;
+using Game.Upgrade.Carousel;
 using Game.Upgrade.Shop;
 using Input;
 using Player.Networking;
@@ -34,11 +35,18 @@ namespace Player.General_UI.Shop
             closeShopButton.onClick.AddListener(() => GameManager.Instance.ShopManager.SetOpened(false));
 
             InputManager.OnShopOpened += OpenCloseShopKey;
-            ItemSelectionWindow.OnItemChosen += ItemChosen;
+            CarouselManager.OnItemChosenOrUpgradedOwner += ItemChosen;
             GameLoopEvents.OnRoundStateChangedAll += OnRoundStateChanged;
-            
             ShopManager.OnShopOpenedChanged += OnShopOpenedChanged;
         }
+        protected override void DisableAnyOwner()
+        {
+            ShopManager.OnShopOpenedChanged -= OnShopOpenedChanged;
+            InputManager.OnShopOpened -= OpenCloseShopKey;
+            CarouselManager.OnItemChosenOrUpgradedOwner -= ItemChosen;
+            GameLoopEvents.OnRoundStateChangedAll -= OnRoundStateChanged;
+        }
+        
 
         private void OpenCloseShopKey()
         {
@@ -58,11 +66,6 @@ namespace Player.General_UI.Shop
         {
             SetOpenShopCanvasVisibility(newState == GameRoundState.Upgrade);
             if (newState != GameRoundState.Upgrade) GameManager.Instance.ShopManager.SetOpened(false);
-        }
-
-        protected override void DisableAnyOwner()
-        {
-            ShopManager.OnShopOpenedChanged -= OnShopOpenedChanged;
         }
 
         private void OnShopOpenedChanged(bool opened, ShopManager shopManager)

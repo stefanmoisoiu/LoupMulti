@@ -3,7 +3,7 @@ using Unity.Netcode;
 
 namespace Game.Data.Extensions
 {
-    public class PlayerState : NetworkBehaviour
+    public class PlayerStateHelper : NetworkBehaviour
     {
         public void SetNotAssignedPlayersToPlayingState()
         {

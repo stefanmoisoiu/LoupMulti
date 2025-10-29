@@ -17,15 +17,5 @@ namespace Game.Game_Loop
             roundState.Value = newRoundState;
             OnRoundStateChangedClientRpc(newRoundState, serverTime);
         }
-    
-    
-        public static event Action OnGameEnded;
-        public void GameEnded()
-        {
-            if (!IsServer) throw new InvalidOperationException("OnGameEnded can only be called on the server.");
-            OnGameEndedClientRpc();
-        }
-        [Rpc(SendTo.Everyone)]
-        private void OnGameEndedClientRpc() => OnGameEnded?.Invoke();
     }
 }

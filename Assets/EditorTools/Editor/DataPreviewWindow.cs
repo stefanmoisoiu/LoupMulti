@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using System.Linq;
 using Game.Common;
 using Game.Common.List;
 using Game.Data;
 using Game.Game_Loop;
-using Game.Upgrade.Perks;
 using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
@@ -147,8 +147,9 @@ namespace EditorTools.Editor
             EditorGUILayout.LabelField($"<b>État :</b> {data.outerData.playingState}", labelStyle);
             EditorGUILayout.LabelField($"<b>Vie :</b> {data.inGameData.health}", labelStyle);
             EditorGUILayout.LabelField($"<b>Ressources :</b>\n{data.inGameData.resources.ToString()}", labelStyle);
-            Item[] items = data.inGameData.GetItems();
-            var itemNames = items.Length > 0 ? string.Join("\n", items.Select(u => u.Info.Name)) : "<i>Aucun</i>";
+            List<OwnedItemData> items = data.inGameData.ownedItems;
+            List<Item> itemList = items.Select(u => ItemRegistry.Instance.GetItem(u.ItemRegistryIndex)).ToList();
+            string itemNames = itemList.Count > 0 ? string.Join("\n", itemList.Select(u => u.Info.Name)) : "<i>Aucun</i>";
             EditorGUILayout.LabelField($"<b>Items :</b>\n{itemNames}", labelStyle);
             // var perks = data.inGameData.GetPerks();
             // var perkName = perks.Length > 0 ? string.Join(", ", perks.Select(u => u.Info.Name)) : "<i>Aucun</i>";

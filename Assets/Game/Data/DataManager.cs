@@ -12,12 +12,12 @@ namespace Game.Data
     {
         public static DataManager Instance { get; private set; }
 
-        [SerializeField] private PlayerResources playerResources;
-        public PlayerResources PlayerResources => playerResources;
-        [SerializeField] private PlayerDataHealth playerDataHealth;
-        public PlayerDataHealth PlayerDataHealth => playerDataHealth;
-        [SerializeField] private PlayerState playerState;
-        public PlayerState PlayerState => playerState;
+        [SerializeField] private PlayerResourcesHelper playerResourcesHelper;
+        public PlayerResourcesHelper PlayerResourcesHelper => playerResourcesHelper;
+        [SerializeField] private PlayerHealthHelper playerHealthHelper;
+        public PlayerHealthHelper PlayerHealthHelper => playerHealthHelper;
+        [SerializeField] private PlayerStateHelper playerStateHelper;
+        public PlayerStateHelper PlayerStateHelper => playerStateHelper;
         
         
     
@@ -194,12 +194,15 @@ namespace Game.Data
     
         public void Reset()
         {
-            ClearEntries();
-            
-            foreach (var client in NetworkManager.Singleton.ConnectedClients)
+            foreach (ulong clientId in _data.Keys)
             {
-                // On ajoute chaque client connecté au dictionnaire
-                AddEntry(new PlayerData(client.Value));
+                if (NetworkManager.Singleton.ConnectedClientsIds.Contains(clientId)) continue;
+                RemoveEntry(clientId);
+            }
+            foreach (NetworkClient client in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                if (_data.ContainsKey(client.ClientId)) UpdateEntry(new PlayerData(client));
+                else AddEntry(new PlayerData(client));
             }
         }
         public override void OnNetworkSpawn()

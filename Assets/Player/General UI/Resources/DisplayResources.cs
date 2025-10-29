@@ -23,7 +23,7 @@ namespace Player.General_UI.Resources
 
         private void OnDataUpdated(PlayerData previousData, PlayerData newData)
         {
-            PlayerResourceData resources = newData.inGameData.resources;
+            OwnedResourcesData resources = newData.inGameData.resources;
             int commonAmount = resources.GetResourceAmount(ResourceType.Common);
             int rareAmount = resources.GetResourceAmount(ResourceType.Rare);
             

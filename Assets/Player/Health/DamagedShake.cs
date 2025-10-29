@@ -29,7 +29,7 @@ namespace Player.Health
         {
             if (newHealth >= previousHealth) return;
             float healthLost = previousHealth - newHealth;
-            float adv = healthLost / GameSettings.PlayerMaxHealth;
+            float adv = healthLost / GameSettings.Instance.PlayerMaxHealth;
             Shake.ShakeSettings settings = new Shake.ShakeSettings(
                 shakeSettings.Duration + adv * maxAddedDuration, 
                 shakeSettings.Amplitude + adv * maxAddedAmplitude,

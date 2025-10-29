@@ -20,8 +20,6 @@ namespace Game.Game_Loop
         [SerializeField] private GameLoopEvents gameLoopEvents;
         public GameLoopEvents GameLoopEvents => gameLoopEvents;
 
-        //[SerializeField] private TagRound tagRound;
-        //public TagRound TagRound => tagRound;
         [SerializeField] private CollectRound collectRound;
         public CollectRound CollectRound => collectRound;
         
@@ -30,85 +28,71 @@ namespace Game.Game_Loop
         [SerializeField] private CountdownRound countdownRound;
         public CountdownRound CountdownRound => countdownRound;
         [SerializeField] private EndRound endRound;
+
+        [SerializeField] private GameReportManager gameReportManager;
+        public GameReportManager GameReportManager => gameReportManager;
+
+        public NetworkVariable<ushort> CurrentRound = new();
         
-    
-        private Coroutine _gameLoopCoroutine;
-
-        private event Action OnGameEnded;
-
-        private void Start()
-        {
-            if (!IsServer) return;
-            if (GameSettings.Instance.DebugMode)
-                Debug.LogWarning("Debug mode is enabled, never stopping game /!/");
-            else
-                PlayerDataHealth.OnPlayerDeath += PlayerDiedServer;
-        }
-
-        private void OnDisable()
-        {
-            PlayerDataHealth.OnPlayerDeath -= PlayerDiedServer;
-        }
-
-
         public IEnumerator MainLoop(GameManager manager)
         {
-            _gameLoopCoroutine = StartCoroutine(PlayLoop(manager));
-            
-            gameTickManager.StartTickLoop();
+            if (GameSettings.Instance.NeverStopGame)
+                Debug.LogWarning("Never stopping game /!/");
+            else
+                PlayerHealthHelper.OnPlayerDeathServer += PlayerDiedServer;
             
             bool gameEnded = false;
-            void GameEnded()
+            void PlayerDiedServer(ulong clientId)
             {
+                int alivePlayerCount = PlayerHealthHelper.AlivePlayingPlayerCount();
+                if (alivePlayerCount > 1) return;
+                NetcodeLogger.Instance.LogRpc($"{alivePlayerCount} player(s) alive, ending game", NetcodeLogger.LogType.GameLoop);
                 gameEnded = true;
-                OnGameEnded -= GameEnded;
             }
-            OnGameEnded += GameEnded;
-            yield return new WaitUntil(() => gameEnded);
             
-            if (_gameLoopCoroutine != null)
-                StopCoroutine(_gameLoopCoroutine);
+            gameTickManager.StartTickLoop();
+            gameReportManager.ResetReportServer();
+            gameReportManager.StartRecordingServer();
             
-            yield return GameEnd(manager);
+            Coroutine c = StartCoroutine(PlayLoop(manager));
+            while (!gameEnded) yield return null;
+            StopCoroutine(c);
+            
+            gameReportManager.StopRecordingServer();
+            gameReportManager.SetEndGameReportServer();
+            
+            yield return endRound.Execute(manager, gameLoopEvents);
+        
+            gameTickManager.StopTickLoop();
+
+            PlayerData[] alivePlayers = PlayerHealthHelper.AlivePlayingPlayers();
+            if (alivePlayers.Length == 1)
+            {
+                ulong winnerClientId = alivePlayers[0].clientId;
+                NetcodeLogger.Instance.LogRpc("Player " + winnerClientId + " is the winner!", NetcodeLogger.LogType.GameLoop);
+                gameReportManager.RecordWinnerServer(winnerClientId);
+            }
+            else
+            {
+                NetcodeLogger.Instance.LogRpc("No winner could be determined.", NetcodeLogger.LogType.GameLoop);
+            }
+        
+            gameLoopEvents.RoundStateChanged(GameRoundState.None, NetworkManager.ServerTime.TimeAsFloat);
         }
 
         private IEnumerator PlayLoop(GameManager manager)
         {
-            // Play Round -> Choose Upgrade -> Repeat
-            
-            int round = 0;
-
+            CurrentRound.Value = 0;
             while (true)
             {
-                round++;
-                NetcodeLogger.Instance.LogRpc("Round " + round, NetcodeLogger.LogType.GameLoop);
+                CurrentRound.Value++;
+                
+                NetcodeLogger.Instance.LogRpc("Round " + CurrentRound.Value, NetcodeLogger.LogType.GameLoop);
 
                 yield return countdownRound.Execute(manager, gameLoopEvents);
                 yield return collectRound.Execute(manager, gameLoopEvents);
+                NetcodeLogger.Instance.LogRpc("Collect round ended. Starting upgrade round.", NetcodeLogger.LogType.GameLoop);
                 yield return upgradeRound.Execute(manager, gameLoopEvents);
-            }
-        }
-
-        private IEnumerator GameEnd(GameManager manager)
-        {
-            yield return endRound.Execute(manager, gameLoopEvents);
-        
-            gameTickManager.StopTickLoop();
-        
-            NetcodeLogger.Instance.LogRpc("Game ended", NetcodeLogger.LogType.GameLoop);
-            gameLoopEvents.RoundStateChanged(GameRoundState.None, NetworkManager.ServerTime.TimeAsFloat);
-            gameLoopEvents.GameEnded();
-        }
-
-        private void PlayerDiedServer(ulong clientId)
-        {
-            Debug.Log("Checking for end game conditions");
-            int alivePlayerCount = PlayerDataHealth.AlivePlayingPlayerCount();
-            Debug.Log("There are " + alivePlayerCount + " players alive");
-            if (alivePlayerCount <= 1)
-            {
-                NetcodeLogger.Instance.LogRpc("Only " + alivePlayerCount + " player(s) alive, ending game", NetcodeLogger.LogType.GameLoop);
-                OnGameEnded?.Invoke();
             }
         }
     }

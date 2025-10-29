@@ -10,7 +10,8 @@ namespace Base_Scripts
     
         [SerializeField] private int poolSize = 3;
         private int currentIndex = 0;
-    
+
+        private GameObject[] particleObjects;
         private ParticleSystem[] particlePool;
         [SerializeField] private Vector3 basePosition;
         [SerializeField] private Quaternion baseRotation;
@@ -22,20 +23,39 @@ namespace Base_Scripts
             Setup();
         }
 
+        private void OnDisable()
+        {
+            Delete();
+        }
+
         private void Setup()
         {
-            if (particlePool != null)
-            {
-                for (int i = 0; i < particlePool.Length; i++)
-                {
-                    if (particlePool[i] != null)
-                        Destroy(particlePool[i].gameObject);
-                }
-            }
+            if (particleObjects != null) Delete();
             
+            particleObjects = new GameObject[poolSize];
             particlePool = new ParticleSystem[poolSize];
             for (int i = 0; i < poolSize; i++)
-                particlePool[i] = Instantiate(particlePrefab, transform).GetComponent<ParticleSystem>();
+            {
+                GameObject instance = Instantiate(particlePrefab, transform);
+                DontDestroyOnLoad(instance);
+                particleObjects[i] = instance;
+                particlePool[i] = instance.GetComponent<ParticleSystem>();
+            }
+        }
+
+        private void Delete()
+        {
+            if (particleObjects == null) return;
+            for (int i = 0; i < particleObjects.Length; i++)
+            {
+                if (particleObjects[i] != null)
+                {
+                    Destroy(particleObjects[i]);
+                }
+            }
+            particlePool = null;
+            particleObjects = null;
+            currentIndex = 0;
         }
         
         public void Play()

@@ -42,7 +42,6 @@ namespace Player.Model.Procedural_Anims
         private void Update()
         {
             CalculateTilt();
-            
             _animComponent.Rotation = Quaternion.Euler(_currentTilt*tiltMult, 0, 0);
         }
         

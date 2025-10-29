@@ -30,12 +30,12 @@ namespace Lobby
             if (NetcodeManager.LoadingGame) return;
             if (NetworkManager.ConnectedClients[clientID].PlayerObject != null)
             {
-                Debug.LogError("Player object already exists for client " + clientID);
+                Debug.Log("Player object already exists for client " + clientID);
                 return;
             }
             if (GameManager.CurrentGameState == GameManager.GameState.InGame)
             {
-                NetcodeLogger.Instance.LogRpc("Player " + clientID + " joined IN game, not spawning player.", NetcodeLogger.LogType.Netcode);
+                Debug.LogError("Player " + clientID + " joined IN game, not spawning player.");
                 return;
             }
             Debug.Log("<color=#FF00FF>Spawning player for client " + clientID);

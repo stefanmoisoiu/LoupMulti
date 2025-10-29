@@ -1,10 +1,12 @@
+using System;
 using Base_Scripts;
 using Base_Scripts.Text_Popup;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
-public class PooledTextPopup : NetworkBehaviour
+public class NetworkPooledTextPopup : NetworkBehaviour
 {
     [Header("References")]
     [SerializeField] private GameObject popupPrefab;
@@ -23,25 +25,37 @@ public class PooledTextPopup : NetworkBehaviour
         Setup();
     }
 
+    private void OnDisable()
+    {
+        Delete();
+    }
+
     private void Setup()
     {
-        if (popupPool != null)
-        {
-            for (int i = 0; i < popupPool.Length; i++)
-            {
-                if (popupPool[i] != null)
-                    Destroy(popupPool[i].transform.parent.gameObject);
-            }
-        }
-
+        if (popupPool != null) Delete();
+        
         popupPool = new GameObject[poolSize];
         popupTextPool = new TextPopupInstance[poolSize];
         for (int i = 0; i < poolSize; i++)
         {
             popupPool[i] = Instantiate(popupPrefab, transform);
+            DontDestroyOnLoad(popupPool[i]);
             popupTextPool[i] = popupPool[i].GetComponent<TextPopupInstance>();
             popupPool[i].SetActive(false);
         }
+    }
+
+    private void Delete()
+    {
+        if (popupPool == null) return;
+        for (int i = 0; i < popupPool.Length; i++)
+        {
+            if (popupPool[i] != null)
+                Destroy(popupPool[i].transform.parent.gameObject);
+        }
+        popupPool = null;
+        popupTextPool = null;
+        currentIndex = 0;
     }
 
     public void ShowPopupToAll(Vector3 position, string value, NetworkColor color, bool showToOwner = true)

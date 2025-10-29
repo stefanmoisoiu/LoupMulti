@@ -31,16 +31,16 @@ namespace Player.Health
                 return;
             }
 
-            PlayerDataHealth.OnOwnerPlayerHealthChanged += OnHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner += OnPlayerHealthChangedHealthChanged;
         }
 
         protected override void DisableAnyOwner()
         {
-            PlayerDataHealth.OnOwnerPlayerHealthChanged -= OnHealthChanged;
+            PlayerHealthHelper.OnPlayerHealthChangedOwner -= OnPlayerHealthChangedHealthChanged;
             vignetteMat.SetFloat(MultID, 0);
         }
 
-        private void OnHealthChanged(ushort previousHealth, ushort newHealth)
+        private void OnPlayerHealthChangedHealthChanged(ushort previousHealth, ushort newHealth)
         {
             if (coroutine != null) StopCoroutine(coroutine);
 

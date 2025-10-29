@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 536830109195824688}
   - component: {fileID: 7629144412660134959}
   m_Layer: 5
-  m_Name: Item Card
+  m_Name: Carousel Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

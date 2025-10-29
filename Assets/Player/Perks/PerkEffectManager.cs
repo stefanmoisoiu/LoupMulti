@@ -1,12 +1,12 @@
 ﻿using Game.Common;
 using Game.Game_Loop;
-using Game.Upgrade.Perks;
 using Game.Upgrade.Shop;
 using Player.Networking;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Collections.Generic;
 using AYellowpaper.SerializedCollections;
+using Game.Upgrade.Carousel;
 using Player.Stats; // Ajouté
 
 namespace Player.Perks
@@ -37,14 +37,14 @@ namespace Player.Perks
         {
             _playerReferences = GetComponentInParent<PlayerReferences>();
             ShopManager.OnShopItemBoughtOwner += OnShopItemBoughtOwner;
-            ItemSelectionManager.OnItemChosenOwner += OnItemChosenOwner;
+            CarouselManager.OnItemChosenOrUpgradedOwner += OnItemChosenOwner;
             GameManager.OnGameStateChangedAll += OnGameStateChangedAll;
         }
 
         protected override void DisableAnyOwner()
         {
             ShopManager.OnShopItemBoughtOwner -= OnShopItemBoughtOwner;
-            ItemSelectionManager.OnItemChosenOwner -= OnItemChosenOwner;
+            CarouselManager.OnItemChosenOrUpgradedOwner -= OnItemChosenOwner;
             GameManager.OnGameStateChangedAll -= OnGameStateChangedAll;
         }
         

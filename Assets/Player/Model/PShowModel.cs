@@ -1,3 +1,5 @@
+using Game.Common;
+using Game.Data;
 using Player.Networking;
 using UnityEngine;
 
@@ -5,7 +7,8 @@ namespace Player.Model.Procedural_Anims
 {
     public class PShowModel : PNetworkBehaviour
     {
-        [SerializeField] private GameObject[] showHideModels;
+        [SerializeField] private GameObject[] otherModels;
+        [SerializeField] private GameObject[] ownerHiddenModels;
         [SerializeField] private string showToCamLayerName;
         [SerializeField] private string hiddenFromCamLayerName;
     
@@ -13,20 +16,61 @@ namespace Player.Model.Procedural_Anims
 
         protected override void StartOnlineNotOwner()
         {
-            foreach (var model in showHideModels)
-            {
-                SetModelState(true, model);
-            }
+            DataManager.OnEntryUpdatedClient += OnEntryUpdated;
+            UpdateModels();
         }
 
-        protected override void StartAnyOwner()
+        protected override void StartOnlineOwner()
         {
-            foreach (var model in showHideModels)
-            {
-                SetModelState(alwaysShow, model);
-            }
-            
+            DataManager.OnEntryUpdatedClient += OnEntryUpdated;
+            UpdateModels();
         }
+
+        private void OnDisable()
+        {
+            DataManager.OnEntryUpdatedClient -= OnEntryUpdated;
+        }
+        
+        protected override void StartOffline()
+        {
+            SetOwnerHiddenModels(alwaysShow);
+        }
+        
+        private void OnEntryUpdated(PlayerData _, PlayerData newData)
+        {
+            if (newData.clientId != OwnerClientId) return;
+            UpdateModels();
+        }
+
+        private bool ShouldShowOtherModels()
+        {
+            if (DataManager.Instance == null) return true;
+            return DataManager.Instance[OwnerClientId].outerData.playingState !=
+                   OuterData.PlayingState.SpectatingGame;
+        }
+        private bool ShouldShowOwnerHiddenModel()
+        {
+            if (!IsOnline) return alwaysShow;
+            if (IsOwner) return alwaysShow;
+            if (DataManager.Instance == null) return true;
+            return DataManager.Instance[OwnerClientId].outerData.playingState !=
+                   OuterData.PlayingState.SpectatingGame;
+        }
+
+        private void UpdateModels()
+        {
+            SetOtherModels(ShouldShowOtherModels());
+            SetOwnerHiddenModels(ShouldShowOwnerHiddenModel());
+        }
+        private void SetOtherModels(bool show)
+        {
+            foreach (GameObject model in otherModels) SetModelState(show, model);
+        }
+        private void SetOwnerHiddenModels(bool show)
+        {
+            foreach (GameObject model in ownerHiddenModels) SetModelState(show, model);
+        }
+
         private void SetModelState(bool show, GameObject child)
         {
             child.layer = show ? LayerMask.NameToLayer(showToCamLayerName) : LayerMask.NameToLayer(hiddenFromCamLayerName);

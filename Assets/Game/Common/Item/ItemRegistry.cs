@@ -14,6 +14,8 @@ namespace Game.Common
         [Tooltip("Liste auto-populée de TOUS les items du projet. C'est la source de vérité.")]
         [AssetList(AutoPopulate = true)]
         [SerializeField] private Item[] items;
+        public Item[] Items => items;
+        
         public Item GetItem(ushort index) => items[index];
         public ushort GetItem(Item item) => (ushort)System.Array.IndexOf(items, item);
 
@@ -24,8 +26,9 @@ namespace Game.Common
         public ShopCategory[] ShopCategories => shopCategories;
         public ShopCategory GetShopCategory(ShopCategory.CategoryType type) => Array.Find(shopCategories, c => c.Type == type);
 
-        [SerializeField] private Item[] itemsInSelection;
-        public Item[] ItemsInSelection => itemsInSelection;
+        [SerializeField] private Item[] itemsInCarousel;
+        public Item[] ItemsInCarousel => itemsInCarousel;
+        
 
         
         [Button("Rebuild Item, Shop & Selection Lists", ButtonSizes.Large)]
@@ -44,9 +47,6 @@ namespace Game.Common
                     foundItems.Add(item);
                 }
             }
-            
-            // 3. Assigner cette liste à notre tableau 'items'
-            // On trie par nom pour avoir un ordre cohérent
             items = foundItems.OrderBy(item => item.name).ToArray(); 
             
             Debug.Log($"Master List 'items' rafraîchie : {items.Length} items trouvés."); 
@@ -57,23 +57,14 @@ namespace Game.Common
                 Debug.LogWarning("La liste 'items' est vide. Assure-toi qu'elle est auto-populée.");
                 return;
             }
-
-            // 1. Reconstruire la liste de sélection
-            // Utilise Linq pour trouver tous les items où IsInSelectionPool == true
-            itemsInSelection = items.Where(item => item.IsInSelectionPool).ToArray();
-
-            // 2. Reconstruire les catégories du magasin
             
-            // Crée un dictionnaire pour trier les items par catégorie
-            var shopItemsByCategory = new Dictionary<ShopCategory.CategoryType, List<Item>>();
+            Dictionary<ShopCategory.CategoryType, List<Item>> shopItemsByCategory = new Dictionary<ShopCategory.CategoryType, List<Item>>();
             
-            // Initialise le dictionnaire avec les catégories existantes
-            foreach (var category in shopCategories)
+            foreach (ShopCategory category in shopCategories)
             {
                 shopItemsByCategory[category.Type] = new List<Item>();
             }
 
-            // Ajoute chaque item (marqué 'IsInShop') à la bonne liste dans le dictionnaire
             foreach (var item in items.Where(item => item.IsInShop))
             {
                 if (shopItemsByCategory.ContainsKey(item.ShopCategory))
@@ -82,14 +73,13 @@ namespace Game.Common
                 }
             }
 
-            // 3. Appliquer les listes triées à notre tableau shopCategories
             for (int i = 0; i < shopCategories.Length; i++)
             {
-                // Remplace la liste d'items de la catégorie par celle qu'on vient de créer
                 shopCategories[i].Items = shopItemsByCategory[shopCategories[i].Type].ToArray();
             }
 
-            // Marque cet asset comme "modifié" pour que Unity sauvegarde les changements
+            itemsInCarousel = items.Where(item => item.InCarousel).ToArray();
+            
             #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(this);
             #endif

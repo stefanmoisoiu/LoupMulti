@@ -3,10 +3,10 @@ using UnityEngine;
 
 namespace Game.Common
 {
-    [RequireComponent(typeof(PooledTextPopup))]
+    [RequireComponent(typeof(NetworkPooledTextPopup))]
     public class HealthPopup : MonoBehaviour
     {
-        [SerializeField] private PooledTextPopup textPopup;
+        [SerializeField] private NetworkPooledTextPopup textPopup;
         [SerializeField] private MonoBehaviour healthScript;
         IHealable healable => healthScript as IHealable;
         IDamageable damageable => healthScript as IDamageable;
