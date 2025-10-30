@@ -16,19 +16,16 @@ namespace Player.General_UI.Shop
         private const string OpenShopKeyTag = "OpenShopKey";
         private const string CloseShopButtonTag = "CloseShopButton";
         
-        private CanvasGroup openShopCanvas;
+        private CanvasGroup openShopText;
         private CanvasGroup shopCanvas;
 
         protected override void StartAnyOwner()
         {
             shopCanvas = PCanvas.CanvasObjects[ShopCanvasTag].GetComponent<CanvasGroup>();
-            shopCanvas.alpha = 0;
-            shopCanvas.interactable = false;
-            shopCanvas.blocksRaycasts = false;
+            SetShopCanvasVisibility(false);
             
-            openShopCanvas = PCanvas.CanvasObjects[OpenShopKeyTag].GetComponent<CanvasGroup>();
-            openShopCanvas.alpha = 0f;
-            openShopCanvas.interactable = false;
+            openShopText = PCanvas.CanvasObjects[OpenShopKeyTag].GetComponent<CanvasGroup>();
+            SetOpenShopTextVisibility(false);
             
             Button closeShopButton = PCanvas.CanvasObjects[CloseShopButtonTag].GetComponent<Button>();
             closeShopButton.onClick.RemoveAllListeners();
@@ -55,25 +52,21 @@ namespace Player.General_UI.Shop
             
             GameManager.Instance.ShopManager.SetOpened(!GameManager.Instance.ShopManager.ShopOpened);
         }
+        private void OnRoundStateChanged(GameRoundState newState, float serverTime)
+        {
+            if (newState != GameRoundState.Upgrade) GameManager.Instance.ShopManager.SetOpened(false);
+        }
 
         private void ItemChosen(ushort index)
         {
             if (GameManager.Instance.GameLoop.GameLoopEvents.roundState.Value != GameRoundState.Upgrade) return;
             GameManager.Instance.ShopManager.SetOpened(true);
         }
-
-        private void OnRoundStateChanged(GameRoundState newState, float serverTime)
-        {
-            SetOpenShopCanvasVisibility(newState == GameRoundState.Upgrade);
-            if (newState != GameRoundState.Upgrade) GameManager.Instance.ShopManager.SetOpened(false);
-        }
-
+        
         private void OnShopOpenedChanged(bool opened, ShopManager shopManager)
         {
-            SetOpenShopCanvasVisibility(!opened);
+            SetOpenShopTextVisibility(!opened && GameManager.Instance.GameLoop.GameLoopEvents.roundState.Value == GameRoundState.Upgrade);
             SetShopCanvasVisibility(opened);
-            Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = opened;
         }
         
         private void SetShopCanvasVisibility(bool visible)
@@ -82,11 +75,11 @@ namespace Player.General_UI.Shop
             shopCanvas.interactable = visible;
             shopCanvas.blocksRaycasts = visible;
         }
-        private void SetOpenShopCanvasVisibility(bool visible)
+        private void SetOpenShopTextVisibility(bool visible)
         {
-            openShopCanvas.alpha = visible ? 1f : 0f;
-            openShopCanvas.interactable = visible;
-            openShopCanvas.blocksRaycasts = visible;
+            openShopText.alpha = visible ? 1f : 0f;
+            openShopText.interactable = visible;
+            openShopText.blocksRaycasts = visible;
         }
     }
 }

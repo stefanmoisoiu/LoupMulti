@@ -136,7 +136,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0db00fb60fb24a8b9e125bac23440ab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shopInfoBubbleTarget: {fileID: 98400904962551846}
   button: {fileID: 3341107892936444229}
   image: {fileID: 3505724339669271211}
 --- !u!114 &98400904962551846

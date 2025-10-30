@@ -62,6 +62,8 @@ namespace Player.Perks.UI
 
             _useRerollButton.onClick.RemoveListener(RequestUseReroll); // Mis à jour
             _buyRerollButton.onClick.RemoveListener(RequestBuyAndUseReroll); // Mis à jour
+            
+            CursorManager.Instance.ReleaseCursorUnlock(this);
         }
 
         private void OnRoundStateChanged(GameRoundState state, float serverTime)
@@ -118,8 +120,7 @@ namespace Player.Perks.UI
             _canvasGroup.interactable = true;
             _canvasGroup.blocksRaycasts = true;
 
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            CursorManager.Instance.RequestCursorUnlock(this);
             SetRerollButtonsInteractable(true);
         }
 
@@ -133,8 +134,7 @@ namespace Player.Perks.UI
             _canvasGroup.interactable = false;
             _canvasGroup.blocksRaycasts = false;
 
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            CursorManager.Instance.ReleaseCursorUnlock(this);
         }
 
         private void SetCardInfo(CarouselCardUI carouselCardUI, CarouselOption option, ushort choiceIndex)

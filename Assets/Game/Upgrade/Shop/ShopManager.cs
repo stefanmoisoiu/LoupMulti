@@ -27,9 +27,11 @@ namespace Game.Upgrade.Shop
         {
             if (shopOpened == opened) return;
             shopOpened = opened;
-
-            Cursor.lockState = opened ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = opened;
+            
+            if (opened)
+                CursorManager.Instance.RequestCursorUnlock(this);
+            else
+                CursorManager.Instance.ReleaseCursorUnlock(this);
 
             OnShopOpenedChangedRpc(opened);
 
@@ -95,6 +97,11 @@ namespace Game.Upgrade.Shop
                 resources = ingData.resources.RemoveResource(ResourceType.Common, cost)
             };
             DataManager.Instance[clientId] = new(data) { inGameData = ingData };
+        }
+
+        private void OnDisable()
+        {
+            CursorManager.Instance.ReleaseCursorUnlock(this);
         }
     }
 }

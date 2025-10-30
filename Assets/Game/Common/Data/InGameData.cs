@@ -10,6 +10,7 @@
     {
         public ushort health;
         public List<OwnedItemData> ownedItems;
+        public OwnedItemData ownedDrillData;
         public OwnedResourcesData resources;
         public ushort rerollsAvailable;
 
@@ -18,6 +19,7 @@
             serializer.SerializeValue(ref resources);
             serializer.SerializeValue(ref health);
             serializer.SerializeValue(ref rerollsAvailable);
+            serializer.SerializeValue(ref ownedDrillData);
 
             int count = 0;
             if (!serializer.IsReader && ownedItems != null) count = ownedItems.Count;
@@ -31,7 +33,7 @@
             }
         }
 
-        public InGameData(ushort health = ushort.MaxValue, ushort rerolls = ushort.MaxValue, List<OwnedItemData> ownedItems = null, OwnedResourcesData resources = new())
+        public InGameData(ushort health, ushort rerolls, List<OwnedItemData> ownedItems, OwnedItemData ownedDrillData, OwnedResourcesData resources)
         {
             if (health == ushort.MaxValue) health = GameSettings.Instance.PlayerMaxHealth;
             if (health > GameSettings.Instance.PlayerMaxHealth) health = GameSettings.Instance.PlayerMaxHealth;
@@ -40,7 +42,8 @@
             
             this.health = health;
             this.rerollsAvailable = rerolls;
-            this.ownedItems = ownedItems ?? new List<OwnedItemData>();
+            this.ownedItems = ownedItems;
+            this.ownedDrillData = ownedDrillData;
             this.resources = resources;
         }
 
@@ -49,6 +52,7 @@
             health = copy.health;
             rerollsAvailable = copy.rerollsAvailable;
             ownedItems = copy.ownedItems;
+            ownedDrillData = copy.ownedDrillData;
             resources = copy.resources;
         }
 
@@ -88,12 +92,22 @@
         {
             for (int i = 0; i < ownedItems.Count; i++)
             {
-                if (ownedItems[i].ItemRegistryIndex != itemIndex) continue;
-                if (ownedItems[i].Level >= GameSettings.Instance.MaxItemLevel) return this;
-                OwnedItemData updatedItem = ownedItems[i];
-                updatedItem.Level += upgradeAmount;
-                ownedItems[i] = updatedItem;
-                return this;
+                if (itemIndex == ownedDrillData.ItemRegistryIndex)
+                {
+                    // Upgrade drill
+                    ownedDrillData.Level += upgradeAmount;
+                    return this;
+                }
+                else
+                {
+                    // Upgrade other items
+                    if (ownedItems[i].ItemRegistryIndex != itemIndex) continue;
+                    if (ownedItems[i].Level >= GameSettings.Instance.MaxItemLevel) return this;
+                    OwnedItemData updatedItem = ownedItems[i];
+                    updatedItem.Level += upgradeAmount;
+                    ownedItems[i] = updatedItem;
+                    return this;
+                }
             }
             Debug.LogError($"Tried to upgrade item {itemIndex} but it was not owned.");
             return this;
@@ -102,7 +116,14 @@
         public bool HasItem(ushort itemIndex)
         {
              ownedItems ??= new List<OwnedItemData>();
-             return ownedItems.Any(item => item.ItemRegistryIndex == itemIndex);
+             return ownedItems.Any(item => item.ItemRegistryIndex == itemIndex) || itemIndex == ownedDrillData.ItemRegistryIndex;
+        }
+
+        public List<OwnedItemData> GetAllOwnedItems()
+        {
+            List<OwnedItemData> res = new(ownedItems);
+            res.Add(ownedDrillData);
+            return res;
         }
 
         public bool Equals(InGameData other)

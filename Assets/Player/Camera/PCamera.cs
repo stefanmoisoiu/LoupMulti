@@ -1,3 +1,4 @@
+using Game.Common;
 using Input;
 using Player.Networking;
 using Unity.Cinemachine;
@@ -31,15 +32,9 @@ namespace Player.Camera
             return;
         }
 
-        protected override void StartAnyOwner()
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;;
-        }
-
         protected override void UpdateAnyOwner()
         {
-            if (!Cursor.visible) GetLookTarget();
+            if (CursorManager.Instance.IsCursorLocked) GetLookTarget();
             Look();
         }
 

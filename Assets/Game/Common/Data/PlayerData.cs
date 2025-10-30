@@ -26,6 +26,7 @@ namespace Game.Common
                 health: ushort.MaxValue,
                 rerolls: ushort.MaxValue,
                 ownedItems: new List<OwnedItemData>(),
+                ownedDrillData: new OwnedItemData() {ItemRegistryIndex = ItemRegistry.Instance.DrillItemIndex, Level = 0},
                 resources: new OwnedResourcesData());
         }
         public PlayerData(PlayerData copy)

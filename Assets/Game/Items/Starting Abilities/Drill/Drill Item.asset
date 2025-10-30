@@ -22,7 +22,7 @@ MonoBehaviour:
   shopItemData:
     costType: 0
     costAmount: 0
-  inCarousel: 0
+  inCarousel: 1
   itemType: 1
   abilityData:
     baseCooldown: 3

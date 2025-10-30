@@ -19,6 +19,10 @@ namespace Game.Common
         public Item GetItem(ushort index) => items[index];
         public ushort GetItem(Item item) => (ushort)System.Array.IndexOf(items, item);
 
+        [SerializeField] private Item drillItem;
+        public Item DrillItem => drillItem;
+        public ushort DrillItemIndex => GetItem(drillItem);
+
         [Title("Generated Lists")]
         [InfoBox("Ces listes sont générées automatiquement en cliquant sur le bouton 'Rebuild Lists' ci-dessous.")]
         

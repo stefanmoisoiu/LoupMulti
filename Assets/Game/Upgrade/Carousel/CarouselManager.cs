@@ -116,7 +116,7 @@ namespace Game.Upgrade.Carousel
                  {
                      // TODO: Intégrer la logique de chance pour multi-niveaux ici plus tard
                      ushort levelsToUpgrade = 1;
-                     ushort currentLevel = data.inGameData.ownedItems.First(x => x.ItemRegistryIndex == chosenOption.ItemRegistryIndex).Level;
+                     ushort currentLevel = data.inGameData.GetAllOwnedItems().First(x => x.ItemRegistryIndex == chosenOption.ItemRegistryIndex).Level;
                      logMsgAction = $"upgraded [{currentLevel+1}] -> [{currentLevel+levelsToUpgrade+1}]";
                      data.inGameData = data.inGameData.UpgradeItem(chosenOption.ItemRegistryIndex, levelsToUpgrade);
                  }
@@ -218,7 +218,7 @@ namespace Game.Upgrade.Carousel
 
         private CarouselPools BuildAvailablePools(PlayerData data, CarouselTypeConfig config)
         {
-            List<OwnedItemData> ownedItemsData = data.inGameData.ownedItems;
+            List<OwnedItemData> ownedItemsData = data.inGameData.GetAllOwnedItems();
             List<ushort> ownedItemIndices = ownedItemsData.Select(item => item.ItemRegistryIndex).ToList();
             Item[] selectionPool = ItemRegistry.Instance.ItemsInCarousel;
 

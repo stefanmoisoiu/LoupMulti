@@ -59,12 +59,24 @@ namespace Player.Abilities
         {
             Item item = ItemRegistry.Instance.GetItem(itemInd);
             if (item.Type != Item.ItemType.Ability) return;
-            Debug.LogError("Equipping ability in slot 0. This should be changed later. :)");
-            EquipAbility(item, 0);
+            
+            int slot = GetFirstEmptyAbilitySlot();
+            if (slot == int.MaxValue) throw new System.Exception("Slot non trouve pour item. Le joueur a surement trop d'items ! :)");
+            EquipAbility(item, slot);
         }
         
         public void EquipDrillAbility(Item item) => EquipAbility(item, -1);
 
+        private int GetFirstEmptyAbilitySlot()
+        {
+            for (int i = 0; i < AbilitySlotCount; i++)
+            {
+                if (_abilitySlots[i] == null) return i;
+            }
+
+            return int.MaxValue;
+        }
+        
         public void EquipAbility(Item item, int slot)
         {
             Ability oldAbility = (slot == -1) ? _drillSlot : _abilitySlots[slot];

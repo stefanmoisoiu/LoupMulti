@@ -68,6 +68,7 @@ MonoBehaviour:
   icon: {fileID: 5543024073927254179}
   itemName: {fileID: 9050822528138263151}
   description: {fileID: 8877256509395052052}
+  rarity: {fileID: 4986765955033104856}
   button: {fileID: 536830109195824688}
 --- !u!114 &536830109195824688
 MonoBehaviour:
@@ -90,7 +91,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
+    m_NormalColor: {r: 0, g: 0, b: 0, a: 0}
     m_HighlightedColor: {r: 0, g: 0, b: 0, a: 0.25490198}
     m_PressedColor: {r: 0, g: 0, b: 0, a: 0.59607846}
     m_SelectedColor: {r: 0, g: 0, b: 0, a: 0}

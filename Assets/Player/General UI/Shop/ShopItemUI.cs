@@ -3,16 +3,15 @@ using System.Linq;
 using Game.Common;
 using Game.Data;
 using Game.Upgrade.Shop;
-using Player.General_UI.Shop.ShopSelectionInfo;
+using Player.General_UI.Tooltips;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Player.General_UI.Shop
 {
-    public class ShopItemUI : MonoBehaviour
+    public class ShopItemUI : MonoBehaviour, IInfoTooltipDataProvider
     {
-        [SerializeField] private ShopInfoBubbleTarget shopInfoBubbleTarget;
         private Item _item;
         [SerializeField] private Button button;
         [SerializeField] private Image image;
@@ -31,7 +30,6 @@ namespace Player.General_UI.Shop
         {
             _item = newItem;
             image.sprite = _item.Info.Icon;
-            shopInfoBubbleTarget.SetData(_item.Info.Name, _item.Info.Description, _item.ShopItemData.CostAmount, _item.ShopItemData.CostType);
 
             List<OwnedItemData> ownedItems = DataManager.Instance[NetworkManager.Singleton.LocalClientId].inGameData.ownedItems;
             
@@ -54,7 +52,34 @@ namespace Player.General_UI.Shop
         private void DisableShopItemUI()
         {
             button.interactable = false;
-            shopInfoBubbleTarget.OnPointerExit();
+        }
+
+        public string GetHeaderText()
+        {
+            return _item.Info.Name;
+        }
+
+        public string GetDescriptionText()
+        {
+            return _item.Info.Description;
+        }
+
+        public Sprite GetMainIcon()
+        {
+            return null;
+            return _item.Info.Icon;
+        }
+
+        public bool ShouldShowPrice(out int price, out ResourceType resourceType)
+        {
+            price = _item.ShopItemData.CostAmount;
+            resourceType = _item.ShopItemData.CostType;
+            return true;
+        }
+
+        public Color GetHeaderColor()
+        {
+            return Color.white;
         }
     }
 }
