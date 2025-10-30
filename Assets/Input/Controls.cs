@@ -402,7 +402,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             ""id"": ""9fdfa20a-a6c5-4222-ae5a-e80d62f60d40"",
             ""actions"": [
                 {
-                    ""name"": ""Scoreboard"",
+                    ""name"": ""Inventory"",
                     ""type"": ""Button"",
                     ""id"": ""4e52fe20-7251-4bf2-bc4b-d26a63598527"",
                     ""expectedControlType"": """",
@@ -428,14 +428,14 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Scoreboard"",
+                    ""action"": ""Inventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
                     ""id"": ""fda4c615-d2e6-4a39-9c01-0501bb14252e"",
-                    ""path"": ""<Keyboard>/p"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -467,7 +467,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Gameplay_Secondary = m_Gameplay.FindAction("Secondary", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
-        m_UI_Scoreboard = m_UI.FindAction("Scoreboard", throwIfNotFound: true);
+        m_UI_Inventory = m_UI.FindAction("Inventory", throwIfNotFound: true);
         m_UI_ShopOpen = m_UI.FindAction("ShopOpen", throwIfNotFound: true);
     }
 
@@ -694,13 +694,13 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     // UI
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
-    private readonly InputAction m_UI_Scoreboard;
+    private readonly InputAction m_UI_Inventory;
     private readonly InputAction m_UI_ShopOpen;
     public struct UIActions
     {
         private @Controls m_Wrapper;
         public UIActions(@Controls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Scoreboard => m_Wrapper.m_UI_Scoreboard;
+        public InputAction @Inventory => m_Wrapper.m_UI_Inventory;
         public InputAction @ShopOpen => m_Wrapper.m_UI_ShopOpen;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
@@ -711,9 +711,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_UIActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_UIActionsCallbackInterfaces.Add(instance);
-            @Scoreboard.started += instance.OnScoreboard;
-            @Scoreboard.performed += instance.OnScoreboard;
-            @Scoreboard.canceled += instance.OnScoreboard;
+            @Inventory.started += instance.OnInventory;
+            @Inventory.performed += instance.OnInventory;
+            @Inventory.canceled += instance.OnInventory;
             @ShopOpen.started += instance.OnShopOpen;
             @ShopOpen.performed += instance.OnShopOpen;
             @ShopOpen.canceled += instance.OnShopOpen;
@@ -721,9 +721,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
 
         private void UnregisterCallbacks(IUIActions instance)
         {
-            @Scoreboard.started -= instance.OnScoreboard;
-            @Scoreboard.performed -= instance.OnScoreboard;
-            @Scoreboard.canceled -= instance.OnScoreboard;
+            @Inventory.started -= instance.OnInventory;
+            @Inventory.performed -= instance.OnInventory;
+            @Inventory.canceled -= instance.OnInventory;
             @ShopOpen.started -= instance.OnShopOpen;
             @ShopOpen.performed -= instance.OnShopOpen;
             @ShopOpen.canceled -= instance.OnShopOpen;
@@ -764,7 +764,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     }
     public interface IUIActions
     {
-        void OnScoreboard(InputAction.CallbackContext context);
+        void OnInventory(InputAction.CallbackContext context);
         void OnShopOpen(InputAction.CallbackContext context);
     }
 }

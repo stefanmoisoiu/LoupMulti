@@ -12,8 +12,6 @@ namespace Player.Health
         
         [SerializeField] private CamShake camShake;
         [SerializeField] private Shake.ShakeSettings shakeSettings;
-        [SerializeField] private float maxAddedDuration = 0.5f;
-        [SerializeField] private float maxAddedAmplitude = 0.5f;
 
         protected override void StartAnyOwner()
         {
@@ -31,8 +29,8 @@ namespace Player.Health
             float healthLost = previousHealth - newHealth;
             float adv = healthLost / GameSettings.Instance.PlayerMaxHealth;
             Shake.ShakeSettings settings = new Shake.ShakeSettings(
-                shakeSettings.Duration + adv * maxAddedDuration, 
-                shakeSettings.Amplitude + adv * maxAddedAmplitude,
+                shakeSettings.Duration, 
+                shakeSettings.Amplitude,
                 shakeSettings.Curve);
             camShake.AddShake(settings);
         }

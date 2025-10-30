@@ -11,6 +11,7 @@ namespace Player.Perks.UI
         public Image icon;
         public TMP_Text itemName;
         public TMP_Text description;
+        public TMP_Text rarity;
         public Button button;
 
         private CarouselOption _option;
@@ -23,6 +24,7 @@ namespace Player.Perks.UI
             icon.sprite = item.Info.Icon;
             itemName.text = item.Info.Name;
             description.text = option.Type == CarouselOption.OptionType.UpgradeItem ? $"LVL [{option.CurrentLevel+1}] -> LVL [{option.CurrentLevel+2}]" : item.Info.Description;
+            rarity.text = item.Info.Rarity.ToString();
 
             //bgMat.SetFloat(RarityShaderID, (int)perkData.Rarity);
         

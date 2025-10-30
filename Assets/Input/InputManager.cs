@@ -29,7 +29,7 @@ namespace Input
         public static bool    Slot2{ get; private set; }
         public static bool    Slot3{ get; private set; }
         
-        public static bool    Score  { get; private set; }
+        public static bool    Inventory  { get; private set; }
         
         // Booléens pour UI
         
@@ -59,8 +59,8 @@ namespace Input
         public static event Action OnSlot2Canceled;
         public static event Action OnSlot3Use;
         public static event Action OnSlot3Canceled;
-        public static event Action OnScoreboardOpened;
-        public static event Action OnScoreboardClosed;
+        public static event Action OnInventoryOpened;
+        public static event Action OnInventoryClosed;
         
         public static event Action OnShopOpened;
         public static event Action OnShopClosed;
@@ -215,15 +215,15 @@ namespace Input
             };
 
             // Scoreboard (UI)
-            _controls.UI.Scoreboard.performed += ctx =>
+            _controls.UI.Inventory.performed += ctx =>
             {
-                Score = true;
-                OnScoreboardOpened?.Invoke();
+                Inventory = true;
+                OnInventoryOpened?.Invoke();
             };
-            _controls.UI.Scoreboard.canceled += ctx =>
+            _controls.UI.Inventory.canceled += ctx =>
             {
-                Score = false;
-                OnScoreboardClosed?.Invoke();
+                Inventory = false;
+                OnInventoryClosed?.Invoke();
             };
             
             // Shop (UI)

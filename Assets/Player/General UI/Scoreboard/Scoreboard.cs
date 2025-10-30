@@ -29,25 +29,25 @@ namespace Player.General_UI.Scoreboard
             _spectatorText = _scoreboard.GetChild(1).GetComponent<TMP_Text>();
             _spectatorList = _scoreboard.GetChild(2).GetComponent<TMP_Text>();
         
-            InputManager.OnScoreboardOpened += ShowScoreboard;
-            InputManager.OnScoreboardClosed += HideScoreboard;
+            InputManager.OnInventoryOpened += ShowInventory;
+            InputManager.OnInventoryClosed += HideInventory;
         
-            HideScoreboard();
+            HideInventory();
         }
 
         protected override void DisableOnlineOwner()
         {
-            InputManager.OnScoreboardOpened -= ShowScoreboard;
-            InputManager.OnScoreboardClosed -= HideScoreboard;
+            InputManager.OnInventoryOpened -= ShowInventory;
+            InputManager.OnInventoryClosed -= HideInventory;
         
-            HideScoreboard();
+            HideInventory();
         }
 
-        private void ShowScoreboard()
+        private void ShowInventory()
         {
             _scoreboardCanvasGroup.alpha = 1;
         }
-        private void HideScoreboard()
+        private void HideInventory()
         {
             if (_scoreboard == null) return;
             _scoreboardCanvasGroup.alpha = 0;

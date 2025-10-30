@@ -380,7 +380,7 @@
             "id": "9fdfa20a-a6c5-4222-ae5a-e80d62f60d40",
             "actions": [
                 {
-                    "name": "Scoreboard",
+                    "name": "Inventory",
                     "type": "Button",
                     "id": "4e52fe20-7251-4bf2-bc4b-d26a63598527",
                     "expectedControlType": "",
@@ -406,14 +406,14 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Scoreboard",
+                    "action": "Inventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "fda4c615-d2e6-4a39-9c01-0501bb14252e",
-                    "path": "<Keyboard>/p",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

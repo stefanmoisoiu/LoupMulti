@@ -812,8 +812,6 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  maxAddedDuration: 0.5
-  maxAddedAmplitude: 0.5
 --- !u!114 &3284010739676238858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -827,9 +825,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shake:
-    moveFrequency: 6
+    moveFrequency: 12
     amplitudeMult: 0.1
-    lerpSpeed: 50
+    lerpSpeed: 100
 --- !u!1 &1855804629462819577
 GameObject:
   m_ObjectHideFlags: 0
@@ -6598,8 +6596,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   animManager: {fileID: 3112151402033593990}
   cam: {fileID: 56786652358893990}
-  turnSpringConstant: 10
-  turnDampingFactor: 6
+  turnSpringConstant: 15
+  turnDampingFactor: 5
   cogMult: 1.5
 --- !u!114 &230671883783473277
 MonoBehaviour:
@@ -6617,8 +6615,8 @@ MonoBehaviour:
   animManager: {fileID: 3112151402033593990}
   cam: {fileID: 56786652358893990}
   tiltMult: 0.5
-  springConstant: 10
-  dampingFactor: 3
+  springConstant: 15
+  dampingFactor: 5
 --- !u!1 &4017553734326806409
 GameObject:
   m_ObjectHideFlags: 0

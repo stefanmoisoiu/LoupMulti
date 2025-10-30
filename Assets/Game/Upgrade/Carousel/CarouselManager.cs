@@ -14,7 +14,8 @@ namespace Game.Upgrade.Carousel
 {
     public class CarouselManager : NetworkBehaviour
     {
-        [SerializeField] private WeightedProbabilitySelector<CarouselOption.OptionType> carouselOptionProbability;
+        [SerializeField] private WeightedProbabilitySelector<CarouselOption.OptionType> carouselOptionProbability = new();
+        [SerializeField] private WeightedProbabilitySelector<ObjectRarity> rarityProbability = new();
         
         
         private readonly Dictionary<ulong, CarouselOption[]> _playerCurrentOptions = new();
@@ -175,17 +176,53 @@ namespace Game.Upgrade.Carousel
                 GenerateAndSendOptionsForPlayer(clientId, activeConfig); // Regénère avec la même config
             }
         }
+        
+       private struct CarouselPools
+        {
+            public List<Item> NewAbilities;
+            public List<Item> NewPerks;
+            public List<Item> UpgradeableItems;
+            public List<OwnedItemData> UpgradeableItemsData;
+
+            public int TotalAvailable() => NewAbilities.Count + NewPerks.Count + UpgradeableItems.Count;
+
+            public static CarouselPools Create()
+            {
+                return new CarouselPools
+                {
+                    NewAbilities = new List<Item>(),
+                    NewPerks = new List<Item>(),
+                    UpgradeableItems = new List<Item>(),
+                    UpgradeableItemsData = new List<OwnedItemData>()
+                };
+            }
+        }
 
         private CarouselOption[] GenerateCarouselOptions(PlayerData data, CarouselTypeConfig config)
         {
+            List<CarouselOption> finalChoices = new List<CarouselOption>();
+            
+            CarouselPools pools = BuildAvailablePools(data, config);
+
+            ApplyForcedAbilityRule(data, config, ref finalChoices, pools);
+
+            int choicesNeeded = config.numberOfChoices - finalChoices.Count;
+
+            if (choicesNeeded > 0)
+            {
+                FillRemainingChoices(choicesNeeded, config, ref finalChoices, pools);
+            }
+            
+            return finalChoices.OrderBy(_ => Random.value).ToArray();
+        }
+
+        private CarouselPools BuildAvailablePools(PlayerData data, CarouselTypeConfig config)
+        {
             List<OwnedItemData> ownedItemsData = data.inGameData.ownedItems;
             List<ushort> ownedItemIndices = ownedItemsData.Select(item => item.ItemRegistryIndex).ToList();
-            Item[] selectionPool = ItemRegistry.Instance.Items;
+            Item[] selectionPool = ItemRegistry.Instance.ItemsInCarousel;
 
-            List<Item> availableNewAbilities = new List<Item>();
-            List<Item> availableNewPerks = new List<Item>();
-            List<OwnedItemData> availableUpgradesOwned = new List<OwnedItemData>();
-            List<Item> availableUpgrades = new List<Item>();
+            CarouselPools pools = CarouselPools.Create();
 
             foreach (Item item in selectionPool)
             {
@@ -195,8 +232,8 @@ namespace Game.Upgrade.Carousel
                     OwnedItemData owned = ownedItemsData.First(oi => oi.ItemRegistryIndex == itemIndex);
                     if (config.allowUpgrades && owned.Level < GameSettings.Instance.MaxItemLevel)
                     {
-                        availableUpgradesOwned.Add(owned);
-                        availableUpgrades.Add(item);
+                        pools.UpgradeableItemsData.Add(owned);
+                        pools.UpgradeableItems.Add(item);
                     }
                 }
                 else
@@ -205,50 +242,49 @@ namespace Game.Upgrade.Carousel
                     switch (item.Type)
                     {
                         case Item.ItemType.Ability when config.allowNewAbilities:
-                            availableNewAbilities.Add(item);
+                            pools.NewAbilities.Add(item);
                             break;
                         case Item.ItemType.Perk when config.allowNewPerks:
-                            availableNewPerks.Add(item);
+                            pools.NewPerks.Add(item);
                             break;
                     }
                 }
             }
-
-            // 2. Assemblage
-            List<CarouselOption> finalChoices = new List<CarouselOption>();
-            int choicesNeeded = config.numberOfChoices;
-
-            // Logique de forçage (réservation)
-            int activeItemCount = ownedItemsData.Count(itemData => ItemRegistry.Instance.GetItem(itemData.ItemRegistryIndex).Type == Item.ItemType.Ability);
+            return pools;
+        }
+        
+        private void ApplyForcedAbilityRule(PlayerData data, CarouselTypeConfig config, ref List<CarouselOption> finalChoices, CarouselPools pools)
+        {
+            int activeItemCount = data.inGameData.ownedItems.Count(itemData => ItemRegistry.Instance.GetItem(itemData.ItemRegistryIndex).Type == Item.ItemType.Ability);
             bool mustForceActiveCheck = config.forceActiveIfNotMax && activeItemCount < GameSettings.Instance.AbilitySlots;
 
-            if (mustForceActiveCheck && availableNewAbilities.Count > 0 && choicesNeeded > 0)
+            if (mustForceActiveCheck && pools.NewAbilities.Count > 0)
             {
-                int idx = Random.Range(0, availableNewAbilities.Count);
-                Item forcedItem = availableNewAbilities[idx];
-                finalChoices.Add(new CarouselOption(CarouselOption.OptionType.NewAbilty, ItemRegistry.Instance.GetItem(forcedItem)));
-                availableNewAbilities.RemoveAt(idx);
-                choicesNeeded--;
+                Item forcedItem = SelectItemByRarity(pools.NewAbilities);
+                if (forcedItem != null)
+                {
+                    finalChoices.Add(new CarouselOption(CarouselOption.OptionType.NewAbilty, ItemRegistry.Instance.GetItem(forcedItem)));
+                    pools.NewAbilities.Remove(forcedItem);
+                }
             }
-            List<Item> currentNewAbilities = new List<Item>(availableNewAbilities);
-            List<Item> currentNewPerks = new List<Item>(availableNewPerks);
-            List<OwnedItemData> currentUpgradesOwned = new List<OwnedItemData>(availableUpgradesOwned);
-            List<Item> currentUpgrades = new List<Item>(availableUpgrades);
-
-            while (choicesNeeded > 0 && (currentNewAbilities.Count + currentNewPerks.Count + currentUpgrades.Count > 0))
+        }
+        
+        private void FillRemainingChoices(int choicesNeeded, CarouselTypeConfig config, ref List<CarouselOption> finalChoices, CarouselPools pools)
+        {
+            while (choicesNeeded > 0 && pools.TotalAvailable() > 0)
             {
                 List<WeightedProbabilitySelector<CarouselOption.OptionType>.WeightedOutcome> validWeights = new();
                 foreach(var weightedType in carouselOptionProbability.GetAllOutcomes())
                 {
                     switch (weightedType.Outcome)
                     {
-                        case CarouselOption.OptionType.NewAbilty when currentNewAbilities.Count > 0:
+                        case CarouselOption.OptionType.NewAbilty when pools.NewAbilities.Count > 0:
                             validWeights.Add(weightedType);
                             break;
-                        case CarouselOption.OptionType.NewPerk when currentNewPerks.Count > 0:
+                        case CarouselOption.OptionType.NewPerk when pools.NewPerks.Count > 0:
                             validWeights.Add(weightedType);
                             break;
-                        case CarouselOption.OptionType.UpgradeItem when config.allowUpgrades && currentUpgrades.Count > 0:
+                        case CarouselOption.OptionType.UpgradeItem when config.allowUpgrades && pools.UpgradeableItems.Count > 0:
                             validWeights.Add(weightedType);
                             break;
                     }
@@ -257,29 +293,85 @@ namespace Game.Upgrade.Carousel
                 if (validWeights.Count == 0) break;
 
                 CarouselOption.OptionType chosenType = carouselOptionProbability.GetRandomOutcome(validWeights);
-
-                List<Item> list = chosenType switch
-                {
-                    CarouselOption.OptionType.UpgradeItem => currentUpgrades,
-                    CarouselOption.OptionType.NewAbilty => currentNewAbilities,
-                    CarouselOption.OptionType.NewPerk => currentNewPerks,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                int ind = Random.Range(0, list.Count);
-                Item optionItem = list[ind];
-                ushort currentLevel = chosenType == CarouselOption.OptionType.UpgradeItem ? currentUpgradesOwned[ind].Level : (ushort)0;
-                CarouselOption generatedOption = new(chosenType, ItemRegistry.Instance.GetItem(optionItem), currentLevel);
                 
-                list.RemoveAt(ind);
-                if (chosenType == CarouselOption.OptionType.UpgradeItem) currentUpgradesOwned.RemoveAt(ind);
+                Item optionItem;
+                ushort currentLevel = 0;
+                List<Item> selectionList;
+                
+                switch (chosenType)
+                {
+                    case CarouselOption.OptionType.UpgradeItem:
+                        selectionList = pools.UpgradeableItems;
+                        break;
+                    case CarouselOption.OptionType.NewAbilty:
+                        selectionList = pools.NewAbilities;
+                        break;
+                    case CarouselOption.OptionType.NewPerk:
+                        selectionList = pools.NewPerks;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                
+                optionItem = SelectItemByRarity(selectionList);
+                if (optionItem == null) continue;
 
+                int originalIndex = selectionList.IndexOf(optionItem);
+                selectionList.RemoveAt(originalIndex);
+
+                if (chosenType == CarouselOption.OptionType.UpgradeItem)
+                {
+                    currentLevel = pools.UpgradeableItemsData[originalIndex].Level;
+                    pools.UpgradeableItemsData.RemoveAt(originalIndex);
+                }
+
+                CarouselOption generatedOption = new(chosenType, ItemRegistry.Instance.GetItem(optionItem), currentLevel);
                 finalChoices.Add(generatedOption);
                 
                 choicesNeeded--;
             }
-            
-            return finalChoices.OrderBy(_ => Random.value).ToArray();
+        }
+        
+        private Item SelectItemByRarity(List<Item> availableItems)
+        {
+            if (availableItems == null || availableItems.Count == 0)
+            {
+                return null;
+            }
+
+            HashSet<ObjectRarity> availableRarities = new HashSet<ObjectRarity>(
+                availableItems.Select(item => item.Info.Rarity)
+            );
+
+            List<WeightedProbabilitySelector<ObjectRarity>.WeightedOutcome> validRarityWeights =
+                rarityProbability.GetAllOutcomes()
+                    .Where(outcome => availableRarities.Contains(outcome.Outcome) && outcome.Weight > 0)
+                    .ToList();
+
+            ObjectRarity chosenRarity;
+
+            if (validRarityWeights.Count > 0)
+            {
+                chosenRarity = rarityProbability.GetRandomOutcome(validRarityWeights);
+            }
+            else
+            {
+                chosenRarity = availableRarities.First();
+                Debug.LogWarning($"[CarouselManager] No valid rarity weights found for available items. Falling back to first available rarity: {chosenRarity}");
+            }
+
+            List<Item> finalPool = availableItems
+                .Where(item => item.Info.Rarity == chosenRarity)
+                .ToList();
+
+            if (finalPool.Count == 0)
+            {
+                 Debug.LogError($"[CarouselManager] Rarity selection failed. Final pool for {chosenRarity} was empty. Returning first available item.");
+                 return availableItems[0];
+            }
+
+            int ind = Random.Range(0, finalPool.Count);
+            return finalPool[ind];
         }
 
         /// <summary>
