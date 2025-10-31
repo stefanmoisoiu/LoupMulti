@@ -7015,10 +7015,10 @@ MonoBehaviour:
   rb: {fileID: 2150122228102207166}
   maxSpeedStat: {fileID: 11400000, guid: ad23a174cbb95a942b382edb04c06031, type: 2}
   accelerationStat: {fileID: 11400000, guid: 7b0c8f192b6209545bdbeecf5d2ff631, type: 2}
-  maxWalkSpeed: 4
-  maxRunSpeed: 6
+  maxWalkSpeed: 4.5
+  maxRunSpeed: 7
   acceleration: 100
-  airAccelMultiplier: 0.2
+  airAccelMultiplier: 0.4
   slideForce: 100
   run: {fileID: 7387252875506893107}
   grounded: {fileID: 8967691956622427921}
@@ -7721,10 +7721,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  drillItem: {fileID: 11400000, guid: 966cc2f1bbb97134c9f9da2304f63a40, type: 2}
-  _playerReferences: {fileID: 0}
+  _playerReferences: {fileID: 7704428553215244976}
   abilityManagerUI: {fileID: 5131738851637463487}
-  abilityMap:
+  abilityPrefabMap:
     _serializedList:
     - Key: {fileID: 11400000, guid: 966cc2f1bbb97134c9f9da2304f63a40, type: 2}
       Value: {fileID: 2085193255231112171}

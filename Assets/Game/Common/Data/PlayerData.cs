@@ -5,6 +5,7 @@ using Base_Scripts;
 using Game.Common;
 using Game.Common.List;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,12 +22,20 @@ namespace Game.Common
         {
             clientId = client?.ClientId ?? ulong.MaxValue;
             outerData = new OuterData(client);
-            // Le constructeur InGameData s'occupe de la valeur par défaut (2)
+
+            // Crée le tableau pour les slots
+            var newEquippedArray = new OwnedItemData[GameSettings.Instance.AbilitySlots];
+            for (int i = 0; i < GameSettings.Instance.AbilitySlots; i++)
+            {
+                newEquippedArray[i] = OwnedItemData.Empty; // Pré-remplir avec "Vide"
+            }
+    
             inGameData = new InGameData(
                 health: ushort.MaxValue,
                 rerolls: ushort.MaxValue,
                 ownedItems: new List<OwnedItemData>(),
-                ownedDrillData: new OwnedItemData() {ItemRegistryIndex = ItemRegistry.Instance.DrillItemIndex, Level = 0},
+                ownedDrillData: new OwnedItemData(ItemRegistry.Instance.DrillItemIndex, 0),
+                equippedAbilities: newEquippedArray, // Passe le tableau
                 resources: new OwnedResourcesData());
         }
         public PlayerData(PlayerData copy)

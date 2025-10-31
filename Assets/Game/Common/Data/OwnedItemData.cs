@@ -14,6 +14,13 @@ namespace Game.Common
             ItemRegistryIndex = index;
             Level = level;
         }
+        
+        public static OwnedItemData Empty => new OwnedItemData(ushort.MaxValue, 0);
+        
+        public bool IsEmpty()
+        {
+            return ItemRegistryIndex == ushort.MaxValue;
+        }
 
         public bool IsValid() => ItemRegistryIndex != ushort.MaxValue;
 

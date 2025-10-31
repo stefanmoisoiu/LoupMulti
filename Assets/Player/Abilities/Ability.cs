@@ -10,6 +10,8 @@ namespace Player.Abilities
 {
     public class Ability : PNetworkBehaviour
     {
+        public OwnedItemData OwnedItemData { get; private set; }
+        public ushort ItemRegistryIndex => OwnedItemData.ItemRegistryIndex;
         public Item Item { get; private set; }
         public PlayerReferences PlayerReferences { get; private set; }
 
@@ -31,12 +33,11 @@ namespace Player.Abilities
         public Action OnAbilityAvailableOwner;
         public Action<bool> OnCanUseAbilityChangedOwner;
         
-        public void Initialize(Item item, PlayerReferences playerReferences)
+        public void UpdateInfo(OwnedItemData ownedItemData, PlayerReferences playerReferences)
         {
-            Item = item;
             PlayerReferences = playerReferences;
-            
-            _maxCooldown = Item.AbilityData.BaseCooldown;
+            OwnedItemData = ownedItemData;
+            Item = ItemRegistry.Instance.GetItem(ownedItemData.ItemRegistryIndex);
         }
         
         protected override void UpdateOnlineOwner()
