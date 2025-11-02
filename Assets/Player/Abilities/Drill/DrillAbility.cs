@@ -1,12 +1,8 @@
 using System;
 using System.Collections;
-using Base_Scripts;
-using Game.Collect.Resource.Structure;
 using Game.Common;
 using Game.Common.Hitbox;
-using Player.Camera.Effects;
 using Player.Target;
-using Player.Model.Procedural_Anims;
 using Player.Stats;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -16,7 +12,6 @@ namespace Player.Abilities.Drill
     public class DrillAbility : Ability
     {
         [Title("References")]
-        [SerializeField] private FloatStat drillSpeed;
         [SerializeField] private TargetDetector targetDetector;
         [SerializeField] private DrillUseEffect drillUseEffect;
         
@@ -38,7 +33,7 @@ namespace Player.Abilities.Drill
         
             success = true;
 
-            float maxCooldown = Item.AbilityData.BaseCooldown / PlayerReferences.StatManager.GetFloatStat(drillSpeed).Apply(1);
+            float maxCooldown = Item.AbilityData.BaseCooldown / PlayerReferences.StatManager.GetStat(StatType.DrillCooldownSpeed).GetValue(1);
             ApplyCooldown(maxCooldown,maxCooldown);
             
             if (_useDrillCoroutine != null) StopCoroutine(_useDrillCoroutine);

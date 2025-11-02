@@ -153,7 +153,7 @@ namespace Game.Data
         {
             get
             {
-                if (_data.TryGetValue(clientId, out var pd))
+                if (_data.TryGetValue(clientId, out PlayerData pd))
                     return pd;
                 throw new KeyNotFoundException($"Client ID {clientId} not found in PlayerDataManager.");
             }

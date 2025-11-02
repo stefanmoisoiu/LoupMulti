@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Player.Model.Procedural_Anims
 {
-    public class PAnimBallMove : NetworkBehaviour
+    public class PAnimBallMove : PAnimBehaviour
     {
         [SerializeField] private PAnimManager animManager;
         private AnimComponent _animComponent = new() { Target = PAnimManager.Target.Ball };
@@ -15,7 +15,6 @@ namespace Player.Model.Procedural_Anims
         private void Start()
         {
             _previousPosition = transform.position;
-            animManager.AddAnim(_animComponent);
         }
 
         private void Update()
@@ -31,5 +30,6 @@ namespace Player.Model.Procedural_Anims
             
             _animComponent.Rotation = rotZ * rotX * _animComponent.Rotation;
         }
+        public override AnimComponent[] GetAnimComponents() => new[] {_animComponent};
     }
 }

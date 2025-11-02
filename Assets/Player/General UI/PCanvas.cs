@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using AYellowpaper.SerializedCollections;
 using Base_Scripts;
 using UnityEngine;
@@ -40,6 +41,13 @@ namespace Player.General_UI
             }
         }
 
+        private void OnDisable()
+        {
+            if (_transitionCoroutine != null)
+                StopCoroutine(_transitionCoroutine);
+            _transitionCoroutine = null;
+        }
+
         public void SetCanvasVisible(bool visible)
         {
             if (_transitionCoroutine != null)
@@ -51,10 +59,10 @@ namespace Player.General_UI
         {
             if (_transitionCoroutine != null)
                 StopCoroutine(_transitionCoroutine);
-            _transitionCoroutine = StartCoroutine(TranisitionCoroutine(visible));
+            _transitionCoroutine = StartCoroutine(TransitionCoroutine(visible));
         }
         
-        private IEnumerator TranisitionCoroutine(bool visible)
+        private IEnumerator TransitionCoroutine(bool visible)
         {
             if (_canvasGroup == null) yield break;
             float startValue = _canvasGroup.alpha;

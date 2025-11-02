@@ -20,7 +20,8 @@ namespace Player.Movement
         {
             StickToGround();
         }
-    
+
+
         private void StickToGround()
         {
             if(jump.JumpCooldown) return;

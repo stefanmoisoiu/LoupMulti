@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Base_Scripts;
@@ -247,3 +248,4 @@ public class WeightedProbabilitySelectorDrawer : PropertyDrawer
         list.serializedObject.ApplyModifiedProperties();
     }
 }
+#endif

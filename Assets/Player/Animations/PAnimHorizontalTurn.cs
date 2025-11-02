@@ -3,13 +3,13 @@ using Networking;
 using Networking.Connection;
 using Player.Camera;
 using Player.Networking;
+using Plugins.Smooth_Sync.Netcode_for_GameObjects.Smooth_Sync_Assets;
 using UnityEngine;
 
 namespace Player.Model.Procedural_Anims
 {
-    public class PAnimHorizontalTurn : PNetworkBehaviour
+    public class PAnimHorizontalTurn : PAnimBehaviour
     {
-        [SerializeField] private PAnimManager animManager;
         private AnimComponent _bodyAnimComponent = new() { Target = PAnimManager.Target.Body };
         private AnimComponent _bodyCogAnimComponent = new() { Target = PAnimManager.Target.BodyCog };
         private AnimComponent _headCogAnimComponent = new() { Target = PAnimManager.Target.HeadCog };
@@ -23,22 +23,6 @@ namespace Player.Model.Procedural_Anims
         private float _currentTurnVelocity;
 
         [SerializeField] [Range(0,2)] private float cogMult = 1f;
-        
-
-        protected override void StartOnlineNotOwner()
-        {
-            _currentTurn = cam.lookTargetNet.Value.x;
-            animManager.AddAnim(_bodyAnimComponent);
-            animManager.AddAnim(_bodyCogAnimComponent);
-            animManager.AddAnim(_headCogAnimComponent);
-        }
-
-        protected override void StartAnyOwner()
-        {
-            animManager.AddAnim(_bodyAnimComponent);
-            animManager.AddAnim(_bodyCogAnimComponent);
-            animManager.AddAnim(_headCogAnimComponent);
-        }
 
         private void Update()
         {
@@ -52,10 +36,12 @@ namespace Player.Model.Procedural_Anims
 
         private void CalculateTilt()
         {
-            float targetTilt = IsOnline && !IsOwner ? cam.lookTargetNet.Value.x : cam.LookTarget.x;
+            float targetTilt = cam.LookDir.x;
             float headForce = Spring.CalculateSpringForce(_currentTurn, targetTilt , _currentTurnVelocity, turnSpringConstant, turnDampingFactor);
             _currentTurnVelocity += headForce * Time.fixedDeltaTime;
             _currentTurn += _currentTurnVelocity * Time.fixedDeltaTime;
         }
+        
+        public override AnimComponent[] GetAnimComponents() => new[] {_bodyAnimComponent, _bodyCogAnimComponent, _headCogAnimComponent};
     }
 }

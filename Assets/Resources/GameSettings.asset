@@ -19,8 +19,8 @@ MonoBehaviour:
   maxItemLevel: 20
   abilitySlots: 3
   collectRoundLength: 60
-  upgradeRoundLength: 30
+  upgradeRoundLength: 60
   debug: 0
-  debugRoundLengths: 1
+  debugRoundLengths: 0
   debugCollectRoundLength: 2
   debugUpgradeRoundLength: 20

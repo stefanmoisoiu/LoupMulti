@@ -9,7 +9,7 @@ namespace Player.Networking
 {
     public abstract class PNetworkBehaviour : NetworkBehaviour
     {
-        public bool IsOnline => (NetcodeManager.InGame || NetcodeManager.LoadingGame) && IsSpawned;
+        protected bool IsOnline => NetcodeManager.InGame || NetcodeManager.LoadingGame;
         private bool _initializedAny = false;
         private bool _onNetworkSpawnCalled = false;
 
@@ -41,12 +41,13 @@ namespace Player.Networking
 
         private void OnEnableOnline()
         {
-            if (!IsOwner)
+            if (IsServer) StartOnlineServer();
+            if (IsOwner)  StartOnlineOwner();
+            else
             {
                 StartOnlineNotOwner();
                 return;
             }
-            StartOnlineOwner();
             if (!_initializedAny) StartAnyOwner();
             _initializedAny = true;
         }
@@ -56,6 +57,7 @@ namespace Player.Networking
             _initializedAny = false;
             if (IsOnline)
             {
+                if (IsServer) DisableOnlineServer();
                 if (IsOwner) DisableOnlineOwner();
                 else
                 {
@@ -75,6 +77,7 @@ namespace Player.Networking
             if (!enabled) return;
             if (NetcodeManager.InGame)
             {
+                if (IsServer) UpdateOnlineServer();
                 if (IsOwner)
                 {
                     UpdateOnlineOwner();
@@ -91,8 +94,10 @@ namespace Player.Networking
 
         private void FixedUpdate()
         {
+            if (!enabled) return;
             if (NetcodeManager.InGame)
             {
+                if (IsServer) FixedUpdateOnlineServer();
                 if (IsOwner)
                 {
                     FixedUpdateOnlineOwner();
@@ -108,21 +113,34 @@ namespace Player.Networking
         }
 
 
+        protected virtual void StartOnlineServer() {}
+        
+        
         protected virtual void StartOnlineOwner() {}
         protected virtual void StartOnlineNotOwner() {}
         protected virtual void StartOffline() {}
         protected virtual void StartAnyOwner() {}
     
+        
+        protected virtual void DisableOnlineServer() {}
+        
         protected virtual void DisableOnlineOwner() {}
         protected virtual void DisableOnlineNotOwner() {}
         protected virtual void DisableOffline() {}
         protected virtual void DisableAnyOwner() {}
     
+        
+        protected virtual void UpdateOnlineServer() {}
+        
+        
         protected virtual void UpdateOnlineOwner() {}
         protected virtual void UpdateAnyOwner() {}
         protected virtual void UpdateOffline() {}
         protected virtual void UpdateOnlineNotOwner() {}
     
+        
+        protected virtual void FixedUpdateOnlineServer() {}
+        
         protected virtual void FixedUpdateOnlineOwner() {}
         protected virtual void FixedUpdateAnyOwner() {}
         protected virtual void FixedUpdateOffline() {}

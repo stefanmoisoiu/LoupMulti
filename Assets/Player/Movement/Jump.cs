@@ -15,7 +15,6 @@ namespace Player.Movement
 
         private PlayerReferences _playerReferences;
         private StatManager StatManager => _playerReferences.StatManager;
-        [SerializeField] private FloatStat jumpHeightStat;
         
         [SerializeField] private float jumpForce;
 
@@ -98,7 +97,7 @@ namespace Player.Movement
         
             rb.useGravity = true;
 
-            float finalJumpForce = StatManager.GetFloatStat(jumpHeightStat).Apply(jumpForce);
+            float finalJumpForce = StatManager.GetStat(StatType.JumpHeight).GetValue(jumpForce);
         
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, finalJumpForce, rb.linearVelocity.z);
         

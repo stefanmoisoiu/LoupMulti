@@ -5,9 +5,11 @@ using Player.Networking;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using AYellowpaper.SerializedCollections;
+using Game.Data;
 using Game.Upgrade.Carousel;
-using Player.Stats; // Ajouté
+using Player.Stats;
 
 namespace Player.Perks
 {
@@ -15,85 +17,56 @@ namespace Player.Perks
     {
         private PlayerReferences _playerReferences;
         [TitleGroup("Perk Prefab Mapping")]
-        [Tooltip("Relation 'bakée' entre un Item et son prefab PerkEffect.")]
         [SerializeField]
-        private SerializedDictionary<Item, PerkEffect> perkMap; // Plus de liste !
-        
-        private List<PerkEffect> _activePerks = new List<PerkEffect>();
-
-
-        private PerkEffect GetPerkPrefabForItem(Item item)
-        {
-            if (perkMap.TryGetValue(item, out PerkEffect prefab))
-            {
-                return prefab;
-            }
-            
-            Debug.LogError($"Aucun prefab 'PerkEffect' n'est mappé pour l'item '{item.name}' dans le PerkEffectManager.");
-            return null;
-        }
-
+        private SerializedDictionary<Item, PerkEffect> perkMap;
         protected override void StartOnlineOwner()
         {
             _playerReferences = GetComponentInParent<PlayerReferences>();
-            ShopManager.OnShopItemBoughtOwner += OnShopItemBoughtOwner;
-            CarouselManager.OnItemChosenOrUpgradedOwner += OnItemChosenOwner;
-            GameManager.OnGameStateChangedAll += OnGameStateChangedAll;
+            
+            DataManager.OnEntryUpdatedOwner += OnPlayerDataUpdated;
+            
+            if (DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData initialData))
+            {
+                OnPlayerDataUpdated(default, initialData);
+            }
         }
 
         protected override void DisableAnyOwner()
         {
-            ShopManager.OnShopItemBoughtOwner -= OnShopItemBoughtOwner;
-            CarouselManager.OnItemChosenOrUpgradedOwner -= OnItemChosenOwner;
-            GameManager.OnGameStateChangedAll -= OnGameStateChangedAll;
+            DataManager.OnEntryUpdatedOwner -= OnPlayerDataUpdated;
         }
         
-        private void OnShopItemBoughtOwner(ushort itemInd)
+        private void OnPlayerDataUpdated(PlayerData previousData, PlayerData newData)
         {
-            Item item = ItemRegistry.Instance.GetItem(itemInd);
-            if (item.Type != Item.ItemType.Perk) return;
-            ApplyPerk(item);
+            UpdateAppliedPerks(newData.inGameData.GetAllPerks());
         }
 
-        private void OnItemChosenOwner(ushort itemInd)
+        private void UpdateAppliedPerks(List<OwnedItemData> serverPerks)
         {
-            Item item = ItemRegistry.Instance.GetItem(itemInd);
-            if (item.Type != Item.ItemType.Perk) return;
-            ApplyPerk(item);
-        }
-        
-        private void ApplyPerk(Item item)
-        {
-            PerkEffect prefab = GetPerkPrefabForItem(item);
-            if (prefab == null) return;
-            
-            foreach(var perk in _activePerks)
+            foreach (Item item in perkMap.Keys)
             {
-                if(perk.Item == item)
+                ushort itemRegistryIndex = ItemRegistry.Instance.GetItem(item);
+                PerkEffect perkEffect = perkMap[item];
+
+                OwnedItemData ownedPerkData = OwnedItemData.Empty;
+                foreach (OwnedItemData ownedItemData in serverPerks)
                 {
-                    Debug.Log($"Perk {item.Info.Name} déjà appliqué.");
-                    return;
+                    if (ownedItemData.ItemRegistryIndex == itemRegistryIndex)
+                    {
+                        ownedPerkData = ownedItemData;
+                        break;
+                    }
                 }
-            }
-
-            GameObject spawnedObject = Instantiate(prefab.gameObject, transform);
-            PerkEffect newPerkInstance = spawnedObject.GetComponent<PerkEffect>();
-
-            newPerkInstance.Initialize(item, _playerReferences);
-            newPerkInstance.SetApplied(true);
-            _activePerks.Add(newPerkInstance);
-        }
-        
-        private void OnGameStateChangedAll(GameManager.GameState previousState, GameManager.GameState newState)
-        {
-            SetPerksEnabled(newState == GameManager.GameState.InGame);
-        }
-        
-        private void SetPerksEnabled(bool value)
-        {
-            foreach (PerkEffect perkInstance in _activePerks)
-            {
-                perkInstance.SetApplied(value);
+                
+                if (ownedPerkData.IsEmpty())
+                {
+                    perkEffect.SetPerkEnabled(false);
+                }
+                else
+                {
+                    perkEffect.UpdateInfo(serverPerks.Find(x => x.ItemRegistryIndex == itemRegistryIndex), _playerReferences);
+                    perkEffect.SetPerkEnabled(true);
+                }
             }
         }
     }

@@ -11,20 +11,20 @@ namespace Player.General_UI.Shop
     {
         [SerializeField] private GameObject shopItemPrefab;
         
-        private List<GameObject> shopItemObjects;
+        private static List<GameObject> _shopItemObjects;
 
         [SerializeField] private string categoryTag;
         
         [SerializeField] private ShopCategory.CategoryType type;
         
-        private Transform shopItemParent;
+        private Transform _shopItemParent;
 
-        protected override void StartAnyOwner()
+        protected override void StartOnlineOwner()
         {
-            shopItemParent = PCanvas.CanvasObjects[categoryTag].transform;
+            _shopItemParent = PCanvas.CanvasObjects[categoryTag].transform;
             ShopManager.OnShopOpenedChanged += ShopOpenedChangedChanged;
         }
-
+        
         protected override void DisableAnyOwner()
         {
             ShopManager.OnShopOpenedChanged -= ShopOpenedChangedChanged;
@@ -34,20 +34,20 @@ namespace Player.General_UI.Shop
         {
             if (!opened) return;
 
-            if (shopItemObjects == null) CreateShopItems(shopManager);
+            if (_shopItemObjects == null) CreateShopItems(shopManager);
             
         }
 
         private void CreateShopItems(ShopManager shopManager)
         {
             Item[] items = ItemRegistry.Instance.GetShopCategory(type).Items;
-            shopItemObjects = new List<GameObject>(items.Length);
+            _shopItemObjects = new List<GameObject>(items.Length);
             for (int i = 0; i < items.Length; i++)
             {
-                GameObject itemObject = Instantiate(shopItemPrefab, shopItemParent);
+                GameObject itemObject = Instantiate(shopItemPrefab, _shopItemParent);
                 if (!itemObject.TryGetComponent(out ShopItemUI ui)) throw new NullReferenceException("ShopItemUI component is missing on the shop item prefab.");
                 ui.SetShopItem(items[i], shopManager);
-                shopItemObjects.Add(itemObject);
+                _shopItemObjects.Add(itemObject);
             }
         }
     }

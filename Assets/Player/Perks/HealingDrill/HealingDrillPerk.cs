@@ -15,11 +15,14 @@ namespace Player.Perks.HealingDrill
         [SerializeField] private ushort amountToHeal;
         [SerializeField] [Range(0,1)] private float chanceToHeal;
         
-        internal override void StartApply()
+        public override void EnablePerk()
         {
             Debug.Log("HealingDrillPerk applied");
             PlayerReferences.PlayerEventHub.OnDrillUsed += OnDrillUsedOwner;
-            
+        }
+        public override void DisablePerk()
+        {
+            PlayerReferences.PlayerEventHub.OnDrillUsed -= OnDrillUsedOwner;
         }
 
         private void OnDrillUsedOwner(Targetable target)
@@ -31,12 +34,5 @@ namespace Player.Perks.HealingDrill
                 healable.Heal(new IHealable.HealInfo() { HealAmount = amountToHeal, Origin = OwnerClientId });
             }
         }
-
-        internal override void StopApply()
-        {
-            PlayerReferences.PlayerEventHub.OnDrillUsed -= OnDrillUsedOwner;
-        }
-        
-        
     }
 }

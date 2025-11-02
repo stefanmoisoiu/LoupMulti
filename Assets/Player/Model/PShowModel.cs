@@ -45,16 +45,19 @@ namespace Player.Model.Procedural_Anims
         private bool ShouldShowOtherModels()
         {
             if (DataManager.Instance == null) return true;
-            return DataManager.Instance[OwnerClientId].outerData.playingState !=
-                   OuterData.PlayingState.SpectatingGame;
+            if (!DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData ownerData)) return true;
+            return ownerData.outerData.playingState != OuterData.PlayingState.SpectatingGame;
         }
         private bool ShouldShowOwnerHiddenModel()
         {
-            if (!IsOnline) return alwaysShow;
-            if (IsOwner) return alwaysShow;
+            if (!IsOnline || IsOwner)
+            {
+                Debug.Log("ShouldShowOwnerHiddenModel");
+                return alwaysShow;
+            }
             if (DataManager.Instance == null) return true;
-            return DataManager.Instance[OwnerClientId].outerData.playingState !=
-                   OuterData.PlayingState.SpectatingGame;
+            if (!DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData ownerData)) return true;
+            return ownerData.outerData.playingState != OuterData.PlayingState.SpectatingGame;
         }
 
         private void UpdateModels()

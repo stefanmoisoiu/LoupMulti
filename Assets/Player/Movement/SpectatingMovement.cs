@@ -13,15 +13,6 @@ namespace Player.Movement
         
         [SerializeField] private float speed;
 
-        protected override void StartAnyOwner()
-        {
-            DataManager.OnEntryUpdatedOwner += OnEntryUpdatedOwner;
-        }
-        protected override void DisableAnyOwner()
-        {
-            DataManager.OnEntryUpdatedOwner -= OnEntryUpdatedOwner;
-        }
-
         protected override void FixedUpdateAnyOwner()
         {
             if (DataManager.Instance == null || DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState !=
@@ -32,11 +23,6 @@ namespace Player.Movement
             Vector3 moveDirection = head.forward * direction.z + head.right * direction.x + head.up * direction.y;
             
             rb.linearVelocity = moveDirection * speed;
-        }
-
-        private void OnEntryUpdatedOwner(PlayerData previousData, PlayerData newData)
-        {
-            rb.useGravity = newData.outerData.playingState != OuterData.PlayingState.SpectatingGame;
         }
     }
 }

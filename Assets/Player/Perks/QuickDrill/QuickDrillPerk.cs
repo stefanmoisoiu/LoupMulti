@@ -20,12 +20,12 @@ namespace Player.Perks.QuickDrill
         [SerializeField] private AbilityManager _abilityManager;
         
         
-        internal override void StartApply()
+        public override void EnablePerk()
         {
             PlayerReferences.PlayerEventHub.OnDrillUsed += OnDrillUsedOwner;
             InputManager.OnDrillUse += TryHitWeakPoint;
         }
-        internal override void StopApply()
+        public override void DisablePerk()
         {
             PlayerReferences.PlayerEventHub.OnDrillUsed -= OnDrillUsedOwner;
             InputManager.OnDrillUse -= TryHitWeakPoint;

@@ -9,14 +9,11 @@ namespace Player.Movement.Stamina
         [SerializeField] private Run run;
         private PlayerReferences _playerReferences;
         private StatManager StatManager => _playerReferences.StatManager;
-        [SerializeField] private FloatStat maxStaminaStat;
-        [SerializeField] private FloatStat staminaRecoveryStat;
         
-        
-        [SerializeField] private float baseRecoverRate = 10f;
-        [SerializeField] private int baseMaxStamina = 100;
+        [SerializeField] private float staminaRecoveryRate = 10f;
+        [SerializeField] private int maxStamina = 100;
 
-        public float MaxStamina => StatManager.GetFloatStat(maxStaminaStat).Apply(baseMaxStamina);
+        public float MaxStamina => StatManager.GetStat(StatType.MaxStamina).GetValue(maxStamina);
         
         private float _staminaValue;
         public float StaminaValue => _staminaValue;
@@ -34,7 +31,7 @@ namespace Player.Movement.Stamina
         private void TryRecoverStamina()
         {
             if (run.Running) return;
-            float recoverAmount = StatManager.GetFloatStat(staminaRecoveryStat).Apply(baseRecoverRate) * Time.deltaTime;
+            float recoverAmount = StatManager.GetStat(StatType.StaminaRecoverySpeed).GetValue(staminaRecoveryRate) * Time.deltaTime;
             IncreaseStamina(recoverAmount);
         }
 

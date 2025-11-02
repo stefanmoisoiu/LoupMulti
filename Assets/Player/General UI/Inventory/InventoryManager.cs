@@ -46,7 +46,7 @@ namespace Player.General_UI.Inventory
         private List<OwnedItemData> _cachedOwnedActives;
         private OwnedItemData _cachedOwnedDrill;
 
-        protected override void StartAnyOwner()
+        protected override void StartOnlineOwner()
         {
             _inventoryLayout = PCanvas.CanvasObjects[InventoryLayoutTag].transform;
             _inventoryRect = _inventoryLayout.GetComponent<RectTransform>();

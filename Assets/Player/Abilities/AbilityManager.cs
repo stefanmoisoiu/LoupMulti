@@ -15,8 +15,7 @@ namespace Player.Abilities
 {
     public class AbilityManager : PNetworkBehaviour
     {
-        [TitleGroup("Configuration")]
-        [SerializeField] private PlayerReferences _playerReferences;
+        private PlayerReferences _playerReferences;
         [TitleGroup("UI")]
         [SerializeField] private AbilityManagerUI abilityManagerUI;
 

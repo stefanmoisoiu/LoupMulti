@@ -36,7 +36,7 @@ namespace Base_Scripts
             particlePool = new ParticleSystem[poolSize];
             for (int i = 0; i < poolSize; i++)
             {
-                GameObject instance = Instantiate(particlePrefab, transform);
+                GameObject instance = Instantiate(particlePrefab);
                 DontDestroyOnLoad(instance);
                 particleObjects[i] = instance;
                 particlePool[i] = instance.GetComponent<ParticleSystem>();

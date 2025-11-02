@@ -48,11 +48,10 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   orientation: {fileID: 4249025199511889103}
   head: {fileID: 4619258455599945709}
-  cameraSmoothSpeed: 50
+  lookDirSmoothSpeed: 50
+  netLookDirSmoothSpeed: 35
   cam: {fileID: 2270088609287280482}
   sensMult: 0.75
-  lookTargetNet:
-    m_InternalValue: {x: 0, y: 0}
 --- !u!1 &75706639266997522
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,8 +103,6 @@ MonoBehaviour:
     m_Bits: 8
   maxGroundAngle: 35
   debug: 1
-  IsGroundedNet:
-    m_InternalValue: 1
   jump: {fileID: 2135684917104818374}
 --- !u!1 &418991915712246090
 GameObject:
@@ -226,7 +223,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  drillSpeed: {fileID: 11400000, guid: 51ed10b9c9bb3cd4fa59315046ee8313, type: 2}
   targetDetector: {fileID: 2921917384464759806}
   drillUseEffect: {fileID: 7532948290242055728}
   damage: 15
@@ -432,80 +428,6 @@ Transform:
   - {fileID: 4555022290930983549}
   m_Father: {fileID: 4619258455599945709}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1135856416425894374
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1402764396648089228}
-  - component: {fileID: 2677929641953160410}
-  m_Layer: 6
-  m_Name: Drilling Addiction
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1402764396648089228
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1135856416425894374}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7131679979400068959}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2677929641953160410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1135856416425894374}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c2ea48b9f394d22a8b8a5eaafdc86ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  curve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  healPerSecRange: {x: 1, y: -2}
-  speedFactorRange: {x: 1.2, y: 0.9}
-  curveEnd: 20
-  maxSpeedStat: {fileID: 11400000, guid: ad23a174cbb95a942b382edb04c06031, type: 2}
-  accelerationStat: {fileID: 11400000, guid: 7b0c8f192b6209545bdbeecf5d2ff631, type: 2}
 --- !u!1 &1185622116842282315
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,7 +488,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d309863e43ba8ad47ae4a83532a0f8cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animManager: {fileID: 3112151402033593990}
+  ShowTopMostFoldoutHeaderGroup: 1
   tiltMultiplier: 500
   springConstant: 30
   dampingFactor: 7
@@ -1067,7 +989,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8975976148226289288}
-  - component: {fileID: 4051369805892692727}
   m_Layer: 0
   m_Name: Movement
   m_TagString: Untagged
@@ -1098,20 +1019,6 @@ Transform:
   - {fileID: 3616147907933949312}
   m_Father: {fileID: 7574911353834465632}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4051369805892692727
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2601056351346208521}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b0cc061694447ceb734ab646e64473e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  rb: {fileID: 2150122228102207166}
 --- !u!1 &2632363369017088970
 GameObject:
   m_ObjectHideFlags: 0
@@ -6051,7 +5958,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1344773509343092844}
-  - {fileID: 1402764396648089228}
   - {fileID: 6649089567474741757}
   - {fileID: 240706781119519274}
   m_Father: {fileID: 3172498379375653394}
@@ -6076,7 +5982,7 @@ MonoBehaviour:
     - Key: {fileID: 11400000, guid: 670ccf9e80af4f0419cfa142f2d934a4, type: 2}
       Value: {fileID: 6129189808323800937}
     - Key: {fileID: 11400000, guid: d09947c586664aa4a8bab0dfd21d4f08, type: 2}
-      Value: {fileID: 2677929641953160410}
+      Value: {fileID: 0}
     - Key: {fileID: 11400000, guid: 34a32f5bca6292a4a87e254276838dd3, type: 2}
       Value: {fileID: 613236478547274044}
     - Key: {fileID: 11400000, guid: 111deeafdfc1a2740bc10ad07c6877ca, type: 2}
@@ -6666,7 +6572,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  animManager: {fileID: 3112151402033593990}
   cam: {fileID: 56786652358893990}
   turnSpringConstant: 15
   turnDampingFactor: 5
@@ -6684,7 +6589,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  animManager: {fileID: 3112151402033593990}
   cam: {fileID: 56786652358893990}
   tiltMult: 0.5
   springConstant: 15
@@ -6735,11 +6639,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   run: {fileID: 7387252875506893107}
-  maxStaminaStat: {fileID: 11400000, guid: 64b77199d18e3ec41826e02d7a953b85, type: 2}
-  staminaRecoveryStat: {fileID: 11400000, guid: b0fd134c09f10e242bfe4ac52aa8b147,
-    type: 2}
-  baseRecoverRate: 10
-  baseMaxStamina: 100
+  staminaRecoveryRate: 10
+  maxStamina: 100
 --- !u!1 &4131426305060130527
 GameObject:
   m_ObjectHideFlags: 0
@@ -7013,12 +6914,10 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   orientation: {fileID: 4249025199511889103}
   rb: {fileID: 2150122228102207166}
-  maxSpeedStat: {fileID: 11400000, guid: ad23a174cbb95a942b382edb04c06031, type: 2}
-  accelerationStat: {fileID: 11400000, guid: 7b0c8f192b6209545bdbeecf5d2ff631, type: 2}
   maxWalkSpeed: 4.5
   maxRunSpeed: 7
-  acceleration: 100
-  airAccelMultiplier: 0.4
+  acceleration: 125
+  airAccelMultiplier: 0.2
   slideForce: 100
   run: {fileID: 7387252875506893107}
   grounded: {fileID: 8967691956622427921}
@@ -7347,16 +7246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe66e42c21a04a21a24b75cdc3fb2b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floatStats:
-    _serializedList:
-    - Key: {fileID: 11400000, guid: 7b0c8f192b6209545bdbeecf5d2ff631, type: 2}
-    - Key: {fileID: 11400000, guid: 51ed10b9c9bb3cd4fa59315046ee8313, type: 2}
-    - Key: {fileID: 11400000, guid: a058e893207a2db498eee6a360b79694, type: 2}
-    - Key: {fileID: 11400000, guid: ad23a174cbb95a942b382edb04c06031, type: 2}
-    - Key: {fileID: 11400000, guid: 64b77199d18e3ec41826e02d7a953b85, type: 2}
-    - Key: {fileID: 11400000, guid: b0fd134c09f10e242bfe4ac52aa8b147, type: 2}
-  intStats:
-    _serializedList: []
 --- !u!1 &4614776741147519490
 GameObject:
   m_ObjectHideFlags: 0
@@ -7531,15 +7420,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  playerStatModifier:
-    floatModifiersDict:
-      _serializedList:
-      - Key: {fileID: 11400000, guid: 51ed10b9c9bb3cd4fa59315046ee8313, type: 2}
-        Value:
-          factor: 3
-          added: 0
-    intModifiersDict:
-      _serializedList: []
+  statType: 2
+  statModifier:
+    Value: 0.15
+    Type: 1
 --- !u!1 &5152320382614855923
 GameObject:
   m_ObjectHideFlags: 0
@@ -7721,7 +7605,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  _playerReferences: {fileID: 7704428553215244976}
   abilityManagerUI: {fileID: 5131738851637463487}
   abilityPrefabMap:
     _serializedList:
@@ -8614,19 +8497,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  playerStatModifier:
-    floatModifiersDict:
-      _serializedList:
-      - Key: {fileID: 11400000, guid: ad23a174cbb95a942b382edb04c06031, type: 2}
-        Value:
-          factor: 3
-          added: 0
-      - Key: {fileID: 11400000, guid: 7b0c8f192b6209545bdbeecf5d2ff631, type: 2}
-        Value:
-          factor: 1.1
-          added: 0
-    intModifiersDict:
-      _serializedList: []
+  statType: 0
+  statModifier:
+    Value: 0.15
+    Type: 1
 --- !u!1 &7432584151954196088
 GameObject:
   m_ObjectHideFlags: 0
@@ -8780,8 +8654,6 @@ GameObject:
   - component: {fileID: 2150122228102207166}
   - component: {fileID: 2221418960958869959}
   - component: {fileID: 4335382278290041665}
-  - component: {fileID: 9176094876498817091}
-  - component: {fileID: 3060015828633105640}
   - component: {fileID: 5208657439149501480}
   - component: {fileID: 4774920814156975839}
   - component: {fileID: 2134083596921260983}
@@ -8908,10 +8780,10 @@ MonoBehaviour:
   extrapolationTimeLimit: 5
   useExtrapolationDistanceLimit: 0
   extrapolationDistanceLimit: 20
-  sendPositionThreshold: 0
+  sendPositionThreshold: 0.1
   sendRotationThreshold: 0
   sendScaleThreshold: 0
-  sendVelocityThreshold: 0
+  sendVelocityThreshold: 0.1
   sendAngularVelocityThreshold: 0
   receivedPositionThreshold: 0
   receivedRotationThreshold: 0
@@ -8941,118 +8813,6 @@ MonoBehaviour:
   networkChannel: 
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 1
-  maxPositionDifferenceForVelocitySyncing: 10
-  useLocalTransformOnly: 0
-  ownerChangeIndicator: 1
-  receivedStatesCounter: 0
---- !u!114 &9176094876498817091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7585879278427072321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cca18b1aff5bb3e498b69d39cea4db5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  interpolationBackTime: 0.1
-  extrapolationMode: 1
-  useExtrapolationTimeLimit: 1
-  extrapolationTimeLimit: 5
-  useExtrapolationDistanceLimit: 0
-  extrapolationDistanceLimit: 20
-  sendPositionThreshold: 0
-  sendRotationThreshold: 0
-  sendScaleThreshold: 0
-  sendVelocityThreshold: 0
-  sendAngularVelocityThreshold: 0
-  receivedPositionThreshold: 0
-  receivedRotationThreshold: 0
-  snapPositionThreshold: 0
-  snapRotationThreshold: 0
-  snapScaleThreshold: 0
-  positionLerpSpeed: 0.85
-  rotationLerpSpeed: 0.85
-  scaleLerpSpeed: 0.85
-  timeCorrectionSpeed: 0.1
-  snapTimeThreshold: 3
-  syncPosition: 7
-  syncRotation: 4
-  syncScale: 7
-  syncVelocity: 7
-  syncAngularVelocity: 7
-  isPositionCompressed: 0
-  isRotationCompressed: 0
-  isScaleCompressed: 0
-  isVelocityCompressed: 0
-  isAngularVelocityCompressed: 0
-  automaticallyResetTime: 1
-  isSmoothingAuthorityChanges: 0
-  transformSource: 0
-  whenToUpdateTransform: 0
-  sendRate: 30
-  networkChannel: 
-  childObjectToSync: {fileID: 4131426305060130527}
-  setVelocityInsteadOfPositionOnNonOwners: 0
-  maxPositionDifferenceForVelocitySyncing: 10
-  useLocalTransformOnly: 0
-  ownerChangeIndicator: 1
-  receivedStatesCounter: 0
---- !u!114 &3060015828633105640
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7585879278427072321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cca18b1aff5bb3e498b69d39cea4db5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  interpolationBackTime: 0.1
-  extrapolationMode: 1
-  useExtrapolationTimeLimit: 1
-  extrapolationTimeLimit: 5
-  useExtrapolationDistanceLimit: 0
-  extrapolationDistanceLimit: 20
-  sendPositionThreshold: 0
-  sendRotationThreshold: 0
-  sendScaleThreshold: 0
-  sendVelocityThreshold: 0
-  sendAngularVelocityThreshold: 0
-  receivedPositionThreshold: 0
-  receivedRotationThreshold: 0
-  snapPositionThreshold: 0
-  snapRotationThreshold: 0
-  snapScaleThreshold: 0
-  positionLerpSpeed: 0.85
-  rotationLerpSpeed: 0.85
-  scaleLerpSpeed: 0.85
-  timeCorrectionSpeed: 0.1
-  snapTimeThreshold: 3
-  syncPosition: 7
-  syncRotation: 5
-  syncScale: 7
-  syncVelocity: 7
-  syncAngularVelocity: 7
-  isPositionCompressed: 0
-  isRotationCompressed: 0
-  isScaleCompressed: 0
-  isVelocityCompressed: 0
-  isAngularVelocityCompressed: 0
-  automaticallyResetTime: 1
-  isSmoothingAuthorityChanges: 0
-  transformSource: 0
-  whenToUpdateTransform: 0
-  sendRate: 30
-  networkChannel: 
-  childObjectToSync: {fileID: 8072888538017009645}
-  setVelocityInsteadOfPositionOnNonOwners: 0
   maxPositionDifferenceForVelocitySyncing: 10
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1
@@ -9522,7 +9282,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  loseRate: 50
+  loseRate: 20
   grounded: {fileID: 8967691956622427921}
   stamina: {fileID: 4325151636364509555}
 --- !u!1 &8072888538017009645
@@ -9670,7 +9430,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 2150122228102207166}
-  jumpHeightStat: {fileID: 11400000, guid: a058e893207a2db498eee6a360b79694, type: 2}
   jumpForce: 5
   jumpCooldown: 0.2
   jumpCoyoteTime: 0.1
@@ -9884,7 +9643,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  animManager: {fileID: 3112151402033593990}
   cam: {fileID: 56786652358893990}
   tiltMult: 0.5
   springConstant: 15

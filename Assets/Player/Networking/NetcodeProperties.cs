@@ -10,17 +10,17 @@ namespace Player.Networking
         protected override void StartOnlineNotOwner()
         {
             rb.useGravity = false;
-            gameObject.name = $"#b#redPlayer [{OwnerClientId}]";
+            gameObject.name = $"Player [{OwnerClientId}]";
         }
 
         protected override void StartOnlineOwner()
         {
-            gameObject.name = $"#b#blueMY Player [{OwnerClientId}]";
+            gameObject.name = $"MY Player [{OwnerClientId}]";
         }
 
         protected override void StartOffline()
         {
-            gameObject.name = $"#b#bluePlayer [OFFLINE]";
+            gameObject.name = "Player [OFFLINE]";
             MultiplayerDashboard.StartEnterGame += DisableObject;
             MultiplayerDashboard.FailedEnterGame += EnableObject;
         }

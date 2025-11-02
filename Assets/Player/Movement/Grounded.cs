@@ -15,7 +15,6 @@ namespace Player.Movement
 
 
         public bool IsGrounded { get; private set; } = true;
-        public NetworkVariable<bool> IsGroundedNet = new(true, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public RaycastHit GroundHit { get; private set; }
         public Quaternion WorldToLocalUp { get; private set; }
         public Quaternion LocalUpToWorld { get; private set; }
@@ -31,6 +30,11 @@ namespace Player.Movement
             CheckGrounded();
         }
 
+        protected override void UpdateOnlineNotOwner()
+        {
+            CheckGrounded();
+        }
+
         private Vector3 LocalUp()
         {
             if (IsGrounded) return GroundHit.normal;
@@ -41,8 +45,6 @@ namespace Player.Movement
             bool WasGrounded = IsGrounded;
             IsGrounded = Physics.Raycast(
                 transform.position, Vector3.down, out var hit, rayLength, groundMask);
-            if (IsOnline)
-                IsGroundedNet.Value = IsGrounded;
             GroundHit = hit;
 
             Vector3 localUp = LocalUp();

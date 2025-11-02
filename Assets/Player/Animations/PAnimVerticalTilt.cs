@@ -8,9 +8,8 @@ using UnityEngine;
 
 namespace Player.Model.Procedural_Anims
 {
-    public class PAnimVerticalTilt : PNetworkBehaviour
+    public class PAnimVerticalTilt : PAnimBehaviour
     {
-        [SerializeField] private PAnimManager animManager;
         private AnimComponent _animComponent = new() { Target = PAnimManager.Target.Body };
         
         [Header("References")]
@@ -30,13 +29,7 @@ namespace Player.Model.Procedural_Anims
 
         protected override void StartOnlineNotOwner()
         {
-            _currentTilt = GetTargetTilt();
-            animManager.AddAnim(_animComponent);
-        }
-
-        protected override void StartAnyOwner()
-        {
-            animManager.AddAnim(_animComponent);
+            _currentTilt = cam.LookDir.y;
         }
 
         private void Update()
@@ -48,15 +41,12 @@ namespace Player.Model.Procedural_Anims
 
         private void CalculateTilt()
         {
-            float targetTilt = GetTargetTilt();
+            float targetTilt = cam.LookDir.y;
             float force = Spring.CalculateSpringForce(_currentTilt, targetTilt , _currentVelocity, springConstant, dampingFactor);
             _currentVelocity += force * Time.fixedDeltaTime;
             _currentTilt += _currentVelocity * Time.fixedDeltaTime;
         }
         
-        private float GetTargetTilt()
-        {
-            return IsOnline && !IsOwner ? cam.lookTargetNet.Value.y : cam.LookTarget.y;
-        }
+        public override AnimComponent[] GetAnimComponents() => new[] {_animComponent};
     }
 }

@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace Player.Model.Procedural_Anims
 {
-    public class PAnimSpeedTilt : MonoBehaviour
+    public class PAnimSpeedTilt : PAnimBehaviour
     {
-        [SerializeField] private PAnimManager animManager;
         private AnimComponent _animComponent = new() { Target = PAnimManager.Target.Body };
         
         private Vector3 _previousPosition;
@@ -21,7 +20,6 @@ namespace Player.Model.Procedural_Anims
         private void Start()
         {
             _previousPosition = transform.position;
-            animManager.AddAnim(_animComponent);
         }
 
         private void CalculateTilt()
@@ -37,8 +35,10 @@ namespace Player.Model.Procedural_Anims
 
         private void Update()
         {
-            // CalculateTilt();
-            // _animComponent.Rotation = Quaternion.Euler(_currentTurn.y * tiltMultiplier, 0, 0);
+            CalculateTilt();
+            _animComponent.Rotation = Quaternion.Euler(_currentTurn.y * tiltMultiplier, 0, 0);
         }
+
+        public override AnimComponent[] GetAnimComponents() => new[] {_animComponent};
     }
 }

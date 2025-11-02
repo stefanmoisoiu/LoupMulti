@@ -22,8 +22,6 @@ namespace Game.Common
             return ItemRegistryIndex == ushort.MaxValue;
         }
 
-        public bool IsValid() => ItemRegistryIndex != ushort.MaxValue;
-
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref ItemRegistryIndex);

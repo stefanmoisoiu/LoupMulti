@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Player.Abilities
 {
-    public class Ability : PNetworkBehaviour
+    public abstract class Ability : PNetworkBehaviour
     {
         public OwnedItemData OwnedItemData { get; private set; }
         public ushort ItemRegistryIndex => OwnedItemData.ItemRegistryIndex;
@@ -19,16 +19,13 @@ namespace Player.Abilities
         public float Cooldown => _cooldown;
 
         private float _maxCooldown;
-        
-        private bool _abilityEnabled;
-        public bool AbilityEnabled => _abilityEnabled;
+
+        public bool AbilityEnabled { get; private set; }
+
         private bool _canUseAbility;
 
         private AbilitySlotUI _slotUI;
 
-        [Title("Events")]
-        public Action OnAbilityEnabledOwner;
-        public Action OnAbilityDisabledOwner;
         public Action OnAbilityUsedOwner;
         public Action OnAbilityAvailableOwner;
         public Action<bool> OnCanUseAbilityChangedOwner;
@@ -56,7 +53,7 @@ namespace Player.Abilities
             if (_cooldown <= 0)
             {
                 _cooldown = 0;
-                if (_abilityEnabled)
+                if (AbilityEnabled)
                 {
                     OnAbilityAvailableOwner?.Invoke();
                     UpdateCanUseAbilityFlag();
@@ -76,14 +73,12 @@ namespace Player.Abilities
                 
         public void EnableAbility(AbilitySlotUI ui)
         {
-            _abilityEnabled = true;
+            AbilityEnabled = true;
             
             _slotUI = ui;
             _slotUI.SetIcon(Item.Info.Icon);
             OnCanUseAbilityChangedOwner += _slotUI.CanUseAbilityChanged;
             
-            OnAbilityEnabledOwner?.Invoke();
-
             if (_cooldown <= 0)
             {
                 OnAbilityAvailableOwner?.Invoke();
@@ -94,7 +89,7 @@ namespace Player.Abilities
         
         public void DisableAbility()
         {
-            _abilityEnabled = false;
+            AbilityEnabled = false;
             
             if (_slotUI != null)
             {
@@ -104,7 +99,6 @@ namespace Player.Abilities
                 _slotUI = null;
             }
             
-            OnAbilityDisabledOwner?.Invoke();
             UpdateCanUseAbilityFlag();
         }
         
@@ -118,7 +112,7 @@ namespace Player.Abilities
             OnAbilityUsedOwner?.Invoke();
         }
                 
-        public virtual bool CanUseAbility() => _abilityEnabled && _cooldown <= 0;
+        public virtual bool CanUseAbility() => AbilityEnabled && _cooldown <= 0;
 
         public void ApplyCooldown(float newCooldown = float.MinValue, float maxCooldown = float.MinValue)
         {

@@ -27,8 +27,10 @@ namespace Player.Model.Procedural_Anims
         private AnimComponent _baseRightHand;
         
         private readonly List<AnimComponent> Anims = new();
-        public void AddAnim(AnimComponent anim) => Anims.Add(anim);
-        public void RemoveAnim(AnimComponent anim) => Anims.Remove(anim);
+        
+        private PAnimBehaviour[] _animBehaviours;
+        private void AddAnim(AnimComponent anim) => Anims.Add(anim);
+        private void RemoveAnim(AnimComponent anim) => Anims.Remove(anim);
         
         public enum Target
         {
@@ -72,6 +74,29 @@ namespace Player.Model.Procedural_Anims
         private void OnEnable()
         {
             InitializeBase();
+            
+            _animBehaviours = GetComponentsInChildren<PAnimBehaviour>();
+            foreach (PAnimBehaviour anim in _animBehaviours)
+            {
+                AnimComponent[] animComponents = anim.GetAnimComponents();
+                foreach (AnimComponent animComponent in animComponents)
+                {
+                    AddAnim(animComponent);
+                }
+            }
+        }
+
+        private void OnDisable()
+        {
+            foreach (PAnimBehaviour anim in _animBehaviours)
+            {
+                if (anim == null) continue;
+                AnimComponent[] animComponents = anim.GetAnimComponents();
+                foreach (AnimComponent animComponent in animComponents)
+                {
+                    RemoveAnim(animComponent);
+                }
+            }
         }
 
         private void Update()

@@ -144,6 +144,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 291534821936763137, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 291534821936763137, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -161,6 +166,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 628099667674837369, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 628099667674837369, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
@@ -224,6 +234,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 975265483900662936, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975265483900662936, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 975265483900662936, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 92.5
       objectReference: {fileID: 0}
@@ -270,6 +290,16 @@ PrefabInstance:
     - target: {fileID: 2063782589799060545, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063782589799060545, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2063782589799060545, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2063782589799060545, guid: 57a25852aa3254f488a9eb4414cac584,
@@ -479,6 +509,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3242245599626984902, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3242245599626984902, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3242245599626984902, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 92.5
       objectReference: {fileID: 0}
@@ -559,6 +599,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5682021978661585304, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5682021978661585304, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5682021978661585304, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 75
       objectReference: {fileID: 0}
@@ -590,6 +640,11 @@ PrefabInstance:
     - target: {fileID: 6571003305656418320, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6571003305656418320, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6571003305656418320, guid: 57a25852aa3254f488a9eb4414cac584,
@@ -725,6 +780,11 @@ PrefabInstance:
     - target: {fileID: 8446507801681274525, guid: 57a25852aa3254f488a9eb4414cac584,
         type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8446507801681274525, guid: 57a25852aa3254f488a9eb4414cac584,
+        type: 3}
+      propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8800020965888213842, guid: 57a25852aa3254f488a9eb4414cac584,
@@ -939,12 +999,12 @@ MonoBehaviour:
     EnableNetworkLogs: 1
     NetworkTopology: 0
     UseCMBService: 0
-    AutoSpawnPlayerPrefabClientSide: 1
+    AutoSpawnPlayerPrefabClientSide: 0
     NetworkMessageMetrics: 1
     NetworkProfilingMetrics: 1
     OldPrefabList: []
   RunInBackground: 1
-  LogLevel: 1
+  LogLevel: 2
 --- !u!4 &443578923
 Transform:
   m_ObjectHideFlags: 0
@@ -1186,6 +1246,78 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ae1e4b87b79693a45a79229b41506b86, type: 3}
+--- !u!1 &1726671388
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1726671390}
+  - component: {fileID: 1726671389}
+  m_Layer: 0
+  m_Name: Network Simulator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1726671389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726671388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98d9db9626104da59357651088226725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PresetAsset: {fileID: 0}
+  m_PresetReference:
+    rid: 2174417340539863151
+  m_Scenario:
+    rid: -2
+  m_IsScenarioSettingsFolded: 0
+  AutoRunScenario: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }
+    - rid: 2174417340539863151
+      type: {class: NetworkSimulatorPreset, ns: Unity.Multiplayer.Tools.NetworkSimulator.Runtime,
+        asm: Unity.Multiplayer.Tools.NetworkSimulator.Runtime}
+      data:
+        <Name>k__BackingField: 'Mobile 4.5G [4G+, LTE-A, ''16]'
+        <Description>k__BackingField: 'Suitable for synchronous multiplayer, except
+          that ping (and overall connection quality and stability) may be quite poor.
+
+
+          Expect
+          to handle players dropping all packets in bursts of 1-60s. I.e. Ensure
+          you handle reconnections.'
+        <PacketDelayMs>k__BackingField: 80
+        <PacketJitterMs>k__BackingField: 20
+        <PacketLossInterval>k__BackingField: 0
+        <PacketLossPercent>k__BackingField: 4
+--- !u!4 &1726671390
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726671388}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1871595839
 GameObject:
   m_ObjectHideFlags: 0
@@ -1500,3 +1632,4 @@ SceneRoots:
   - {fileID: 2125074023}
   - {fileID: 719409976}
   - {fileID: 1938748332}
+  - {fileID: 1726671390}
