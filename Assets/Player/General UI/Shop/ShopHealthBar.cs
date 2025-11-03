@@ -29,7 +29,7 @@ namespace Player.General_UI.Shop
             _buttonCanvasGroup = PCanvas.CanvasObjects[shopHealthBarButtonTag].GetComponent<CanvasGroup>();
             _buttonCanvasGroup.alpha = 1;
 
-            _lastShopOpenedHealth = GameSettings.Instance.PlayerMaxHealth;
+            _lastShopOpenedHealth = ushort.MaxValue;
             
             _shopHealthBarButton.onClick.AddListener(BuyHealth);
             
@@ -50,7 +50,8 @@ namespace Player.General_UI.Shop
         private void BuyHealth()
         {
             ushort health = DataManager.Instance[OwnerClientId].inGameData.health;
-            if (health >= GameSettings.Instance.PlayerMaxHealth)
+            ushort maxHealth = DataManager.Instance[OwnerClientId].inGameData.maxHealth;
+            if (health >= maxHealth)
             {
                 Debug.Log("Tried to buy health at max health.");
                 return;
@@ -60,7 +61,7 @@ namespace Player.General_UI.Shop
         private void HealthChanged(ushort previousHealth, ushort newHealth)
         {
             if (!GameManager.Instance.ShopManager.ShopOpened) return;
-            _healthBarEffect.UpdateHealthBar(previousHealth, newHealth, GameSettings.Instance.PlayerMaxHealth);
+            _healthBarEffect.UpdateHealthBar(previousHealth, newHealth, DataManager.Instance[OwnerClientId].inGameData.maxHealth);
         }
 
         private void ShopOpenedChanged(bool opened, ShopManager shopManager)
@@ -68,7 +69,10 @@ namespace Player.General_UI.Shop
             if (!opened) return;
 
             ushort health = DataManager.Instance[OwnerClientId].inGameData.health;
-            _healthBarEffect.UpdateHealthBar(_lastShopOpenedHealth, health, GameSettings.Instance.PlayerMaxHealth);
+            ushort maxHealth = DataManager.Instance[OwnerClientId].inGameData.maxHealth;
+            if (_lastShopOpenedHealth == ushort.MaxValue) _lastShopOpenedHealth = maxHealth;
+            
+            _healthBarEffect.UpdateHealthBar(_lastShopOpenedHealth, health, maxHealth);
             
             _lastShopOpenedHealth = health;
         }
@@ -78,7 +82,7 @@ namespace Player.General_UI.Shop
             InGameData igData = newData.inGameData;
             
             bool hasEnoughResources = igData.resources.HasEnough(ResourceType.Common, 1);
-            bool hasLifeToRestore = igData.health < GameSettings.Instance.PlayerMaxHealth;
+            bool hasLifeToRestore = igData.health < igData.maxHealth;
             
             SetBuyButtonEnabled(hasEnoughResources && hasLifeToRestore);
         }

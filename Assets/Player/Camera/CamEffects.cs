@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Networking;
-using Networking.Connection;
 using Player.Networking;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -23,7 +21,7 @@ namespace Player.Camera
 
         private void LateUpdate()
         {
-            if (!IsOwner && NetcodeManager.InGame) return;
+            if (!IsOwner && IsOnline) return;
             ApplyEffect(GetEffectTotal());
         }
         private Effect GetEffectTotal()

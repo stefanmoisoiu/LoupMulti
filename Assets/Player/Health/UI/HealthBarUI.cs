@@ -1,5 +1,6 @@
 ﻿using Game.Common;
 using Game.Common.CircularBar;
+using Game.Data;
 using Game.Data.Extensions;
 using Player.General_UI;
 using Player.Networking;
@@ -24,7 +25,12 @@ namespace Player.Health
 
         private void OnPlayerHealthChangedHealthChanged(ushort previousHealth, ushort newHealth)
         {
-            float newAdv = (float)newHealth / GameSettings.Instance.PlayerMaxHealth;
+            ushort maxHealth = GameSettings.Instance.PlayerMaxHealth;
+            if (DataManager.Instance != null &&
+                DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData playerData))
+                maxHealth = playerData.inGameData.maxHealth;
+
+            float newAdv = (float)newHealth / maxHealth;
             _healthBar.SetAdv(newAdv);
         }
     }

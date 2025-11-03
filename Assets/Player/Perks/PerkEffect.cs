@@ -13,19 +13,30 @@ namespace Player.Perks
         public OwnedItemData OwnedItemData { get; private set; }
         public Item Item { get; private set; }
         public PlayerReferences PlayerReferences { get; private set; }
-
-        public void UpdateInfo(OwnedItemData ownedItemData, PlayerReferences playerReferences)
+        
+        private void Awake()
         {
-            PlayerReferences = playerReferences;
+            PlayerReferences ??= GetComponentInParent<PlayerReferences>();
+        }
+
+        public void UpdateInfo(OwnedItemData ownedItemData)
+        {
             OwnedItemData = ownedItemData;
             Item = ItemRegistry.Instance.GetItem(ownedItemData.ItemRegistryIndex);
         }
 
+        /// <summary>
+        /// Enables the perk on OWNER & SERVER ! (Called only once if both)
+        /// </summary>
         public abstract void EnablePerk();
+        /// <summary>
+        /// Disables the perk on OWNER & SERVER ! (Called only once if both)
+        /// </summary>
         public abstract void DisablePerk();
 
         public void SetPerkEnabled(bool value)
         {
+            if (PerkEnabled == value) return;
             PerkEnabled = value;
             if (PerkEnabled) EnablePerk();
             else DisablePerk();

@@ -1,4 +1,5 @@
-﻿using Sirenix.OdinInspector;
+﻿using Base_Scripts;
+using Sirenix.OdinInspector;
 using UnityEngine;
 namespace Game.Common
 {
@@ -16,5 +17,6 @@ namespace Game.Common
         public bool allowUpgrades = true;
         [InfoBox("One of the choices will be an ability, if the player does not own all his abilities")]
         public bool forceActiveIfNotMax = false;
+        [SerializeField] private WeightedProbabilitySelector<ObjectRarity> customRarityProbability;
     }
 }

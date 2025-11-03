@@ -138,12 +138,18 @@ namespace Player.Model.Procedural_Anims
             {
                 case ApplyType.Add:
                     target.localPosition += c.Position;
-                    target.localRotation *= c.Rotation;
+                    if (c.IsLocal)
+                        target.localRotation *= c.Rotation;
+                    else
+                        target.rotation *= c.Rotation;
                     target.localScale = Vector3.Scale(target.localScale, c.Scale);
                     break;
                 case ApplyType.Base:
                     target.localPosition = c.Position;
-                    target.localRotation = c.Rotation;
+                    if (c.IsLocal)
+                        target.localRotation = c.Rotation;
+                    else
+                        target.rotation = c.Rotation;
                     target.localScale = Vector3.Scale(target.localScale, c.Scale);
                     break;
             }

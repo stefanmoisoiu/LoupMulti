@@ -1,9 +1,10 @@
 using System;
+using Player.Networking;
 using UnityEngine;
 
 namespace Player.Camera.Effects
 {
-    public class HeadTurnTilt : MonoBehaviour
+    public class HeadTurnTilt : PNetworkBehaviour
     {
         [SerializeField] private Rigidbody rb;
     
@@ -16,18 +17,18 @@ namespace Player.Camera.Effects
         private CamEffects.Effect _effect = new();
 
         [SerializeField] private PCamera cam;
-    
-        private void OnEnable()
+
+        protected override void StartAnyOwner()
         {
             CamEffects.Effects.Add(_effect);
         }
 
-        private void OnDisable()
+        protected override void DisableAnyOwner()
         {
             CamEffects.Effects.Remove(_effect);
         }
 
-        private void Update()
+        protected override void UpdateAnyOwner()
         {
             Tilt();
         }

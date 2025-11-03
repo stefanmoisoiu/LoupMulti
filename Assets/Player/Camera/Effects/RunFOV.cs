@@ -1,10 +1,11 @@
 using Input;
 using Player.Movement;
+using Player.Networking;
 using UnityEngine;
 
 namespace Player.Camera.Effects
 {
-    public class RunFOV : MonoBehaviour
+    public class RunFOV : PNetworkBehaviour
     {
         [SerializeField] private float addedFov;
         [SerializeField] private float fovLerpSpeed;
@@ -14,12 +15,21 @@ namespace Player.Camera.Effects
         private float _fov = 0;
 
         [SerializeField] private Run run;
-    
-        private void Start()
+
+        protected override void StartAnyOwner()
         {
             CamEffects.Effects.Add(_effect);
-            run.OnRun += () => _targetFov = addedFov;
-            run.OnStopRun += () => _targetFov = 0;
+            run.OnRun += SetRunFOV;
+            run.OnStopRun += StopRunFOV;
+        }
+        private void SetRunFOV() => _targetFov = addedFov;
+        private void StopRunFOV() => _targetFov = 0;
+        
+        protected override void DisableAnyOwner()
+        {
+            CamEffects.Effects.Remove(_effect);
+            run.OnRun -= SetRunFOV;
+            run.OnStopRun -= StopRunFOV;
         }
 
         private void Update()

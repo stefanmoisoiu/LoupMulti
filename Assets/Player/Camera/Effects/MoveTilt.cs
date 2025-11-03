@@ -1,9 +1,10 @@
 using Player.Movement;
+using Player.Networking;
 using UnityEngine;
 
 namespace Player.Camera.Effects
 {
-    public class MoveTilt : MonoBehaviour
+    public class MoveTilt : PNetworkBehaviour
     {
         [SerializeField] private float tiltLerpSpeed = 1;
     
@@ -19,12 +20,16 @@ namespace Player.Camera.Effects
         [SerializeField] private Rigidbody rb;
         [SerializeField] private Grounded grounded;
 
-        private void Start()
+        protected override void StartAnyOwner()
         {
             CamEffects.Effects.Add(_effect);
         }
+        protected override void DisableAnyOwner()
+        {
+            CamEffects.Effects.Remove(_effect);
+        }
 
-        private void Update()
+        protected override void UpdateAnyOwner()
         {
             Tilt();
         }

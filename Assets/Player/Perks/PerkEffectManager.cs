@@ -31,13 +31,32 @@ namespace Player.Perks
             }
         }
 
+        protected override void StartOnlineServer()
+        {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
+            
+            DataManager.OnEntryUpdatedClient += OnPlayerDataUpdated;
+            
+            if (DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData initialData))
+            {
+                OnPlayerDataUpdated(default, initialData);
+            }
+        }
+
         protected override void DisableAnyOwner()
         {
             DataManager.OnEntryUpdatedOwner -= OnPlayerDataUpdated;
         }
-        
+
+        protected override void DisableOnlineServer()
+        {
+            DataManager.OnEntryUpdatedClient -= OnPlayerDataUpdated;
+        }
+
         private void OnPlayerDataUpdated(PlayerData previousData, PlayerData newData)
         {
+            if (newData.clientId != OwnerClientId) return;
+            
             UpdateAppliedPerks(newData.inGameData.GetAllPerks());
         }
 
@@ -64,7 +83,7 @@ namespace Player.Perks
                 }
                 else
                 {
-                    perkEffect.UpdateInfo(serverPerks.Find(x => x.ItemRegistryIndex == itemRegistryIndex), _playerReferences);
+                    perkEffect.UpdateInfo(ownedPerkData);
                     perkEffect.SetPerkEnabled(true);
                 }
             }

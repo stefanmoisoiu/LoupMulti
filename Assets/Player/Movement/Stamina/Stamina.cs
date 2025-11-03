@@ -31,7 +31,7 @@ namespace Player.Movement.Stamina
         private void TryRecoverStamina()
         {
             if (run.Running) return;
-            float recoverAmount = StatManager.GetStat(StatType.StaminaRecoverySpeed).GetValue(staminaRecoveryRate) * Time.deltaTime;
+            float recoverAmount = staminaRecoveryRate * Time.deltaTime;
             IncreaseStamina(recoverAmount);
         }
 

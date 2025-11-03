@@ -29,8 +29,9 @@ namespace Game.Common
             {
                 newEquippedArray[i] = OwnedItemData.Empty; // Pré-remplir avec "Vide"
             }
-    
+
             inGameData = new InGameData(
+                maxHealth: GameSettings.Instance.PlayerMaxHealth,
                 health: ushort.MaxValue,
                 rerolls: ushort.MaxValue,
                 ownedItems: new List<OwnedItemData>(),

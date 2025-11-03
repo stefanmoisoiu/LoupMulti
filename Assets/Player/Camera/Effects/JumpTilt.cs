@@ -2,12 +2,13 @@ using System.Collections;
 using Networking;
 using Networking.Connection;
 using Player.Movement;
+using Player.Networking;
 using Unity.Netcode;
 using UnityEngine;
 
 namespace Player.Camera.Effects
 {
-    public class JumpTilt : NetworkBehaviour
+    public class JumpTilt : PNetworkBehaviour
     {
         [SerializeField] private float tiltAmount;
         [SerializeField] private AnimationCurve tiltCurve;
@@ -22,29 +23,17 @@ namespace Player.Camera.Effects
     
         [SerializeField] private Jump jump;
 
-        private void Start()
+        protected override void StartAnyOwner()
         {
+            jump.OnJump += StartJumpTilt;
             CamEffects.Effects.Add(_effect);
         }
 
-        public override void OnNetworkSpawn()
-        {
-            base.OnNetworkSpawn();
-            if (!IsOwner) return;
-            jump.OnJump += StartJumpTilt;
-        }
-
-        private void OnEnable()
-        {
-            if (NetcodeManager.InGame) return;
-            jump.OnJump += StartJumpTilt;
-        }
-
-        private void OnDisable()
+        protected override void DisableAnyOwner()
         {
             jump.OnJump -= StartJumpTilt;
+            CamEffects.Effects.Remove(_effect);
         }
-
         private void StartJumpTilt()
         {
             if (_jumpTilt != null) StopCoroutine(_jumpTilt);
@@ -58,12 +47,10 @@ namespace Player.Camera.Effects
                 t += Time.deltaTime;
                 float p = t / length;
                 _tilt = tiltAmount * tiltCurve.Evaluate(p);
-                // headJumpTilt.localRotation = Quaternion.Euler(_tilt, 0, 0);
                 _effect.Tilt.x = _tilt;
                 yield return null;
             }
             _tilt = 0;
-            // headJumpTilt.localRotation = Quaternion.Euler(0, 0, 0);
             _effect.Tilt.x = 0;
         }
     }

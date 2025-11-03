@@ -38,7 +38,7 @@ public class NetworkPooledTextPopup : NetworkBehaviour
         popupTextPool = new TextPopupInstance[poolSize];
         for (int i = 0; i < poolSize; i++)
         {
-            popupPool[i] = Instantiate(popupPrefab, transform);
+            popupPool[i] = Instantiate(popupPrefab, Vector3.zero, Quaternion.identity);
             DontDestroyOnLoad(popupPool[i]);
             popupTextPool[i] = popupPool[i].GetComponent<TextPopupInstance>();
             popupPool[i].SetActive(false);

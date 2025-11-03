@@ -23,12 +23,16 @@ namespace Player.Perks.QuickDrill
         public override void EnablePerk()
         {
             PlayerReferences.PlayerEventHub.OnDrillUsed += OnDrillUsedOwner;
-            InputManager.OnDrillUse += TryHitWeakPoint;
+            
+            if (IsOwner)
+                InputManager.OnDrillUse += TryHitWeakPoint;
         }
         public override void DisablePerk()
         {
             PlayerReferences.PlayerEventHub.OnDrillUsed -= OnDrillUsedOwner;
-            InputManager.OnDrillUse -= TryHitWeakPoint;
+            
+            if (IsOwner)
+                InputManager.OnDrillUse -= TryHitWeakPoint;
         }
 
         private void OnDrillUsedOwner(Targetable target)

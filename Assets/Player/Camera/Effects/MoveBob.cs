@@ -1,10 +1,11 @@
 using Input;
 using Player.Movement;
+using Player.Networking;
 using UnityEngine;
 
 namespace Player.Camera.Effects
 {
-    public class MoveBob : MonoBehaviour
+    public class MoveBob : PNetworkBehaviour
     {
         [SerializeField] private AnimationCurve bobCurve;
         [SerializeField] private float amplitude;
@@ -27,18 +28,22 @@ namespace Player.Camera.Effects
         [SerializeField] private Grounded grounded;
         [SerializeField] private FreezePlayer freezePlayer;
 
-        private void Start()
+        protected override void StartAnyOwner()
         {
             CamEffects.Effects.Add(_effect);
         }
 
-        private void Update()
+        protected override void DisableAnyOwner()
         {
-        
+            CamEffects.Effects.Remove(_effect);
+        }
+
+        protected override void UpdateAnyOwner()
+        {
             _effect.AddedPosition.y = Mathf.Lerp(_effect.AddedPosition.y, GetBob(), lerpBackSpeed * Time.deltaTime);
             _effect.Tilt.z = Mathf.Lerp(_effect.Tilt.z, GetHBob(), lerpBackSpeed * Time.deltaTime);
         }
-
+        
         private float GetBob()
         {
             if (CanBob())

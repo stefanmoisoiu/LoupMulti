@@ -66,7 +66,6 @@ namespace Player.General_UI.Shop
 
         public Sprite GetMainIcon()
         {
-            return null;
             return _item.Info.Icon;
         }
 

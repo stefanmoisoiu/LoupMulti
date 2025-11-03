@@ -8,6 +8,7 @@ using UnityEngine;
 [Serializable]
 public struct InGameData : INetworkSerializable, IEquatable<InGameData>
 {
+    public ushort maxHealth;
     public ushort health;
     public List<OwnedItemData> ownedItems;
     public OwnedItemData[] equippedAbilities;
@@ -17,8 +18,9 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
     {
-        serializer.SerializeValue(ref resources);
+        serializer.SerializeValue(ref maxHealth);
         serializer.SerializeValue(ref health);
+        serializer.SerializeValue(ref resources);
         serializer.SerializeValue(ref rerollsAvailable);
         serializer.SerializeValue(ref ownedDrillData);
 
@@ -40,13 +42,14 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
         }
     }
 
-    public InGameData(ushort health, ushort rerolls, List<OwnedItemData> ownedItems, OwnedItemData ownedDrillData, OwnedItemData[] equippedAbilities, OwnedResourcesData resources)
+    public InGameData(ushort maxHealth, ushort health, ushort rerolls, List<OwnedItemData> ownedItems, OwnedItemData ownedDrillData, OwnedItemData[] equippedAbilities, OwnedResourcesData resources)
     {
-        if (health == ushort.MaxValue) health = GameSettings.Instance.PlayerMaxHealth;
-        if (health > GameSettings.Instance.PlayerMaxHealth) health = GameSettings.Instance.PlayerMaxHealth;
+        if (health == ushort.MaxValue) health = maxHealth;
+        if (health > maxHealth) health = maxHealth;
         
         if (rerolls == ushort.MaxValue) rerolls = GameSettings.Instance.StartingRerolls;
         
+        this.maxHealth = maxHealth;
         this.health = health;
         this.rerollsAvailable = rerolls;
         this.ownedItems = ownedItems;
@@ -57,6 +60,7 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
 
     public InGameData(InGameData copy)
     {
+        maxHealth = copy.maxHealth;
         health = copy.health;
         rerollsAvailable = copy.rerollsAvailable;
         resources = copy.resources;
@@ -72,9 +76,23 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
     }
 
     public InGameData SetResources(OwnedResourcesData newResources) { resources = newResources; return this; }
+
+    public InGameData AddMaxHealth(ushort amount)
+    {
+        maxHealth += amount;
+        health += amount;
+        return this;
+    }
+
+    public InGameData RemoveMaxHealth(ushort amount)
+    {
+        maxHealth -= amount;
+        health -= amount;
+        return this;
+    }
     public InGameData AddHealth(ushort amount)
     {
-        health = (ushort)Mathf.Min(GameSettings.Instance.PlayerMaxHealth, health + amount);
+        health = (ushort)Mathf.Min(maxHealth, health + amount);
         return this;
     }
     public InGameData RemoveHealth(ushort amount)
@@ -82,7 +100,7 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
         health = (ushort)Mathf.Max(0, health - amount);
         return this;
     }
-    public InGameData ResetHealth() { health = GameSettings.Instance.PlayerMaxHealth; return this; }
+    public InGameData FullyHeal() { health = maxHealth; return this; }
     public bool IsAlive() => health > 0;
     
     public InGameData UseReroll()
@@ -201,6 +219,7 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
 
     public bool Equals(InGameData other)
     {
+        if (maxHealth != other.maxHealth) return false;
         if (health != other.health) return false;
         if (!resources.Equals(other.resources)) return false;
         if (rerollsAvailable != other.rerollsAvailable) return false;
@@ -219,12 +238,12 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
     {
          int listHash = 0;
          if (ownedItems != null)
-             foreach (var item in ownedItems) listHash ^= item.GetHashCode();
+             foreach (OwnedItemData item in ownedItems) listHash ^= item.GetHashCode();
          
          int equippedHash = 0;
          if(equippedAbilities != null)
-             foreach (var item in equippedAbilities) equippedHash ^= item.GetHashCode();
+             foreach (OwnedItemData item in equippedAbilities) equippedHash ^= item.GetHashCode();
              
-         return HashCode.Combine(health, resources, listHash, equippedHash, ownedDrillData, rerollsAvailable);
+         return HashCode.Combine(maxHealth, health, resources, listHash, equippedHash, ownedDrillData, rerollsAvailable);
     }
 }

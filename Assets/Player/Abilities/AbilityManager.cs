@@ -53,6 +53,19 @@ namespace Player.Abilities
             }
         }
 
+        protected override void StartOnlineServer()
+        {
+            _playerReferences = GetComponentInParent<PlayerReferences>();
+            _abilitySlots = new Ability[AbilitySlotCount];
+        
+            DataManager.OnEntryUpdatedClient += OnPlayerDataUpdated;
+            
+            if (DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData initialData))
+            {
+                OnPlayerDataUpdated(default, initialData);
+            }
+        }
+
         protected override void DisableOnlineOwner()
         {
             InputManager.OnDrillUse -= TryUseDrill;
@@ -60,8 +73,15 @@ namespace Player.Abilities
             DataManager.OnEntryUpdatedOwner -= OnPlayerDataUpdated;
         }
 
+        protected override void DisableOnlineServer()
+        {
+            DataManager.OnEntryUpdatedClient -= OnPlayerDataUpdated;
+        }
+
         private void OnPlayerDataUpdated(PlayerData previousData, PlayerData newData)
         {
+            if (newData.clientId != OwnerClientId) return;
+            
             UpdateDrill(newData.inGameData.ownedDrillData);
             UpdateEquippedAbilities(newData.inGameData.equippedAbilities);
         }
@@ -74,12 +94,12 @@ namespace Player.Abilities
             {
                 Item item = ItemRegistry.Instance.GetItem(drillData.ItemRegistryIndex);
                 _drillSlot = GetAbilityPrefab(item);
-                _drillSlot.UpdateInfo(drillData, _playerReferences);
+                _drillSlot.UpdateInfo(drillData);
                 _drillSlot.EnableAbility(drillUISlot);
             }
             else
             {
-                _drillSlot.UpdateInfo(drillData, _playerReferences);
+                _drillSlot.UpdateInfo(drillData);
             }
         }
 
@@ -100,7 +120,7 @@ namespace Player.Abilities
                 {
                     if (localAbility != null && localAbility.ItemRegistryIndex == serverItemData.ItemRegistryIndex)
                     {
-                        localAbility.UpdateInfo(serverItemData, _playerReferences);
+                        localAbility.UpdateInfo(serverItemData);
                     }
                     else
                     {
@@ -108,7 +128,7 @@ namespace Player.Abilities
                         Item item = ItemRegistry.Instance.GetItem(serverItemData.ItemRegistryIndex);
                         Ability newAbility = GetAbilityPrefab(item);
                         
-                        newAbility.UpdateInfo(serverItemData, _playerReferences);
+                        newAbility.UpdateInfo(serverItemData);
                         newAbility.EnableAbility(slotUI);
                         
                         _abilitySlots[i] = newAbility;

@@ -29,10 +29,14 @@ namespace Player.Abilities
         public Action OnAbilityUsedOwner;
         public Action OnAbilityAvailableOwner;
         public Action<bool> OnCanUseAbilityChangedOwner;
-        
-        public void UpdateInfo(OwnedItemData ownedItemData, PlayerReferences playerReferences)
+
+        private void Awake()
         {
-            PlayerReferences = playerReferences;
+            PlayerReferences ??= GetComponentInParent<PlayerReferences>();
+        }
+
+        public void UpdateInfo(OwnedItemData ownedItemData)
+        {
             OwnedItemData = ownedItemData;
             Item = ItemRegistry.Instance.GetItem(ownedItemData.ItemRegistryIndex);
         }
@@ -116,7 +120,8 @@ namespace Player.Abilities
 
         public void ApplyCooldown(float newCooldown = float.MinValue, float maxCooldown = float.MinValue)
         {
-            _maxCooldown = maxCooldown == float.MinValue ? Item.AbilityData.BaseCooldown : Mathf.Max(0, maxCooldown);
+            _maxCooldown = (maxCooldown == float.MinValue ? Item.AbilityData.BaseCooldown : Mathf.Max(0, maxCooldown)) / PlayerReferences.StatManager.GetStat(StatType.CooldownSpeed).GetValue(1);
+            
             _cooldown = newCooldown == float.MinValue ? _maxCooldown : Mathf.Clamp(newCooldown, 0, _maxCooldown);
             _slotUI?.UpdateCooldownDisplay(_cooldown, _maxCooldown);
             UpdateCanUseAbilityFlag();

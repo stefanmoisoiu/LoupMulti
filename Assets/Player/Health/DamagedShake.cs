@@ -1,5 +1,6 @@
 ﻿using Base_Scripts;
 using Game.Common;
+using Game.Data;
 using Player.Camera.Effects;
 using Player.Networking;
 using UnityEngine;
@@ -27,7 +28,13 @@ namespace Player.Health
         {
             if (newHealth >= previousHealth) return;
             float healthLost = previousHealth - newHealth;
-            float adv = healthLost / GameSettings.Instance.PlayerMaxHealth;
+
+            ushort maxHealth = GameSettings.Instance.PlayerMaxHealth;
+            if (DataManager.Instance != null &&
+                DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData playerData))
+                maxHealth = playerData.inGameData.maxHealth;
+            
+            float adv = healthLost / maxHealth;
             Shake.ShakeSettings settings = new Shake.ShakeSettings(
                 shakeSettings.Duration, 
                 shakeSettings.Amplitude,

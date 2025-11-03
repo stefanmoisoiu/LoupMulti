@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Base_Scripts;
+using Player.Networking;
 using UnityEngine;
 
 namespace Player.Camera.Effects
 {
-    public class CamShake : MonoBehaviour
+    public class CamShake : PNetworkBehaviour
     {
         private CamEffects.Effect _effect = new();
         [SerializeField] private Shake shake;
@@ -18,18 +19,17 @@ namespace Player.Camera.Effects
         {
             shake.RemoveShake(settings);
         }
-        
-        private void OnEnable()
+
+        protected override void StartAnyOwner()
         {
             CamEffects.Effects.Add(_effect);
         }
-        
-        private void OnDisable()
+        protected override void DisableAnyOwner()
         {
             CamEffects.Effects.Remove(_effect);
         }
 
-        private void Update()
+        protected override void UpdateAnyOwner()
         {
             shake.Update(Time.deltaTime);
             _effect.AddedPosition = shake.GetShake2D();

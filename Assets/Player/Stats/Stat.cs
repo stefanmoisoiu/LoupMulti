@@ -11,7 +11,8 @@ public class Stat
 
     // Cache pour l'optimisation
     private bool _isDirty = true;
-    private float _cachedValue;
+    private float _cachedFlat;
+    private float _cachedMult;
 
     /// <summary>
     /// Ajoute un nouveau modificateur à cette stat.
@@ -39,12 +40,9 @@ public class Stat
     /// </summary>
     public float GetValue(float baseValue)
     {
-        if (!_isDirty)
-        {
-            return _cachedValue;
-        }
+        if (!_isDirty) return GetCachedValue(baseValue);
 
-        float finalFlat = baseValue;
+        float finalFlat = 0;
         float sumOfBuffs = 0;   // Pour les Additive > 0
         float sumOfDebuffs = 0; // Pour les Additive < 0
 
@@ -69,9 +67,11 @@ public class Stat
         }
         
         // Formule : (Base + Flats) * ( (1 + Buffs) / (1 + Debuffs) )
-        _cachedValue = finalFlat * ((1 + sumOfBuffs) / (1 + sumOfDebuffs));
+        _cachedFlat = finalFlat;
+        _cachedMult = (1 + sumOfBuffs) / (1 + sumOfDebuffs);
         _isDirty = false;
         
-        return _cachedValue;
+        return GetCachedValue(baseValue);
     }
+    private float GetCachedValue(float baseValue) => (baseValue + _cachedFlat) * _cachedMult;
 }

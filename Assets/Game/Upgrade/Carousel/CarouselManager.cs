@@ -261,11 +261,9 @@ namespace Game.Upgrade.Carousel
             if (mustForceActiveCheck && pools.NewAbilities.Count > 0)
             {
                 Item forcedItem = SelectItemByRarity(pools.NewAbilities);
-                if (forcedItem != null)
-                {
-                    finalChoices.Add(new CarouselOption(CarouselOption.OptionType.NewAbilty, ItemRegistry.Instance.GetItem(forcedItem)));
-                    pools.NewAbilities.Remove(forcedItem);
-                }
+                if (forcedItem == null) return;
+                finalChoices.Add(new CarouselOption(CarouselOption.OptionType.NewAbilty, ItemRegistry.Instance.GetItem(forcedItem)));
+                pools.NewAbilities.Remove(forcedItem);
             }
         }
         
@@ -343,10 +341,7 @@ namespace Game.Upgrade.Carousel
                 availableItems.Select(item => item.Info.Rarity)
             );
 
-            List<WeightedProbabilitySelector<ObjectRarity>.WeightedOutcome> validRarityWeights =
-                rarityProbability.GetAllOutcomes()
-                    .Where(outcome => availableRarities.Contains(outcome.Outcome) && outcome.Weight > 0)
-                    .ToList();
+            List<WeightedProbabilitySelector<ObjectRarity>.WeightedOutcome> validRarityWeights = rarityProbability.GetAllOutcomes();
 
             ObjectRarity chosenRarity;
 
@@ -367,7 +362,7 @@ namespace Game.Upgrade.Carousel
             if (finalPool.Count == 0)
             {
                  Debug.LogError($"[CarouselManager] Rarity selection failed. Final pool for {chosenRarity} was empty. Returning first available item.");
-                 return availableItems[0];
+                 return null;
             }
 
             int ind = Random.Range(0, finalPool.Count);

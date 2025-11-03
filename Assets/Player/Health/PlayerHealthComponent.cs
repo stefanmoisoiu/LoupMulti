@@ -79,7 +79,7 @@ namespace Player.Health
                 Debug.Log($"Player {OwnerClientId} is dead. Ignoring heal.");
                 return;
             }
-            if (playerData.inGameData.health >= GameSettings.Instance.PlayerMaxHealth)
+            if (playerData.inGameData.health >= playerData.inGameData.maxHealth)
             {
                 Debug.Log($"Player {OwnerClientId} is already at max health. Ignoring heal.");
                 return;
@@ -94,13 +94,14 @@ namespace Player.Health
 
         public ushort GetHealth()
         {
-            if (DataManager.Instance == null) return GameSettings.Instance.PlayerMaxHealth;
-            return DataManager.Instance[OwnerClientId].inGameData.health;
+            if (DataManager.Instance == null || !DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData playerData)) return GameSettings.Instance.PlayerMaxHealth;
+            return playerData.inGameData.health;
         }
         
         public ushort GetMaxHealth()
         {
-            return GameSettings.Instance.PlayerMaxHealth;
+            if (DataManager.Instance == null || !DataManager.Instance.TryGetValue(OwnerClientId, out PlayerData playerData)) return GameSettings.Instance.PlayerMaxHealth;
+            return playerData.inGameData.maxHealth;
         }
     }
 }

@@ -6,6 +6,7 @@ using Game.Data;
 using Input;
 using Player.Networking;
 using Player.Stats;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -18,7 +19,6 @@ namespace Player.Movement
         [SerializeField] private Rigidbody rb;
         
         private PlayerReferences _playerReferences;
-        private StatManager StatManager => _playerReferences.StatManager;
         
         
         
@@ -49,21 +49,29 @@ namespace Player.Movement
             InitializePID();
         }
 
+        
         private void InitializePID()
         {
-            pidX = new PIDController(Kp, Ki, Kd);
-            pidZ = new PIDController(Kp, Ki, Kd);
+            pidX ??= new PIDController(Kp, Ki, Kd);
+            pidZ ??= new PIDController(Kp, Ki, Kd);
+
+            pidX.Kp = Kp;
+            pidZ.Kp = Kp;
+            pidX.Ki = Ki;
+            pidZ.Ki = Ki;
+            pidX.Kd = Kd;
+            pidZ.Kd = Kd;
         }
         public float GetMaxSpeed()
         {
             float maxSpeed = maxWalkSpeed;
             if (run.Running) maxSpeed += maxRunSpeed - maxWalkSpeed;
-            return StatManager.GetStat(StatType.MoveSpeed).GetValue(maxSpeed);
+            return _playerReferences == null ? maxSpeed : _playerReferences.StatManager.GetStat(StatType.MoveSpeed).GetValue(maxSpeed);
         }
         
         private float GetAcceleration()
         {
-            float accel = StatManager.GetStat(StatType.MoveSpeed).GetValue(acceleration);
+            float accel = _playerReferences == null ? acceleration : _playerReferences.StatManager.GetStat(StatType.MoveSpeed).GetValue(acceleration);
             if (!grounded.FullyGrounded()) accel *= airAccelMultiplier;
             return accel;
         }
@@ -76,6 +84,7 @@ namespace Player.Movement
 
         private void HandleMovement(Vector2 input)
         {
+            // InitializePID();
             if (DataManager.Instance != null && DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
                 OuterData.PlayingState.SpectatingGame) return;
             
@@ -93,7 +102,7 @@ namespace Player.Movement
             
             Vector3 slideDir = Vector3.Cross(groundNormalRight, grounded.GroundHit.normal).normalized;
             Vector3 force = slideDir * slideForce;
-            rb.AddForce(force, ForceMode.Acceleration);
+            rb.AddForce(force);
             
             Debug.DrawRay(transform.position, groundNormalRight, Color.green);
             Debug.DrawRay(transform.position, slideDir * 5, Color.blue);
