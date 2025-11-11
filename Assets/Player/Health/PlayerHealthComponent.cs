@@ -2,6 +2,7 @@
 using Game.Data;
 using Game.Data.Extensions;
 using Game.Game_Loop;
+using Player.Stats;
 using Sirenix.OdinInspector;
 
 namespace Player.Health
@@ -12,10 +13,12 @@ namespace Player.Health
 
     public class PlayerHealthComponent : NetworkBehaviour, IDamageable, IHealable, IHealth
     {
+        private PlayerReferences _playerReferences;
         public event Action<ushort, ushort> OnHealthChanged;
 
         private void OnEnable()
         {
+            _playerReferences ??= GetComponentInParent<PlayerReferences>();
             PlayerHealthHelper.OnPlayerHealthChangedServer += CheckHealthChangedServer;
         }
 
@@ -41,6 +44,10 @@ namespace Player.Health
         {
             if (tick > GameTickManager.CurrentTick)
                 throw new Exception($"Tick {tick} is greater than current tick {GameTickManager.CurrentTick}");
+
+            info.DamageAmount = (ushort)Mathf.CeilToInt(info.DamageAmount * 100f /
+                                                        _playerReferences.StatManager.GetStat(StatType.Armor)
+                                                            .GetValue(100));
             
             PlayerData playerData = DataManager.Instance[OwnerClientId];
             
@@ -50,7 +57,7 @@ namespace Player.Health
                 return;
             }
             
-            playerData.inGameData = playerData.inGameData.RemoveHealth(info.DamageAmount);
+            playerData.inGameData = playerData.inGameData.Damage(info.DamageAmount);
             DataManager.Instance[OwnerClientId] = playerData;
             
             TakeDamageClientRpc(info.DamageAmount);
@@ -85,7 +92,7 @@ namespace Player.Health
                 return;
             }
             
-            playerData.inGameData = playerData.inGameData.AddHealth(info.HealAmount);
+            playerData.inGameData = playerData.inGameData.Heal(info.HealAmount);
             DataManager.Instance[OwnerClientId] = playerData;
             
             OnHealedClientRpc(info.HealAmount);

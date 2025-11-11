@@ -29,8 +29,6 @@ namespace Player.Movement
         private float _jumpBuffer;
 
         [SerializeField] private float jumpStaminaCost = 0;
-    
-    
         private float _jumpAdv;
 
         // [SerializeField] private float jumpStaminaCost = 10f;
@@ -107,7 +105,7 @@ namespace Player.Movement
         }
 
         private bool CanJump() => !JumpCooldown &&
-                                  (grounded.IsGrounded || _jumpCoyote >= 0) &&
+                                  ((grounded.IsGrounded && grounded.GroundAngleValid()) || _jumpCoyote >= 0) &&
                                   stamina.StaminaValue >= jumpStaminaCost;
     }
 }

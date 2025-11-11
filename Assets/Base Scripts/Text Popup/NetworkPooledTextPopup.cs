@@ -48,10 +48,10 @@ public class NetworkPooledTextPopup : NetworkBehaviour
     private void Delete()
     {
         if (popupPool == null) return;
-        for (int i = 0; i < popupPool.Length; i++)
+        foreach (GameObject popup in popupPool)
         {
-            if (popupPool[i] != null)
-                Destroy(popupPool[i].transform.parent.gameObject);
+            if (popup != null && popup.transform.parent != null)
+                Destroy(popup.transform.parent.gameObject);
         }
         popupPool = null;
         popupTextPool = null;

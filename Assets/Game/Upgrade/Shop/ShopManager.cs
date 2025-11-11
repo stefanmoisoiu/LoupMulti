@@ -91,7 +91,7 @@ namespace Game.Upgrade.Shop
                 return;
             }
 
-            ingData = ingData.AddHealth(healAmount);
+            ingData = ingData.Heal(healAmount);
             ingData = new(ingData)
             {
                 resources = ingData.resources.RemoveResource(ResourceType.Common, cost)

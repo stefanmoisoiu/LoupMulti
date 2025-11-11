@@ -640,8 +640,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hRunBobAmplitude: 3
-  hRunBobFrequency: 0.2
+  hRunBobAmplitude: 2
+  hRunBobFrequency: 0.25
   run: {fileID: 7387252875506893107}
   grounded: {fileID: 8967691956622427921}
   freezePlayer: {fileID: 8947697217109975828}
@@ -675,8 +675,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 2150122228102207166}
-  maxAddedFOV: 30
-  maxFOVSpeed: 15
+  maxAddedFOV: 15
+  maxFOVSpeed: 20
   fovLerpSpeed: 5
 --- !u!114 &7500947352921325675
 MonoBehaviour:
@@ -6303,11 +6303,12 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   otherModels:
   - {fileID: 8085627386913444733}
-  - {fileID: 8655666526565379001}
   - {fileID: 3369227140380341150}
   ownerHiddenModels:
   - {fileID: 5438460641664888267}
   - {fileID: 2159333226411663275}
+  - {fileID: 8655666526565379001}
+  - {fileID: 7528452979191727441}
   showToCamLayerName: Player
   hiddenFromCamLayerName: HiddenFromCam
   alwaysShow: 0
@@ -6922,7 +6923,10 @@ MonoBehaviour:
   maxRunSpeed: 6
   acceleration: 125
   airAccelMultiplier: 0.2
-  slideForce: 20
+  slideAcceleration: 25
+  momentumMult: 0.8
+  groundedMomentumDecayRate: 3
+  airMomentumDecayRate: 1
   run: {fileID: 7387252875506893107}
   grounded: {fileID: 8967691956622427921}
   Kp: 50
@@ -7297,7 +7301,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 2150122228102207166}
   particles: {fileID: 6890316700295797712}
-  speedParticlesThreshold: 7
+  speedParticlesThreshold: 12
 --- !u!1 &4697121175046797851
 GameObject:
   m_ObjectHideFlags: 0
@@ -7737,7 +7741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4952211744687670415
 Transform:
   m_ObjectHideFlags: 0
@@ -7760,14 +7764,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5638773891474333611}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f90561f042599464bb0095d50083c983, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 2150122228102207166}
-  drag: 0.1
+  drag: 0.05
   airDrag: 0.0025
   grounded: {fileID: 8967691956622427921}
 --- !u!1 &5690644670108678605
@@ -8133,6 +8137,54 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 300
+--- !u!1 &6360160294620812304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5334551261048063502}
+  - component: {fileID: 6172347864994078038}
+  m_Layer: 6
+  m_Name: Debug Info
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5334551261048063502
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6360160294620812304}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7622608851174086964}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6172347864994078038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6360160294620812304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ba13deb8da046c5acca88b8195c4e47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  rb: {fileID: 2150122228102207166}
+  grounded: {fileID: 8967691956622427921}
+  movement: {fileID: 2981132234044297896}
 --- !u!1 &6449826077855902203
 GameObject:
   m_ObjectHideFlags: 0
@@ -9211,6 +9263,7 @@ Transform:
   - {fileID: 7489323696406559687}
   - {fileID: 5170012854176350336}
   - {fileID: 3151804888690380778}
+  - {fileID: 5334551261048063502}
   m_Father: {fileID: 478902417327462121}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1536592394465798137
@@ -9437,10 +9490,10 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   rb: {fileID: 2150122228102207166}
   jumpForce: 5
-  jumpCooldown: 0.2
+  jumpCooldown: 0.5
   jumpCoyoteTime: 0.1
   jumpBufferTime: 0.1
-  jumpStaminaCost: 0
+  jumpStaminaCost: 10
   grounded: {fileID: 8967691956622427921}
   stamina: {fileID: 4325151636364509555}
 --- !u!1 &8833109295592137671
@@ -10434,7 +10487,7 @@ PrefabInstance:
     - target: {fileID: 7870479891233722490, guid: 47559e430b6e2e549a51761c4ef1d170,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7909848542033764120, guid: 47559e430b6e2e549a51761c4ef1d170,
         type: 3}
@@ -10479,7 +10532,7 @@ PrefabInstance:
     - target: {fileID: 9033346751733972626, guid: 47559e430b6e2e549a51761c4ef1d170,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -10555,6 +10608,12 @@ MeshRenderer:
 --- !u!4 &7212717901725586486 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8160009799644753909, guid: 47559e430b6e2e549a51761c4ef1d170,
+    type: 3}
+  m_PrefabInstance: {fileID: 1524069464205458371}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &7528452979191727441 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9033346751733972626, guid: 47559e430b6e2e549a51761c4ef1d170,
     type: 3}
   m_PrefabInstance: {fileID: 1524069464205458371}
   m_PrefabAsset: {fileID: 0}

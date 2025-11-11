@@ -8,5 +8,8 @@ namespace Player.Events
     {
         public Action OnAbilityUsed;
         public Action<Targetable> OnDrillUsed;
+        public Action OnStartRun, OnStopRun;
+        public Action OnJump;
+        
     }
 }

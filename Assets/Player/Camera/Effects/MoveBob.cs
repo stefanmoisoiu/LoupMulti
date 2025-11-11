@@ -48,7 +48,7 @@ namespace Player.Camera.Effects
         {
             if (CanBob())
             {
-                _advancement += Time.deltaTime * movement.GetMaxSpeed() * frequency * InputManager.Move.magnitude;
+                _advancement += Time.deltaTime * movement.GetBaseMaxSpeed() * frequency * InputManager.Move.magnitude;
                 if (_advancement > 1) _advancement--;
             
                 return bobCurve.Evaluate(_advancement) * amplitude;
@@ -62,9 +62,9 @@ namespace Player.Camera.Effects
 
         private float GetHBob()
         {
-            if (CanBob() && movement.GetMaxSpeed() > movement.MaxRunSpeed - .5f)
+            if (CanBob() && movement.GetBaseMaxSpeed() > movement.MaxRunSpeed - .5f)
             {
-                _hAdvancement += Time.deltaTime * hRunBobFrequency * movement.GetMaxSpeed() * InputManager.Move.magnitude;
+                _hAdvancement += Time.deltaTime * hRunBobFrequency * movement.GetBaseMaxSpeed() * InputManager.Move.magnitude;
                 if (_hAdvancement > 1) _hAdvancement--;
             
                 return hRunBobCurve.Evaluate(_hAdvancement) * hRunBobAmplitude;

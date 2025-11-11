@@ -5,7 +5,7 @@ namespace Player.Stats
 {
     public enum StatType
     {
-        MaxHealth,
+        Armor,
         MoveSpeed,
         JumpHeight,
         DrillCooldownSpeed,

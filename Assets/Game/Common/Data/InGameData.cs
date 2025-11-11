@@ -90,12 +90,12 @@ public struct InGameData : INetworkSerializable, IEquatable<InGameData>
         health -= amount;
         return this;
     }
-    public InGameData AddHealth(ushort amount)
+    public InGameData Heal(ushort amount)
     {
         health = (ushort)Mathf.Min(maxHealth, health + amount);
         return this;
     }
-    public InGameData RemoveHealth(ushort amount)
+    public InGameData Damage(ushort amount)
     {
         health = (ushort)Mathf.Max(0, health - amount);
         return this;

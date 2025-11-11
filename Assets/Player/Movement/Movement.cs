@@ -21,15 +21,23 @@ namespace Player.Movement
         private PlayerReferences _playerReferences;
         
         
-        
+        [Header("Main Movement")]
         [SerializeField] private float maxWalkSpeed = 10f;
         [SerializeField] private float maxRunSpeed = 20f;
         public float MaxRunSpeed => maxRunSpeed;
-        // L'accélération définit maintenant la force MAXIMALE que le PID est autorisé à appliquer.
+        
+        [Header("Acceleration")]
         [SerializeField] private float acceleration = 10f;
         [SerializeField] private float airAccelMultiplier = 0.5f;
+        [SerializeField] private float slideAcceleration = 25;
 
-        [SerializeField] private float slideForce = 5;
+        [Header("Momentum")]
+        [SerializeField] [Range(0,1)] private float momentumMult = .8f;
+        [SerializeField] private float groundedMomentumDecayRate = 5;
+        [SerializeField] private float airMomentumDecayRate = 2;
+
+        private float _currentMomentumSpeed;
+
         
         
         [SerializeField] private Run run;
@@ -42,6 +50,9 @@ namespace Player.Movement
 
         private PIDController pidX;
         private PIDController pidZ;
+
+        private bool _isSliding = false;
+        public bool IsSliding => _isSliding;
 
         protected override void StartAnyOwner()
         {
@@ -62,12 +73,14 @@ namespace Player.Movement
             pidX.Kd = Kd;
             pidZ.Kd = Kd;
         }
-        public float GetMaxSpeed()
+        public float GetBaseMaxSpeed()
         {
             float maxSpeed = maxWalkSpeed;
             if (run.Running) maxSpeed += maxRunSpeed - maxWalkSpeed;
             return _playerReferences == null ? maxSpeed : _playerReferences.StatManager.GetStat(StatType.MoveSpeed).GetValue(maxSpeed);
         }
+        
+        public float GetMaxSpeed() => Mathf.Max(GetBaseMaxSpeed(), _currentMomentumSpeed);
         
         private float GetAcceleration()
         {
@@ -84,41 +97,57 @@ namespace Player.Movement
 
         private void HandleMovement(Vector2 input)
         {
-            // InitializePID();
             if (DataManager.Instance != null && DataManager.Instance[NetworkManager.LocalClientId].outerData.playingState ==
                 OuterData.PlayingState.SpectatingGame) return;
             
             if (grounded.IsGrounded && !grounded.GroundAngleValid()) Slide(input);
             else Move(input);
+
+            HandleMomentum();
+            HandleMomentumDecay(Time.deltaTime);
         }
         
         private void Slide(Vector2 input)
         {
+            if (!_isSliding)
+            {
+                pidX.Reset();
+                pidZ.Reset();
+            }
+            _isSliding = true;
             Vector3 dir = orientation.forward * input.y + orientation.right * input.x;
             Vector3 groundNormalRight = Quaternion.Euler(0,90,0) * new Vector3(grounded.GroundHit.normal.x,0,grounded.GroundHit.normal.z).normalized;
             dir = Vector3.Project(dir, groundNormalRight);
+            Vector3 rightVel = Vector3.Project(rb.linearVelocity, groundNormalRight);
             
-            MoveDir(dir);
+            MoveDir(dir, rightVel);
             
             Vector3 slideDir = Vector3.Cross(groundNormalRight, grounded.GroundHit.normal).normalized;
-            Vector3 force = slideDir * slideForce;
-            rb.AddForce(force);
+            Vector3 force = slideDir * slideAcceleration;
+            rb.AddForce(force, ForceMode.Force);
             
             Debug.DrawRay(transform.position, groundNormalRight, Color.green);
             Debug.DrawRay(transform.position, slideDir * 5, Color.blue);
         }
         private void Move(Vector2 input)
         {
+            if (_isSliding)
+            {
+                pidX.Reset();
+                pidZ.Reset();
+            }
+            _isSliding = false;
             Vector3 dir = orientation.forward * input.y + orientation.right * input.x;
-            MoveDir(dir);
+            MoveDir(dir, rb.linearVelocity);
         }
-        private void MoveDir(Vector3 dir)
+        private void MoveDir(Vector3 dir, Vector3 velocity)
         {
             float maxSpeed = GetMaxSpeed();
+            
             float maxAccel = GetAcceleration();
             float deltaTime = Time.fixedDeltaTime;
 
-            Vector3 currentLocalVelocity = grounded.WorldToLocalUp * rb.linearVelocity;
+            Vector3 currentLocalVelocity = grounded.WorldToLocalUp * velocity;
             Vector3 desiredLocalVelocity = dir * maxSpeed;
 
             float accelX = pidX.Calculate(desiredLocalVelocity.x, currentLocalVelocity.x, deltaTime);
@@ -130,6 +159,20 @@ namespace Player.Movement
             Vector3 worldAcceleration = grounded.LocalUpToWorld * localAcceleration;
             rb.AddForce(worldAcceleration, ForceMode.Force);
             Debug.DrawRay(transform.position, worldAcceleration, Color.red);
+        }
+
+        private void HandleMomentum()
+        {
+            Vector3 vel = rb.linearVelocity;
+            if (grounded.FullyGrounded()) vel = grounded.WorldToLocalUp * vel;
+            vel.y = 0;
+            _currentMomentumSpeed = Mathf.Max(vel.magnitude * momentumMult, _currentMomentumSpeed);
+        }
+        
+        private void HandleMomentumDecay(float deltaTime)
+        {
+            if (grounded.FullyGrounded()) _currentMomentumSpeed -= deltaTime * groundedMomentumDecayRate;
+            else _currentMomentumSpeed -= deltaTime * airMomentumDecayRate; 
         }
     }
 }
